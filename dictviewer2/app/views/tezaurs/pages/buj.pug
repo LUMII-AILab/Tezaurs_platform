@@ -1,0 +1,4 @@
+extends ../../common/layout
+
+block content
+  include:markdown-it(typographer plugins=['markdown-it-emoji', 'markdown-it-sup', 'markdown-it-sub', 'markdown-it-deflist', 'markdown-it-highlightjs']) buj.md

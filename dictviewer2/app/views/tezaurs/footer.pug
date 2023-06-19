@@ -1,0 +1,60 @@
+#footer-credits
+  #footer-affiliates-logos.footer-imagerow
+    a(href='https://lu.lv', tabindex="-1")
+      img#LU_SVG.img-hover(src='/img/LU.svg', height='45', alt='Latvijas Universitāte')
+    a(href='https://lumii.lv', tabindex="-1")
+      img#MII_SVG.img-hover(src='/img/MII.svg', height='45', alt='Matemātikas un informātikas institūts')
+    a(href='http://ailab.lv', tabindex="-1")
+      img#AILab_SVG.img-hover(src='/img/AILab.svg', height='45', alt='Mākslīgā intelekta laboratorija')
+  .footer-copyright
+    .footnote Vārdnīcu sastādījis Andrejs Spektors
+    .footnote LU MII Mākslīgā intelekta laboratorija, 2009–#{new Date().getFullYear()}
+    +if_not_editor
+      //- .footnote Pēdējais atjauninājums: 2022. gada 23. septembrī
+      //- .footnote Pēdējais atjauninājums: 2022. gada 21. decembrī
+      .footnote Pēdējais atjauninājums: 2023. gada 20. martā
+
+#footer-links
+
+  .footer-link-column
+    a.footer-link(href='/_/anotacija' tabindex="-1") Par Tēzauru
+    //- a.footer-link(href='/tēzaurs' tabindex="-1") Kas ir Tēzaurs
+    a.footer-link(href='/_/apzimejumi' tabindex="-1") Apzīmējumi
+    a.footer-link(href='/_avoti' tabindex="-1") Avoti
+
+  .footer-link-column
+    a.footer-link(href='/_/buj' tabindex="-1") Atbildes
+    //- span.footer-link(style='color : #9E9E9E', data-href='#/statistika') Statistika
+    a.footer-link(href='/_/kontakti' tabindex="-1") Autori
+    //- span.footer-link(style='color : #9E9E9E', data-href='/') Palīdzība
+    //- a.footer-link(href='/_/pateicibas' tabindex="-1") Pateicības
+    a.footer-link(href='/_/iestatijumi' tabindex="-1") Iestatījumi
+
+  .footer-link-column
+    //- a.footer-link(href='https://play.google.com/store/apps/details?id=com.ailab.tezaurs', target='_blank', rel='noreferrer', tabindex="-1") Android lietotne
+    //- a.footer-link(href='/_/kindle',  tabindex="-1") Kindle vārdnīca
+    //- a.footer-link.hide-on-mobile(href='https://github.com/LUMII-AILab/Tezaurs', target='_blank', rel='noreferrer',  tabindex="-1") Atvērtie dati
+    a.footer-link.hide-on-mobile(href='http://hdl.handle.net/20.500.12574/66', target='_blank', rel='noreferrer',  tabindex="-1") Atvērtie dati
+    a.footer-link.hide-on-mobile(href='http://api.tezaurs.lv', target='_blank', tabindex="-1") Tēzaura API
+    a.footer-link(href='https://wordnet.ailab.lv', target='_blank', tabindex="-1") WordNet
+
+  .footer-link-column
+    a.footer-link(href='https://mlvv.tezaurs.lv/_/anotacija' tabindex="-1" data-tippy-content="Mūsdienu latviešu valodas vārdnīca") MLVV
+    a.footer-link(href='https://llvv.tezaurs.lv/_/anotacija' tabindex="-1" data-tippy-content="Latviešu literārās valodas vārdnīca") LLVV
+    a.footer-link-inline(href='https://tezaurs.lv/mev/' tabindex="-1" data-tippy-content="Mīlenbaha-Endzelīna latviešu valoas vārdnīca") MEV
+    =', '
+    a.footer-link-inline(href='https://tezaurs.lv/lvvv/' tabindex="-1" data-tippy-content="Latviešu valodas vēsturiskā vārdnīca") LVVV
+    //- a.footer-link.hide-on-mobile(href='/_/vardnicas' tabindex="-1") Citas vārdnīcas
+
+  .footer-link-column
+    if SHOW_WORDNET_EDITOR
+      a.footer-link(href='/_/wordnet', tabindex="-1") Wordnet saraksts
+
+
+#footer-socmedia
+  .footnote Seko mums:
+  #footer-socmedia-links.footer-imagerow
+    a(href='https://twitter.com/AILab_lv', rel='noreferrer', tabindex="-1")
+      img.img-hover(src='/img/Twitter.png', alt='Twitter')
+    //- a(href='https://www.facebook.com/ailablv', rel='noreferrer', tabindex="-1")
+      img.img-hover(src='/img/Facebook.png', alt='Facebook')

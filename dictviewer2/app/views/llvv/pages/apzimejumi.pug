@@ -1,0 +1,45 @@
+extends ../../common/layout
+
+block append header_scripts
+  style.
+    dl {
+      display: grid;
+      grid-template: auto / 5em 1fr;
+    }
+
+    dt, dd {
+      margin: 0;
+      padding: .3em .5em;
+      //- border-top: 1px solid rgba(0,0,0,.1); 
+    }
+
+block content
+  h1 Apzīmējumi
+
+  dl 
+    dt &rarr;
+    dd norāda uz saistījumu ar kādu citu šķirkļa vārdu (kas dots aiz bultiņas) 
+
+    //- dt //
+    //- dd ievada nozīmes niansi vai nozīmes lietojumu
+
+    dt '
+    dd vārda uzsvars [ne'kad]
+
+    dt -
+    dd zilbes robeža [abituri-ents]
+
+    dt ~
+    dd stieptā intonācija [grie~zt] 
+
+    dt `
+    dd krītošā intonācija [a`ust] 
+
+    dt ^
+    dd lauztā intonācija [a^ust] 
+
+    dt uo
+    dd divskanis o [juods]
+
+    dt ō
+    dd garais o [jōds]

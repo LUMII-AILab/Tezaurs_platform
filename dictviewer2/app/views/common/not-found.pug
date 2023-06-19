@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1 Nekas netika atrasts
+  if data
+    if data.query
+      p Vaicājumam <strong>#{data.query}</strong> neatbilst neviens vārdnīcas šķirklis.
+    if data.message 
+      p= data.message 
+      
+  if app_mode !== APP_MODE.PUBLIC
+    h2= message
+    pre
+      code.language-json= JSON.stringify(error, null, 2)

@@ -1,0 +1,19 @@
+extends base-layout
+
+block page
+  #layout-wrapper
+    #main
+      #main-app
+        block content
+    #rightside
+      #main-top
+        block main-top
+      #main-bottom
+        block main-bottom
+      #right-rightside
+        block rightside
+          //- a.button-main.button-stacked(href='/editor/entries/') Pievienot šķirkli
+      #left-rightside(v-if="this.editingWordnet")
+        block left-rightside
+      #leftside
+        block leftside

@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  if app_mode === APP_MODE.PUBLIC
+    h2 Nekas netika atrasts
+  else
+    h2 Kaut kas ir nogājis greizi
+    h2= message
+    h3= error.status
+    pre
+      code.language-json #{error.stack}

@@ -1,0 +1,293 @@
+:root {
+  /*--accent-color: #666666;*/
+  /*--accent-color: #C0c0c0;*/
+  --accent-color: #e8f5e9;
+
+  /*--dark-color: #a0d5a2;*/
+  --dark-color: #4caf50;
+}
+
+/* Collapser */
+
+.sense-info {
+  margin-left: 2em;
+}
+
+.entry-collapse {
+  /*margin: .25rem 0 0 0;*/
+  margin: 0;
+}
+
+.entry-collapse:first-child {
+  margin-top: .25rem;
+}
+.entry-collapse:last-child {
+  margin-bottom: .5rem;
+}
+
+.entry-collapse-toggle {
+  width: 100%;
+  /* color: #515151; */
+  color: var(--first-color-dark-dimmed);
+  cursor: pointer;
+  line-height: 1.5;
+}
+
+.entry-collapse-toggle:hover {
+  /*box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 1px 2px rgba(0,0,0,0.23);*/
+  /*background-color: #dbdee2;*/
+}
+
+.entry-collapse-toggle:hover .entry-collapse-heading {
+  /*box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 1px 2px rgba(0,0,0,0.23);*/
+  color: var(--dark-color);
+}
+
+.entry-collapse-toggle.open {
+  color: black;
+  background-color: var(--accent-color);
+  /* border: 2px solid var(--accent-color); */
+}
+
+.entry-collapse-toggle.open  .entry-collapse-icon {
+  color: black;
+  -webkit-text-stroke: 1px var(--accent-color);
+}
+
+.entry-collapse-toggle.open .entry-collapse-heading {
+  color: black;
+}
+
+.entry-collapse-heading {
+  margin: 0 15px 0 0;
+  /*font-weight: 500;*/
+  font-weight: 400;
+  font-size: 0.9rem;
+}
+
+.entry-collapse-heading.large {
+  font-size: 1rem;
+}
+
+.entry-collapse-info {
+  font-weight: 300;
+  font-size: .9rem;
+  color: black;
+}
+
+.entry-collapse-icon {
+  color: var(--dark-color);
+  margin: 0 10px 5px 7px;
+  -webkit-text-stroke: 1px white;
+  /*font-size: 12px;*/
+}
+
+.entry-collapse-container {
+  padding: .75rem 1rem;
+  background-color: #f8f8f8;
+  /*overflow-x: auto;*/
+}
+
+.sv_MWE .dash+.dict_SenseNumber {
+  margin-left: 0;
+}
+
+ul.sv_MWEs {
+  padding-left: 1.1rem;
+  margin-bottom: 0;
+}
+
+/* Content */
+
+/*.gradset-synset:not(first-child) {*/
+  /*margin-top: .75rem;*/
+/*}*/
+
+.gradset-synset .dict_Verbalization+.related-sense {
+  display: inline;
+}
+
+.entry-collapse-container .sv_MWEs {
+  margin-left: 0;
+  margin-top: 0;
+}
+
+.sv_WN {
+  margin-top: 1rem;
+  margin-bottom: 0.25rem;
+  font-weight: 300;
+  font-size: 0.95rem;
+}
+
+.sv_WN:first-child, .sv_WN:first-child .wn-relation-heading {
+  margin-top: 0;
+}
+
+.wn-relation-heading {
+  /*font-weight: 500;*/
+  font-weight: 400;
+  font-size: 0.9rem;
+  color: var(--dark-color);
+  margin-bottom: 0.5rem;
+  margin-top: 1rem;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #E0E0E0;
+}
+
+.synset:not(:last-child) {
+  margin-bottom: 0.5rem;
+}
+
+.synset-senses {
+  font-weight: 400;
+  font-size: 1rem;
+}
+
+.synset-gloss, .synset-example {
+  font-size: 0.95rem;
+  font-weight: 300;
+}
+
+.external-link .fas{
+  font-size: 0.9rem;
+  color: grey;
+}
+
+.external-link .fas:hover{
+  color: lightgrey;
+}
+
+.source-info {
+  text-align: right;
+  font-weight: 300;
+}
+
+.example-decoration {
+  font-size: 5px;
+  vertical-align: middle;
+  padding-right: 8px;
+}
+
+.related-sense:not(:first-child), .sv_MWE:not(:first-child) {
+  margin-top: .15rem;
+}
+
+.related-sense a {
+  text-decoration: none;
+}
+
+.related-sense a span.text {
+  text-decoration: underline;
+}
+
+/* Morphology */
+
+.dict_Lexeme .dict_Verbalization {
+  margin-right: .5rem;
+}
+
+.dict_Lexeme .entry-collapse-toggle {
+  border: 1px solid #f8f8f8;
+  background-color: #f8f8f8;
+  /*border-radius: 5px;*/
+}
+.dict_Lexeme .entry-collapse-toggle.open {
+  border: 1px solid var(--accent-color);
+  background-color: var(--accent-color);
+}
+
+/* Alterations to dict.css */
+
+.sv_PI {
+  /*font-weight: 300;*/
+}
+
+.dict_Sense>.dict_Sense .entry-collapse-container {
+  font-size: 1rem;
+}
+
+.dict_Sense > .dict_Gloss {
+  font-weight: 400;
+}
+
+.sv_Idioms .entry-collapse-icon {
+  -webkit-text-stroke: unset;
+}
+
+.dict_Section {
+  font-size: 1rem;
+  color: var(--first-color-dark);
+}
+
+.verbalization-warning {
+  color: #b73642;
+}
+
+.sub-morphology:first-child {
+  margin-top: 0;
+}
+
+.items > table.inflections {
+  margin-top: 0;
+}
+
+/* Info box */
+.info-box {
+  font-size: 0.9rem;
+  width: 300px;
+}
+
+.info-box .heading {
+  font-weight: 500;
+}
+
+.info-box .gloss {
+  font-weight: 300;
+}
+
+.explanation i.fas {
+  margin-left: 0.25rem;
+}
+
+/* Fixes */
+:root {
+  --bs-font-sans-serif: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+  --bs-font-monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+}
+
+body {
+  font-family: var(--bs-font-sans-serif);
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .entry-collapse-toggle {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .entry-collapse-toggle.open:not(.inline) {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+}
+
+/* Misc */
+.dict_Lexeme[hilited], .dict_Sense[hilited], .dict_Example[hilited]  {
+  /* background-color: rgba(76, 202, 80, 0.2); */
+  animation: highlight 2000ms ease-in-out 2;
+  background-color: #F0F0F0;
+}
+@keyframes highlight {
+  0% {
+    background-color: #F0F0F0;
+  }
+  50% {
+    background-color: yellow;
+  }
+  100% {
+    background-color: #F0F0F0;
+  }
+}

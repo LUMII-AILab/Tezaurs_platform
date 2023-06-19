@@ -1,0 +1,93 @@
+extends ./layout
+
+mixin showLetterBar()
+  nav.pagination 
+    ul.pagination-list
+      - for (let c of 'AĀBCČDEĒFGĢHIĪJKĶLĻMNŅOPRSŠTUŪVZŽ')
+        li.item.letter-item(data-tippy-content=letterCounts && letterCounts[c])
+          a(href=`?letter=${c}`)= ` ${c} `
+
+block append header_scripts
+  style.
+    ul.word-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      columns: 5;
+    }
+
+    .buttonRow {
+      display: flex;
+    }
+
+    .pagination {
+      margin: 0.3em 0;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .pagination ul {
+      display: flex;
+      list-style-type: none;
+      padding: 0;
+      color: var(--first-color-dark);
+      flex-wrap: wrap;
+    }
+
+    .pagination li.item {
+      font-size: 1.2em;
+      margin: 0 0.1em;
+      text-align: center;
+      min-width: 2em;
+    }
+
+    .pagination li.item.letter-item {
+      font-size: 1em;
+      min-width: 1.2em;
+    }
+
+    .pagination li.item a {
+      text-decoration: none;
+      border: 1px solid var(--first-color);
+      border-radius: 0.2em;
+      box-shadow: 1px 1px 2px var(--first-color);
+      background-color: var(--first-color-lite);
+      min-width: 2em;
+      padding: 0.2em 0.5em;
+      display: block;
+    }
+
+    .pagination li.item a:hover {
+      opacity: 0.8;
+    }
+
+    .pagination li.item.current-item,
+    .pagination li.item.ellipsis-item {
+      border: none;
+      color: black;
+      background-color: inherit;
+    }
+
+    .pagination li.prev-next-item {
+      
+    }
+    @media only screen and (max-width: 1024px) {
+      ul.word-list {
+        columns: 1;
+      }
+    }
+
+block content
+  if letterStr
+    +showLetterBar
+    h1 Šķirkļi ar sākumburtu #[em #{letterStr}]
+    //- p Skaits: #{entries.length}
+    ul.word-list
+      each e in entries 
+        li
+          a(href=`/${e.human_key}`)= e.heading
+  else
+    h1 Izvēlieties sākumburtu
+    +showLetterBar
+
+

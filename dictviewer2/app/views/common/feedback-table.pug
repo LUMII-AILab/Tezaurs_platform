@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  h1.mb-4.mt-4.text-center Atsauksmes un sūdzības
+
+  #feedback-table
+    if error
+      b-alert(show variant="danger") Neizdevās piekļūt datiem.
+    else
+      feedback-table(:entries=entries :queries=queries)
+

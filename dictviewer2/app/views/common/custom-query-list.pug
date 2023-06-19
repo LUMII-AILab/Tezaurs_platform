@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  h1 
+    span Vaicājumi 
+    span(onclick="for (let e of document.getElementsByTagName('details')) { e.hasAttribute('open') ? e.removeAttribute('open') : e.setAttribute('open', true) }" style='cursor: pointer' title='atvērt/aizvērt mapes')
+      i.fas.fa-plus-square
+
+
+  each g of Object.keys(qdef.groups).filter(g => !qdef.groups[g].hidden)
+    if qdef.queries.filter(x => (x.group === g || (Array.isArray(x.group) && x.group.includes(g))) && !x.hidden).length > 0
+      //- h2= qdef.groups[g].caption
+      //- ul
+        each q in qdef.queries.filter(x => x.group === g && !x.hidden)
+          li
+            a(href=`/_q/${q.name}`)= q.caption
+      details(open=!qdef.groups[g].initiallyCollapsed)
+        summary= qdef.groups[g].caption
+        ul
+          each q in qdef.queries.filter(x => (x.group === g || (Array.isArray(x.group) && x.group.includes(g))) && !x.hidden)
+            li
+              a(href=`/_q/${q.paramForm ? 'p' : '' }${q.name}` target='_blank')= q.caption

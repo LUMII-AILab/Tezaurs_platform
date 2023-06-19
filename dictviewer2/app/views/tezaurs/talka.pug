@@ -1,0 +1,289 @@
+extends ../common/layout
+
+mixin showValueCell(value)
+  -
+    const renderValue = value => {
+      if (typeof value === 'object') {
+        //- return JSON.stringify(value);
+        if (value.entityType) {
+          switch (value.entityType) {
+            case 'entry':
+              return `<a href='/${encodeURIComponent(value.human_key).replace('%3A', ':')}' target='_blank' style='color: blue'>${value.heading}</a>`;
+            case 'sense':
+              return `<span data-tippy-content="${value.gloss.replaceAll('"', '&quot;')}">${renderValue(value.entry)}<sub>${value.senseTag}</sub></span>`;
+            case 'synset':
+              return `❪ ${value.senses.map(x => renderValue(x)).join(', ')} ❫`;
+            case 'gradset':
+              return `❰ ${value.synsets.map(x => renderValue(x)).join(', ')} ❱`;
+            case 'link':
+              return `<a href='${encodeURI(value.url).replace('%3A', ':')}' target='_blank' style='color: blue'>${value.slug}</a>`;
+          }
+        }
+      }
+    }
+  if typeof value === 'boolean'
+    td= value ? '✔' : ''
+  else if typeof value === 'object'
+    if value === null 
+      td &nbsp;
+    else if value.entityType
+      td !{renderValue(value)}
+    else if Array.isArray(value)
+      td !{value.map(x => renderValue(x)).join(', ')}
+    else
+      td
+        pre
+          code.language-json= JSON.stringify(value, null, 2).slice(2, -2)
+  else
+    td= value
+
+mixin showPrevPageButton(n)
+  li.item.prev-next-item
+    a(href=`?page=${n}`)= ` << `
+
+mixin showNextPageButton(n)
+  li.item.prev-next-item
+    a(href=`?page=${n}`)= ` >> `
+
+mixin showPageButton(n)
+  li.item.other-item
+    a(href=`?page=${n}`)= ` ${n} `
+
+mixin showCurrentPageButton(n)
+  li.item.current-item= ` ${n} `
+
+mixin showEllipsis()
+  li.item.ellipsis-item= ` ... `
+
+mixin showPaginationBar(total, current, s1, s2, prevNext = false)
+  nav.pagination 
+    ul.pagination-list
+      if prevNext && current > 1
+        +showPrevPageButton(current - 1)
+
+      if current > s1 + s2 + 1
+        - for (let i = 1; i <= s1; i += 1)
+          +showPageButton(i)
+        +showEllipsis()
+        - for (let i = current - s2; i < current; i += 1)
+          +showPageButton(i)
+      else 
+        - for (let i = 1; i < current; i += 1)
+          +showPageButton(i)
+
+      +showCurrentPageButton(current)
+
+      if current < total - s1 - s2
+        - for (let i = current + 1; i <= current + s2; i += 1)
+          +showPageButton(i)
+        +showEllipsis()
+        - for (let i = total - s1 + 1; i <= total; i += 1)
+          +showPageButton(i)
+      else 
+        - for (let i = current + 1; i <= total; i += 1)
+          +showPageButton(i)
+
+      if prevNext && current < total
+        +showNextPageButton(current + 1)
+
+mixin showPaging(paginationInfo)
+  if paginationInfo && paginationInfo.totalPages > 1
+    //- p Lapa #{paginationInfo.currentPage} no #{paginationInfo.totalPages}
+    +showPaginationBar(paginationInfo.totalPages, paginationInfo.currentPage, 1, 1, false)
+
+mixin showLetterBar()
+  nav.pagination 
+    ul.pagination-list
+      //- - for (let c of '"(AĀBCČDEĒFGĢHIĪJKĶLĻMNŅOŌPQRŖSŠTUŪVWXYZŽ')
+      - for (let c of '"(AĀBCČDEĒFGĢHIĪJKĶLĻMNŅOPQRSŠTUŪVWXYZŽ')
+        li.item.letter-item(data-tippy-content=letterCounts && letterCounts[c])
+          a(href=`?letter=${c}`)= ` ${c} `
+
+
+mixin showResultTable(resArray)
+  if !resArray || !Array.isArray(resArray) || resArray.length === 0
+    p Nav rezultātu 
+  else
+
+    table.result-table
+
+      thead
+        tr.head
+          th(style="text-align:left") Šķirkļvārds
+          th(style="text-align:left") Leksēma tagad
+          th(style="text-align:left") ar mazo
+          th(style="text-align:left") Pogas
+          //- th(style="text-align:left") Poga
+          //- th(style="text-align:left") Šķirklis
+
+      tbody
+        each row, i in resArray
+          tr(class=`${i % 2 === 0 ? 'even': 'odd'}`)
+            //- td= row.heading
+            td
+              a(href=`/${encodeURIComponent(row.human_key).replace('%3A', ':')}` target='_blank' style='color: blue')= row.heading
+              br
+              .entry-hint !{row.ss}
+            td= row.lemma
+            td= row.lemma_new
+            td
+              div.buttonRow(id=`form-${row.lexeme_id}`)
+                button(onclick=`doAction(${row.lexeme_id}, true)` title="ar mazo sākumburtu") abc
+                button(onclick=`doAction(${row.lexeme_id}, false)` title="Cits ar lielo sākumburtu") Abc
+                button(onclick=`doAction(${row.lexeme_id}, false, 'taxon')` title="Taksons") Abc+Tx
+                button(onclick=`doAction(${row.lexeme_id}, false, 'vietvārds')` title="Vietvārds") Abc+Vv
+            //- td
+              a(href=`/${encodeURIComponent(row.human_key).replace('%3A', ':')}` target='_blank' style='color: blue')
+                i.fas.fa-external-link-square-alt(style='color: grey')
+
+
+
+block append header_scripts
+  script.
+    const doAction = (lexeme_id, decapitalize, properNounType) => {
+      const form = document.getElementById(`form-${lexeme_id}`);
+      if (form) {
+        form.innerHTML = 'working...';
+        window.fetch(window.location.href, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',            
+          },
+          body: JSON.stringify({ lexeme_id, decapitalize, properNounType }),
+        }).then(result => {
+          console.log(result);
+          //- form.remove();
+          if (result.status === 200) {
+            form.innerHTML = decapitalize ? 'samazināts' : properNounType ? properNounType : 'atstāts';
+          } else {
+            form.innerHTML = `nesanāca`;
+          }
+        })
+        //- alert(lexeme_id);
+      }
+    }
+  style.
+    .result-table th {
+      text-align: left;
+      margin-bottom: 2em;
+    }
+
+    .result-table tr.head {
+      //- background-color: #8caa8d;
+      background-color: var(--first-color-dark-dimmed);
+      color: white;
+    }
+
+    .result-table tr.odd {
+      background-color: var(--row-bg-color-dark);
+    }
+
+    .result-table tr:hover {
+      background-color: var(--first-color-lite);
+    }
+
+    .result-table th, .result-table td {
+      padding: 0.3em;
+    }
+
+    .result-table a {
+      color: #404040 !important;
+      //- display: block; 
+      text-decoration: none;
+      margin: 0;
+    }
+    .result-table a:hover {
+      text-decoration: underline dotted;
+    }
+    .result-table td pre {
+      border: 0;
+      outline-width: 0;
+      font-size: 0.7em;
+      color: grey;
+    }
+    .result-table td .entry-hint {
+      border: 0;
+      outline-width: 0;
+      font-size: 0.7em;
+      color: grey;
+    }
+
+    .buttonRow {
+      display: flex;
+    }
+
+    .pagination {
+      margin: 0.3em 0;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .pagination ul {
+      display: flex;
+      list-style-type: none;
+      padding: 0;
+      color: var(--first-color-dark);
+      flex-wrap: wrap;
+    }
+
+    .pagination li.item {
+      font-size: 1.2em;
+      margin: 0 0.1em;
+      text-align: center;
+      min-width: 2em;
+    }
+
+    .pagination li.item.letter-item {
+      font-size: 1em;
+      min-width: 1.2em;
+    }
+
+    .pagination li.item a {
+      text-decoration: none;
+      border: 1px solid var(--first-color);
+      border-radius: 0.2em;
+      box-shadow: 1px 1px 2px var(--first-color);
+      background-color: var(--first-color-lite);
+      min-width: 2em;
+      padding: 0.2em 0.5em;
+      display: block;
+    }
+
+    .pagination li.item a:hover {
+      opacity: 0.8;
+    }
+
+    .pagination li.item.current-item,
+    .pagination li.item.ellipsis-item {
+      border: none;
+      color: black;
+      background-color: inherit;
+    }
+
+    .pagination li.prev-next-item {
+      
+    }
+
+block content
+  if letterStr
+    h1= `Talka, burts ${letterStr}`
+  else 
+    h1 Talka
+
+  p Talkas vadlīnijas #[a(href='https://docs.google.com/document/d/1nXoTRfMtOjO_91Fr4lLx_QvSNLYmCgX5Eqcp0dG7UBg' target='_blank') šeit]
+  
+  //- pre= JSON.stringify(data, null, 2)
+  
+  if paginationInfo && paginationInfo.totalRows
+    h2 Skaits: #{paginationInfo.totalRows}
+
+  if Array.isArray(results)
+    +showLetterBar()
+    +showPaging(paginationInfo)
+    +showResultTable(results)
+    +showPaging(paginationInfo)
+
+block append footer_scripts
+  script.
+    tippy('[data-tippy-content]', { trigger: 'mouseenter click', hideOnClick: true, interactive: true, allowHTML: true, maxWidth: 'none' });
+

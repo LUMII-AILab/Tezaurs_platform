@@ -1,0 +1,38 @@
+extends layout
+
+//- include editor
+
+block content
+  //- h1 MLVV
+  //- h1 Eksperimentāls prototips
+  //- p Sveicināti #{title}!
+  //- p Esiet sveicināti
+  //- p
+    | Pirmais vārds bija
+    |
+    //- a(href=`/suns`) suns
+    a(href=`/suns`) suns
+    | .
+  //- h2 vieta jūsu reklāmai
+  //- include ../common/instrukcija
+
+block append rightside
+  if SHOW_EDITOR
+    entry-form(idata="{}" title="Pievienot šķirkli" v-slot:trigger="{id}")
+      button.side-button.secondary(type="button" title="Pievienot jaunu šķirkli" v-b-modal="id") Pievienot šķirkli
+
+    a(href='/_/r')
+      button.side-button(type="button") Nejaušs šķirklis
+
+    a(href='/_q')
+      button.side-button.secondary(type="button" title="Datu vaicājumi") Vaicājumi
+    +only(['tezaurs','mlvv'])
+      a(href='/_issues/feedback/list')
+        button.side-button.secondary(type="button" title="Ziņojumi") Ziņojumi
+    a(href='/__/dokumenti')
+      button.side-button.secondary(type="button") Dokumenti
+
+    if SHOW_WORDNET_EDITOR
+      a(href='/_/wordnet/potential_links')
+        button.side-button.secondary(type="button") Automātiskās saites
+

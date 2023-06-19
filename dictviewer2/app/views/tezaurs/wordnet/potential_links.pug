@@ -1,0 +1,13 @@
+extends ../../common/wide-layout
+
+block content
+  div.mx-5
+    div.container
+      a(href='/_/wordnet/potential_links/answers')
+        b-button(variant="outline-secondary") → Rezultāti
+      hr
+  div.ml-5.mr-5
+    if readOnly
+      potential-link(:link=link, :read-only="true")
+    else
+      potential-link(:link=link, :read-only="false")

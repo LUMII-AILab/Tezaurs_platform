@@ -1,0 +1,105 @@
+extends layout
+
+mixin hiliteHit(text, hit)
+  //- - TODO: uztaisīt arī saliktu vaicājumu krāsošanas atbalstu (vismаz split to words + filter out operators + hilite words)
+  - const hitStart = text.toLowerCase().indexOf(hit.toLowerCase())
+  - const hitEnd = hitStart + hit.length
+  span
+    if hitStart >= 0
+      | !{text.slice(0, hitStart)}
+      strong(style='color: red')= text.slice(hitStart, hitEnd)
+      | !{text.slice(hitEnd)}
+    else
+      | !{text}
+
+block content
+  - 
+    const h_k_link = h_k => `/${encodeURIComponent(h_k).replace('%3A', ':')}`;
+    const entry_link = e => `/${encodeURIComponent(e.human_key).replace('%3A', ':')}`;
+    const format_entry_slug = (e, suppressIndex = false) => {
+      if ([2,3,4].includes(e.type_id)) return e.heading;
+      if (suppressIndex) return e.heading;
+      //- if (!e.homonym_no || e.homonym_no === 1) return e.heading;
+      return `${e.heading}<sup>${e.homonym_no}</sup>`;
+    }
+
+
+  h1 Paplašinātā meklēšana
+  p Meklējam <strong>#{entrySlug}</strong>.
+  if hits && hits.words && hits.words.length > 0
+    details
+      summary Atrasts vārdos (#{hits.words.length}):
+      ul
+        each w, index in hits.words
+          li
+            //- a(href=`/${w.human_key}`)= w.human_key
+            a(href=`${h_k_link(w.human_key)}`)
+              +hiliteHit(w.human_key, entrySlug)
+            //- |
+            //- = w.type_id
+  else
+    P Vārdos nav.
+
+  hr
+
+  if hits && hits.mwes && hits.mwes.length > 0
+    details
+      summary Atrasts vārdu savienojumos (#{hits.mwes.length}):
+      //- p= JSON.stringify(hits.mwes[0])
+      ul
+        each mwe, index in hits.mwes
+          li
+            //- a(href=`/${mwe.human_key}`) !{mwe.heading}
+            a(href=`${h_k_link(mwe.human_key)}`)
+              +hiliteHit(mwe.heading, entrySlug)
+            //- |
+            //- = mwe.type_id
+
+  else
+    p Vārdu savienojumos nav.
+
+  hr
+
+  if hits && hits.senses && hits.senses.length > 0
+    details
+      summary Atrasts skaidrojumos (#{hits.senses.length}#{hits.senses.length>=10000?'+':''}):
+      //- p= JSON.stringify(hits.senses[0])
+      ul
+        each se, index in hits.senses
+          li
+            //- a(href=`/${mwe.human_key}`) !{mwe.heading}
+            strong= se.heading
+            = ' '
+            a(href=`${h_k_link(se.human_key)}`)
+              +hiliteHit(se.gloss, entrySlug)
+
+  else
+    p Skaidrojumos nav.
+
+  //- Kaimiņvārdnīcas
+  if hits && hits.inOtherDictionaries && Object.keys(hits.inOtherDictionaries).length > 0
+    hr
+    p <strong>#{entrySlug}</strong> citās vārdnīcās:
+    each dictData, dictKey in hits.inOtherDictionaries 
+      if dictData.entries && dictData.entries.length > 0
+        .resultSet(style=`border-color: ${dictData.style.primaryColor}`)
+          .wordList(style=`background-color: ${dictData.style.primaryColorLite}; border-color: ${dictData.style.primaryColor}`) #{dictData.name}
+          .listBox(style=`border-color: ${dictData.style.primaryColor}`)
+            each e, i in dictData.entries
+              .listItem(style=`${i % 2 === 1 ? 'background-color: var(--row-bg-color-dark)' : 'background-color: var(--row-bg-color-lite)'}`)
+                a(href=`${dictData.baseUrl}${entry_link(e)}`, class="word", target="_blank") !{format_entry_slug(e, dictData.entries.length === 1)}
+  else 
+    hr
+    p Citās vārdnīcās nav šķirkļa <strong>#{entrySlug}</strong>.
+
+  //- p= JSON.stringify(hits)
+
+block append rightside
+  +if_editor
+    entry-form(idata="{}" title="Pievienot šķirkli" v-slot:trigger="{id}")
+      button.side-button.secondary(type="button" title="Pievienot jaunu šķirkli" v-b-modal="id") Pievienot šķirkli
+    a(href='/_q')
+      button.side-button.secondary(type="button" title="Datu vaicājumi") Vaicājumi
+    +only(['tezaurs','mlvv'])
+      a(href='/_issues/feedback/list')
+        button.side-button.secondary(type="button" title="Ziņojumi") Ziņojumi

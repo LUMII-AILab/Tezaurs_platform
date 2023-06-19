@@ -1,0 +1,294 @@
+
+include entry-constants
+include entry-scripts
+include mixins/wordnet
+include common-mixins
+include entry-mixins
+include entry-editor-mixins
+
+- var homonym_no = entriesToShow.length > 0 ? entriesToShow[0].homonym_no : null
+b-overlay.homonym-content(:show="this.loading", id='homonym-'+ homonym_no, data-no=homonym_no)
+  //- formatting helper functions
+  //- -
+    const format_human_key = (hid) => {
+      let word = hid;
+      let idx = 1;
+      if (hid.includes(':')) {
+        word = hid.slice(0, hid.indexOf(':'));
+        idx = hid.slice(hid.indexOf(':') + 1);
+      }
+      const hideIndex = (homonymEntries && homonymEntries.length === 1 && idx == 1);
+      return hideIndex ? word : `${word}<sup>${idx}</sup>`;
+    }
+
+  //include entry-constants
+  //include entry-scripts
+
+  each entry, entryIndex in entriesToShow
+
+    +modals(entry)
+
+    //- ŠĶIRKĻA NOTES (tikai redaktoriem)
+    +if_editor
+      if entry.notes
+        .entryNotes !{beforeRender(entry.notes.replace(/\n/g, '<br />'))}
+
+    //- šķirklis
+    if entryIndex > 0
+      hr
+
+    .dict_EntryHeader
+      span.dict_EntryHead
+        +entryHead(entry)
+
+      if entry.lexemes && entry.lexemes.length > 0
+        div.dict_Lexemes
+          +if_not_editor
+            //- each lexeme, index in entry.lexemes.filter(x => !x.hidden)
+            each lexeme, index in entry.lexemes
+              div.dict_Lexeme(hilited=(hilite===`l:${lexeme.id}`))
+                +lexemeHead(lexeme)
+                +lexemeInfo(lexeme)
+                if lexeme.morphology
+                  +collapseInline(`morphology-top-${index}`, 'Locīšana', '', 'morpho')
+                    .dict_MorphoTable !{put_in_sandbox(lexeme.morphology.table)}
+                  //- div.disclaimer Locījumu tabula ir ģenerēta automātiski. Ja pamanāt kādu kļūdu, lūdzu, ziņojiet!
+                +entitySources(entry, lexeme.id, undefined)
+
+          +if_editor
+            each lexeme, index in entry.lexemes
+              div.dict_Lexeme(hilited=(hilite===`l:${lexeme.id}`))
+                +editLexeme(entry, lexeme, index + 1)
+                +lexemeHead(lexeme)
+                +lexemeInfo(lexeme)
+                if lexeme.morphology
+                  = ' '
+                  +collapseInline(`morphology-top-${index}`, 'Locīšana', '', 'morpho')
+                    .dict_MorphoTable !{put_in_sandbox(lexeme.morphology.table)}
+                  //- div.disclaimer Locījumu tabula ir ģenerēta automātiski. Ja pamanāt kādu kļūdu, lūdzu, ziņojiet!
+                +entitySources(entry, lexeme.id, undefined)
+
+    //- p Galveno nozīmju skaits: #{entry.senses.length}
+    //- pre #{JSON.stringify(entry, null, 2)}
+
+    //- NOZI'MES
+    each s, index in entry.senses
+      .dict_Sense(hilited=(hilite===`s:${s.id}`))
+        if entry.senses.length > 1 || (entry.senses.length === 1 && entry.senses[0].subSenses)
+          span.dict_SenseNumber #{index + 1}.
+        +editSense(entry, s, index)
+
+        //- +except('tezaurs')
+        +only('llvv')
+          if s.data && s.data.Gram && s.data.Gram.FreeText
+            span.dict_Verbalization= s.data.Gram.FreeText
+            = ' '
+          if s.data && s.data.Gram && s.data.Gram.FlagText
+            span.dict_Verbalization= s.data.Gram.FlagText
+            = ' '
+        //- +only('tezaurs')
+        +except('llvv')
+          if s.data && s.data.Gram
+            if s.data.Gram.Leftovers
+              if s.data && s.data.Gram && s.data.Gram.FreeText
+                span.dict_Verbalization= s.data.Gram.FreeText
+                = ' '
+              if s.data && s.data.Gram && s.data.Gram.FlagText
+                span.dict_Verbalization= s.data.Gram.FlagText
+                = ' '
+            else
+              span.dict_Verbalization !{highlight_warning(v.verbalize_entity('sense', s.data.Gram.Flags, s.data.Gram.StructuralRestrictions))}
+              = ' '
+
+        span.dict_Gloss !{beforeRender(capitalize_first_letter(add_sense_punctuation(s.linkifiedGloss || s.gloss)))}
+
+        +stuffFromGrammar(s.data, SENSE_COLOR)
+        //- if s.data && s.data.Gram && s.data.Gram.FormRestrictions
+        //-   +textFromFormRestrictions(s.data.Gram.FormRestrictions)
+        = ' '
+        +entitySources(entry, undefined, s.id)
+        +hidden(s)
+        +senseInfo(s, s.order_no)
+        +toggles(s)
+        //- +senseExamples(s)
+        //- +senseMWEs(s)
+
+        if s.subSenses
+          +if_show_subsenses(s.order_no)
+            each ss, index_ss in s.subSenses
+              .dict_Sense(hilited=(hilite===`s:${ss.id}`))
+                //- pre #{JSON.stringify(ss, null, 2)}
+                span.dict_SenseNumber #{index + 1}.#{index_ss + 1}.
+                //- span.dict_SenseNumber= '// '
+
+                +editSubsense(entry, s, ss, index_ss)
+
+                if ss.data && ss.data.Gram && ss.data.Gram.AltLemmas
+                  +senseAltLemmas(ss.data.Gram.AltLemmas)
+
+                //- +except('tezaurs')
+                +only('llvv')
+                  if ss.data && ss.data.Gram && ss.data.Gram.FreeText
+                    span.dict_Verbalization #{ss.data.Gram.FreeText}
+                    = ' '
+                  if ss.data && ss.data.Gram && ss.data.Gram.FlagText
+                    span.dict_Verbalization #{ss.data.Gram.FlagText}
+                    = ' '
+
+                //- +only('tezaurs')
+                +except('llvv')
+                  if ss.data && ss.data.Gram
+                    if ss.data.Gram.Leftovers
+                      if ss.data && ss.data.Gram && ss.data.Gram.FreeText
+                        span.dict_Verbalization #{ss.data.Gram.FreeText}
+                        = ' '
+                      if ss.data && ss.data.Gram && ss.data.Gram.FlagText
+                        span.dict_Verbalization #{ss.data.Gram.FlagText}
+                        = ' '
+                    else
+                      span.dict_Verbalization !{highlight_warning(v.verbalize_entity('sense', ss.data.Gram.Flags, ss.data.Gram.StructuralRestrictions))}
+                      = ' '
+
+                span.dict_Gloss !{beforeRender(capitalize_first_letter(add_sense_punctuation(ss.linkifiedGloss || ss.gloss)))}
+
+                +stuffFromGrammar(ss.data, SENSE_COLOR)
+                = ' '
+                +entitySources(entry, undefined, ss.id)
+                +hidden(ss)
+                +senseInfo(ss, s.order_no)
+                //- +senseExamples(ss)
+                //- +senseMWEs(ss)
+
+    //- šis dublē to, kas ir labās malas kastē
+    //- if entry.references.length > 0
+      .sv_SK Sk.
+        each ref, index in entry.references
+          //- | #{JSON.stringify(ref)}
+          //- a(href=`/w/${ref.entry.human_key}`) #{ref.entry.human_key}
+          = ' '
+          a(href=`/${ref.entry.human_key}`) !{format_entry_slug(ref.entry)}
+
+    if entry.incoming_entry_relations && entry.incoming_entry_relations.length > 0
+
+      //- hr
+      //- p Ienākošās šķirkļa saites: #{entry.incoming_entry_relations.length}
+      //- ul
+        li No tām derivativeOf: #{entry.incoming_entry_relations.filter(r=>r.type_id===1).length}
+        li No tām sameAs: #{entry.incoming_entry_relations.filter(r=>r.type_id===2).length}
+        li No tām seeAlso: #{entry.incoming_entry_relations.filter(r=>r.type_id===3).length}
+        li No tām idiomFor: #{entry.incoming_entry_relations.filter(r=>r.type_id===4).length}
+        li No tām MWE: #{entry.incoming_entry_relations.filter(r=>r.type_id===5).length}
+
+      +linkedMWEgroup(entry.incoming_entry_relations, 2, 'idioms', 'Frazeoloģismi', entry.id)
+      +linkedMWEgroup(entry.incoming_entry_relations, 3, 'taxons', 'Taksoni', entry.id)
+      +linkedMWEgroup(entry.incoming_entry_relations, 4, 'mwe', 'Stabili vārdu savienojumi', entry.id)
+
+    //- if entry.incoming_entry_relations.filter(r=>r.type_id===3).length > 0
+      .sv_Idioms
+        +collapser('mwe', 'Piemēri', null, true)
+          each mwe, index in entry.incoming_entry_relations.filter(r=>r.type_id===3)
+            +linkedMWE(mwe, entry.id)
+
+    //- if entry.incoming_entry_relations.filter(r=>r.type_id===5).length > 0
+      .sv_Idioms
+        +collapser('idioms', 'Frazeoloģismi', null, true)
+          each mweRel, index in entry.incoming_entry_relations.filter(r=>r.type_id===5)
+            +linkedMWE(mweRel, entry.id)
+
+    //- if entry.sense_entry_relations.length > 0
+    //-   p Nozīmes šķirkļa saites: #{entry.sense_entry_relations.length}
+
+    //- ETIMOLOĢIJA
+    if entry.data && entry.data.Etymology
+      div.dict_Block
+        span.dict_Section Cilme:
+        span !{beforeRender(entry.data.Etymology)}
+
+    //- normatīvais komentārs
+    if entry.data && entry.data.Normative
+      div.dict_Block
+        span.dict_Section Normatīvais komentārs:
+        span.dict_Comment !{beforeRender(entry.data.Normative)}
+
+    //- AVOTI
+    - let lejasAvoti = entry.sources ? entry.sources.filter(x => !x.lexeme_id && !x.sense_id) : []
+    if lejasAvoti.length > 0
+      //- hr
+      div.dict_Block
+        span.dict_Section Avoti:
+        each src, index in lejasAvoti
+          if index > 0
+            = ','
+          = ' '
+          +editSourceLink(entry, undefined, undefined,src, index)
+
+          -
+            let tippyContent = src.title;
+            let visibleContent = src.abbr;
+
+            const srcDetails = src.data && src.data && src.data.sourceDetails;
+            if (srcDetails) {
+              if (srcDetails.startsWith('http')) {
+                tippyContent += `<br /><a href='${srcDetails}'>${srcDetails}</a>`;
+              } else {
+                visibleContent += `-${srcDetails}`;
+              }
+            }
+
+          //- span(style="color: var(--color-2);", data-tippy-content=src.title) #{src.abbr}#{src.data && src.data && src.data.sourceDetails && '-' + src.data.sourceDetails}
+          span(style="color: var(--color-2);", data-tippy-content=tippyContent) #{visibleContent}
+
+    //- WordNet saites (legacy variants)
+    //- if entry.data && entry.data.wordNetLinks
+      .sv_WordNet.hide-on-mobile
+        //- .dict_Section WordNet saites:
+        +collapser('wordNetLinks', 'WordNet saites:', null, false)
+          ul
+            each link, linkIndex in entry.data.wordNetLinks
+              li
+                a.dict_WordNetLink(href=`${link}`, target="_blank") #{link.slice(7 + link.indexOf('synset='))}
+
+  //- KORPUSA PIEMĒRI (kopīgi visiem homonīmiem)
+  +only('tezaurs')
+    if corporaExamples
+      //- kad šis vajadzīgs?
+      +showCorporaExamples(corporaExamples, entryWord)
+    if entriesToShow && entriesToShow.length > 0
+      +showCorporaExamples(entriesToShow[0].corporaExamples, entryWord, entriesToShow[0])
+
+  if entriesToShow.length === 1
+    +if_not_editor
+      //- hr
+      //- feedback – pie katra šķirkļa; TODO: jānodod homonīma numurs uz js
+      .toolbar
+        form(onsubmit="return false;")
+          div
+            button#feedbackButton.public-button.feedback-button(data-tippy-content='Ziņot par šķirklī pamanītu kļūdu vai nepilnību', data-tippy-trigger='mouseenter')
+              i.fas.fa-paper-plane
+                span.public-button-label#feedbackButtonLabel Ziņot
+
+            .separator
+            button#twitterButton.public-button.twitter-button(data-tippy-content='Dalīties ar šķirkli tviterī', data-tippy-trigger='mouseenter')
+              i.fab.fa-twitter
+                span.public-button-label#twitterButtonLabel Dalīties
+            .separator
+            span#feedbackResponse.feedback-status
+            textarea#feedbackText.feedback-text(name="text", cols="30", rows="5", placeholder='Vai pamanījāt šajā šķirklī kādu kļūdu vai nepilnību?' style='display: none;')
+            input#feedbackEntryId(name="entry_id", type="hidden", value=`${entriesToShow[0].id}`)
+
+    +only(['tezaurs', 'mlvv'])
+      +if_editor
+        div.dict_Block
+          entry-issues(:entry_id=entriesToShow[0].id)
+
+    //- #devinfo(style="padding-top: 1em;")
+    //-   span(class="tooltip", title=`<pre>${jsonColored}</pre>`, style="color: #AAA;") JSON
+    //- p(class="tooltip", title=`${jsonColored}`) JSON
+
+    //- if entry
+      p(style='color: #8080c0;') #{JSON.stringify(entry)}
+
+    //- hr
+    //- h2 datu saturs
+    //- pre(style="margin: 20px; overflow-x: scroll; overflow-y: hidden; white-space: wrap;") !{jsonColored}
+

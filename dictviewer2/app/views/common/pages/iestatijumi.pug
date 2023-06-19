@@ -1,0 +1,159 @@
+extends ../layout
+
+block append header_scripts
+  //- script(defer=true, src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js")
+  style(type='text/css').
+    .param-block {
+      margin: 1em 0;
+    }
+
+    .param-item + .param-item {
+      margin-top: 0.5em;
+    }
+
+    .param-item label {
+      font-weight: 500;
+      margin-left: 0.5em;
+    }
+
+    .bold {
+      font-weight: bold;
+    }
+
+  
+block content
+
+  -
+    const PARAM_GROUPS = [
+      { 
+        name: 'autoExpand',
+        caption: 'Atverot šķirkli, automātiski atvērt',
+        isPublic: true,
+      },
+      { 
+        name: 'editor',
+        caption: 'Redaktors',
+      }
+    ];
+    const PARAM_DEFS = [
+      //- {
+      //-   group: 'Atverot šķirkli, automātiski izvērst',
+      //-   name: 'settings.entry.expandAll',
+      //-   caption: 'Atverot šķirkli, automātiski izvērst visas šķirkļa savēršamās sadaļas',
+      //-   valueType: 'boolean',
+      //-   defaultValue: false,
+      //- },
+      {
+        group: 'autoExpand',
+        name: 'settings.entry.expandMorpho',
+        caption: 'locījumu tabulu',
+        valueType: 'boolean',
+        defaultValue: false,
+        commandParam: 'morpho',
+        hideIn: ['mlvv', 'llvv'],
+      },
+      {
+        group: 'autoExpand',
+        name: 'settings.entry.expandExamples',
+        caption: 'piemērus',
+        valueType: 'boolean',
+        defaultValue: false,
+        commandParam: 'examples',
+      },
+      {
+        group: 'autoExpand',
+        name: 'settings.entry.expandRelatedSenses',
+        caption: 'saistītās nozīmes',
+        valueType: 'boolean',
+        defaultValue: false,
+        commandParam: 'relatedsenses',
+        hideIn: ['mlvv', 'llvv'],
+      },
+      {
+        group: 'autoExpand',
+        name: 'settings.entry.expandMWEs',
+        caption: 'stabilus vārdu savienojumus',
+        valueType: 'boolean',
+        defaultValue: false,
+        commandParam: 'mwes',
+      },
+      {
+        group: 'autoExpand',
+        name: 'settings.entry.expandTranslations',
+        caption: 'tulkojumus',
+        valueType: 'boolean',
+        defaultValue: false,
+        commandParam: 'translations',
+        hideIn: ['mlvv', 'llvv'],
+      },
+      {
+        group: 'editor',
+        name: 'settings.entry.autoEdit',
+        caption: 'Atverot šķirkli, automātiski atvērt to rediģēšanas režīmā',
+        valueType: 'boolean',
+        defaultValue: false,
+        commandParam: 'autoEdit',
+        hideIn: ['mlvv', 'llvv'],
+      },
+    ];
+
+  script. 
+    window.localStorage.setItem('settingsDefs', '!{JSON.stringify(PARAM_DEFS)}');
+
+    function processInputChangeEvent(elem) {
+      //- console.log(`${elem.target.id} changed to ${elem.target.checked} (${elem.target.dataset.paramname})`);
+      window.localStorage.setItem(elem.target.dataset.paramname, elem.target.checked);
+    }
+
+    window.onload = () => {
+      const settingsElements = document.getElementsByClassName('param-input');
+      console.log(settingsElements.length, 'params found')
+
+      for (let n = 0; n < settingsElements.length; n += 1) {
+        let el = settingsElements[n];
+
+        el.addEventListener('change', processInputChangeEvent, false);
+
+        if (el.dataset.paramvaluetype === 'boolean') {
+          let storedValue = localStorage.getItem(el.dataset.paramname);
+          el.checked = storedValue === 'true';
+        }
+      }
+    }
+
+
+  //- h1 Iestatījumi
+
+  //- p Šajā lapā jūs varat veikt iestatījumus, kuri iespaidos vārdnīcas lietotnes izskatu un / vai funkcionalitāti. 
+
+  h1 Šķirkļa iestatījumi
+  
+  //- input#i1.param-input(type="checkbox" checked=`javascript:getBooleanOption('settings.entry.expandAll')` data-param="settings.entry.expandAll")
+  //- //- input#i1.param-input(type="checkbox" checked data-param="settings.entry.expandAll" onchange="processInputChange(this)")
+  //- label(for="i1") Atverot šķirkli, automātiski izvērst visas šķirkļa savēršamās sadaļas 
+
+  .param-block
+    each pgDef, index in PARAM_GROUPS.filter(x => x.isPublic || app_mode !== APP_MODE.PUBLIC)
+      if index > 0
+        hr(style='margin-top: 3em;')
+      p.bold= pgDef.caption
+      each pDef, idx in PARAM_DEFS.filter(x => x.group === pgDef.name && (!x.hideIn || !x.hideIn.includes(dict))) 
+        .param-item
+          //- input.param-input(id=`param-${idx}` type="checkbox" checked=`javascript:getBooleanOption('${pDef.name}', ${pDef.defaultValue})` data-paramName=pDef.name, data-paramValueType=pDef.valueType, data-paramDefaultValue=pDef.defaultValue)
+          input.param-input(id=`param-${index}-${idx}` type="checkbox" data-paramname=pDef.name, data-paramvaluetype=pDef.valueType, data-paramdefaultvalue=pDef.defaultValue)
+          label(for=`param-${index}-${idx}`)= pDef.caption
+
+  //- h1 Apmaļu iestatījumi
+
+  //- h1 Kopskata iestatījumi
+
+  //- h1 Meklēšanas iestatījumi
+
+
+  hr(style='margin-top: 3em;')
+
+  //- p(style="opacity: 0.5;") Iestatījumi glabājas jūsu pārlūkā, tāpēc tie būs spēkā tikai tām vārdnīcas lapām, kuras atvērtas no šī pārlūka.
+  p(style="opacity: 0.5;") Iestatījumi tiek glabāti pārlūkprogrammā. Ja izmantojat vairākas pārlūkprogrammas, vēlamie iestatījumi katrā no tām jānorāda atsevišķi.
+
+
+  //- p Saglabājot iestatījumus, jūs piekrītat, ka jūsu pārlūkā tiek izveidota sīkdatne iestatījumu iegaumēšanai.

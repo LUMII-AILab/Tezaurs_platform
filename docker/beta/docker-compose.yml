@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  viewer:
+    image: registry.gitlab.com/ailab/tezaurs:${TAG}
+    restart: unless-stopped
+    environment:
+      - PORT=9000
+      - DB_URL
+      - DB_SCHEMA=dict
+      - DICT=tezaurs
+      - RELEASE=1
+      - EDITOR=false
+      - USEMEMORYCACHE=false
+      - USETABLECACHE=false
+      - SAVETABLECACHE=false
+      - SHOW_EDITOR=true
+      - DEBUG
+    logging:
+      options:
+        max-size: "100m"
+        max-file: "10"
+    network_mode: host

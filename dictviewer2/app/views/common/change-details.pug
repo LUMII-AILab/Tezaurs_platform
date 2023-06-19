@@ -1,0 +1,101 @@
+extends layout
+
+block append header_scripts
+  style.
+    .top {
+      vertical-align: top !important;
+    }
+    h2.subtitle {
+      padding-bottom: 1rem;
+    }
+    pre.json {
+      font-size: 0.7rem;
+      //- color: gray;
+      overflow: scroll;
+    }
+    .details-wrapper {
+      position: relative;
+    }
+    .details {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      display: flex;
+      flex-wrap: wrap;
+      max-width: 100%;
+    }
+    .col1 {
+      max-width: 100%;
+    }
+    .col3 {
+      max-width: 33%;
+      //- flex: 1 1 auto;
+    }
+    @media all and (max-width: 1023px) {
+      .details {
+        flex-direction: column;
+      }
+    }
+
+block leftside
+  div
+    a(href=`/_history/entry/${entry_id}`) << uz sarakstu
+
+
+block content
+
+  //- rāda vienu atsevišķu izmaiņu (before/after)
+  h1 #[em #{change.entity_type}] ieraksta izmaiņa (#{change.operation})
+  //- h2.subtitle Izmaiņas tips: #{change.operation}
+
+  .details-wrapper
+    .details
+
+      if change.operation === 'INSERT'
+        .col1
+          h3 Jaunie dati
+          //- pre.json= JSON.stringify(change.data_after, null, 2)
+          pre.json 
+            code.language-json !{after}
+
+      if change.operation === 'UPDATE'
+        .col3
+          h3 Pirms
+          //- pre.json= JSON.stringify(change.data_before, null, 2)
+          pre.json 
+            code.language-json !{before}
+        .col3
+          h3 Izmaiņa
+          //- pre.json= JSON.stringify(change.data_diff, null, 2)
+          pre.json 
+            code.language-json !{diff}
+        .col3
+          h3 Pēc
+          //- pre.json= JSON.stringify(change.data_after, null, 2)
+          pre.json 
+            code.language-json !{after}
+
+      if change.operation === 'DELETE'
+        .col1
+          h3 Pēc
+          //- pre.json= JSON.stringify(change.data_after, null, 2)
+          pre.json 
+            code.language-json !{before}
+
+  //- hr
+  //- table
+    tr
+      th Pirms
+      th Izmaiņa
+      th Pēc
+    tr
+      td.top
+        pre.json= JSON.stringify(change.data_before, null, 2)
+      td.top
+        pre.json= JSON.stringify(change.data_diff, null, 2)
+      td.top
+        pre.json= JSON.stringify(change.data_after, null, 2)
+
+  //- pre= JSON.stringify(change, null, 2)

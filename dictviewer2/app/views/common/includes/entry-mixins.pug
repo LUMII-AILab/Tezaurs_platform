@@ -1,0 +1,633 @@
+mixin hidden(el)
+  if el.hidden
+    = ' '
+    i.fas.fa-eye-slash(style="color: red")
+
+mixin entryHead(entry)
+  +editEntry(entry)
+  span.sv_VR
+    != entry.heading
+    //- if entry.homonym_no > 0
+    //- if homonymEntries.length > 1 || entry.homonym_no > 1
+    //- if entry.homonym_no > 1
+    if has_homonymes()
+      sup= entry.homonym_no
+
+    if entry.data && entry.data.SciName && entry.data.SciName.length > 0
+      span.sv_PG= ` [${entry.data.SciName.join(', ')}] `
+
+    +entryVerbalization(entry)
+    +stuffFromGrammar(entry.data, ENTRY_COLOR)
+    +hidden(entry)
+
+mixin entryVerbalization(entry)
+  //- +except('tezaurs')
+  +only('llvv')
+    if entry.data && entry.data.Gram
+      if entry.data.Gram.FreeText
+        = ' '
+        span.dict_Verbalization #{entry.data.Gram.FreeText}
+      if entry.data.Gram.FlagText
+        = ' '
+        span.dict_Verbalization #{entry.data.Gram.FlagText}
+  //- +only('tezaurs')
+  +except('llvv')
+    //- Tēzaura šķirkļos nav Leftovers
+    if entry.data && entry.data.Gram
+      if entry.data.Gram.Leftovers
+        if entry.data.Gram.FreeText
+          = ' '
+          span.dict_Verbalization #{entry.data.Gram.FreeText}
+        if entry.data.Gram.FlagText
+          = ' '
+          span.dict_Verbalization #{entry.data.Gram.FlagText}
+      else
+        = ' '
+        span.dict_Verbalization !{highlight_warning(v.verbalize_entity('entry', entry.data.Gram.Flags, entry.data.Gram.StructuralRestrictions))}
+
+mixin lexemeHead(lex)
+  //- noņemt if, kad <em> ir izskausti
+  +if_editor
+    span.sv_VR(style=`color: ${lexeme_color(lex)}` data-tippy-content=get_lexeme_type_name(lex.type_id))= lex.lemma
+  +if_not_editor
+    span.sv_VR(style=`color: ${lexeme_color(lex)}` data-tippy-content=get_lexeme_type_name(lex.type_id)) !{lex.lemma}
+  //- sub.dict_lexemeType= lexeme_type_name(lex)
+
+mixin lexemeInfo(lex)
+  if lex && lex.data && lex.data.Pronunciations
+    //- span(class='sv_RU')  [#{lex.data.Pronunciations.join(', ')}]
+    span.sv_RU  [#{lex.data.Pronunciations.map(p => prepare_pronunciation(p)).join('], [')}]
+    //- span.dict_Pronunciation  [#{preparePronunciations(lex.data.Pronunciations)}]
+
+  if lex && lex.data && lex.data.Audio 
+    audio(controls style="display: block;")
+      source(src=`/audio/${lex.data.Audio}` type="audio/mpeg")
+
+  //- +except('tezaurs')
+  +only('llvv')
+    if lex && lex.data && lex.data.Gram
+      if lex.data.Gram.FreeText
+        span.dict_Verbalization  #{lex.data.Gram.FreeText}
+        = ' '
+      if lex.data.Gram.FlagText
+        span.dict_Verbalization  #{lex.data.Gram.FlagText}
+        = ' '
+      if lex.data.Gram.Inflection
+        span.dict_Inflection  #{lex.data.Gram.Inflection}
+        = ' '
+  //- +only('tezaurs')
+  +except('llvv')
+    if lex && lex.data && lex.data.Gram && lex.data.Gram.Leftovers
+      if lex.data.Gram.FreeText
+        span.dict_Verbalization  #{lex.data.Gram.FreeText}
+        = ' '
+      if lex.data.Gram.FlagText
+        span.dict_Verbalization  #{lex.data.Gram.FlagText}
+        = ' '
+      if lex.data.Gram.Inflection
+        span.dict_Inflection  #{lex.data.Gram.Inflection}
+        = ' '
+    else
+      if lex && lex.data && lex.data.Gram && lex.data.Gram.Inflection
+        //- span.dict_Inflection  #{lex.data.Gram.Inflection}
+        span.dict_Inflection  #{prepareInflection(lex.data.Gram.Inflection)}
+        = ' '
+      +verbalize_lexeme(lex)
+
+  +iconForParadigm(lex)
+  +hidden(lex)
+  +stuffFromGrammar(lex.data, LEXEME_COLOR)
+
+mixin MWEheading(mwe)
+  //- a(href=`${entry_link(mwe)}`) !{capitalize_first_letter(mwe.heading)} (((#{JSON.stringify(mwe)})))
+  //- Rādām visas MWE leksēmas, atdalītas ar semikolu
+
+  //- case mwe.data && mwe.data.Gram && mwe.data.Gram.Flags && mwe.data.Gram.Flags['Vārdu savienojuma tips']
+    when 'Idioma'
+      span.mwe_decoration ⟡
+    when 'Taksons'
+      span.mwe_decoration ●
+    default
+      span.mwe_decoration △
+  //- = ' '
+
+  //a(href=`${entry_link(mwe)}`) !{mwe.lexemes.map((x, idx) => idx === 0 ? capitalize_first_letter(x.lemma) : x.lemma).join('; ')}
+  mwe-link(human_key=mwe.human_key) !{mwe.lexemes.map((x, idx) => idx === 0 ? capitalize_first_letter(x.lemma) : x.lemma).join('; ')}
+
+mixin senseMWEs(sense)
+  if sense && sense.MWEs && sense.MWEs.length > 0
+    ul.sv_MWEs
+      each mwe, index in sense.MWEs
+        li.sv_MWE
+          //- if mwe.type_id === 3
+            span.mwe_decoration ●
+
+          +editSenseMWELink(sense, mwe)
+
+          span.sv_PI
+            +MWEheading(mwe)
+
+          //- +except('tezaurs')
+          +only('llvv')
+            if mwe.data && mwe.data.Gram && mwe.data.Gram.FreeText
+              = ' '
+              span.dict_Verbalization= mwe.data.Gram.FreeText
+            if mwe.data && mwe.data.Gram && mwe.data.Gram.FlagText
+              = ' '
+              span.dict_Verbalization= mwe.data.Gram.FlagText
+          //- +only('tezaurs')
+          +except('llvv')
+            if mwe.data && mwe.data.Gram
+              = ' '
+              span.dict_Verbalization= v.verbalize_entity('entry', mwe.data.Gram.Flags, mwe.data.Gram.StructuralRestrictions)
+
+          if mwe.data && mwe.data.SciName && mwe.data.SciName.length > 0
+            span.sv_PG= ` [${mwe.data.SciName.join(', ')}] `
+
+          +hidden(mwe)
+
+          if mwe.senses.length > 0
+            span.dash
+              = ' — '
+            each mweSense, index in mwe.senses
+              if mwe.senses.length > 1
+                span.dict_SenseNumber #{index+1}.
+
+              //- +except('tezaurs')
+              +only('llvv')
+                if mweSense.data && mweSense.data.Gram && mweSense.data.Gram.FlagText
+                  span.dict_Verbalization= mweSense.data.Gram.FlagText
+                  = ' '
+                if mweSense.data && mweSense.data.Gram && mweSense.data.Gram.FreeText
+                  span.dict_Verbalization= mweSense.data.Gram.FreeText
+                  = ' '
+              //- +only('tezaurs')
+              +except('llvv')
+                if mweSense.data && mweSense.data.Gram
+                  if mweSense.data.Gram.Leftovers
+                    if mweSense.data && mweSense.data.Gram && mweSense.data.Gram.FreeText
+                      span.dict_Verbalization= mweSense.data.Gram.FreeText
+                      = ' '
+                    if mweSense.data && mweSense.data.Gram && mweSense.data.Gram.FlagText
+                      span.dict_Verbalization= mweSense.data.Gram.FlagText
+                      = ' '
+                  else
+                    = ' '
+                    span.dict_Verbalization= v.verbalize_entity('sense', mweSense.data.Gram.Flags, mweSense.data.Gram.StructuralRestrictions)
+
+              = ' '
+              span.sv_PN !{beforeRender(capitalize_first_letter(mweSense.linkifiedGloss || mweSense.gloss, mwe.senses.length === 1))}
+              +hidden(mweSense)
+
+mixin linkedMWE(rel, entry_id)
+  //- p #{JSON.stringify(mwe)}
+  li.sv_MWE
+    //- if rel.entry.type_id === 2
+    //-   span.mwe_decoration ⟡
+    //- else if rel.entry.type_id === 3
+    //-   span.mwe_decoration ●
+    //- else if rel.entry.type_id === 4
+    //-   span.mwe_decoration △
+
+    +editEntryMWELink(rel, entry_id)
+
+    span.sv_FR
+      +MWEheading(rel.entry)
+
+    if rel.entry.data && rel.entry.data.Gram
+      //- +except('tezaurs')
+      +only('llvv')
+        if rel.entry.data.Gram.FreeText
+          span.dict_Verbalization= rel.entry.data.Gram.FreeText
+          = ' '
+        if rel.entry.data.Gram.FlagText
+          span.dict_Verbalization= rel.entry.data.Gram.FlagText
+          = ' '
+      //- +only('tezaurs')
+      +except('llvv')
+        = ' '
+        span.dict_Verbalization= v.verbalize_entity('entry', rel.entry.data.Gram.Flags, rel.entry.data.Gram.StructuralRestrictions)
+
+    if rel.entry.data && rel.entry.data.SciName && rel.entry.data.SciName.length > 0
+      span.sv_PG= ` [${rel.entry.data.SciName.join(', ')}] `
+
+    +stuffFromGrammar(rel.entry.data, ENTRY_COLOR)
+
+    if rel.entry.senses && rel.entry.senses.length > 0
+      span.dash
+        = ' — '
+      each mwes, index in rel.entry.senses
+        if rel.entry.senses.length > 1
+          span.dict_SenseNumber #{index+1}.
+
+        //- +except('tezaurs')
+        +only('llvv')
+          if mwes.data && mwes.data.Gram && mwes.data.Gram.FlagText
+            span.dict_Verbalization= mwes.data.Gram.FlagText
+            = ' '
+          if mwes.data && mwes.data.Gram && mwes.data.Gram.FreeText
+            span.dict_Verbalization= mwes.data.Gram.FreeText
+            = ' '
+        //- +only('tezaurs')
+        +except('llvv')
+          if mwes.data && mwes.data.Gram
+            if mwes.data.Gram.Leftovers
+              if mwes.data && mwes.data.Gram && mwes.data.Gram.FlagText
+                span.dict_Verbalization= mwes.data.Gram.FlagText
+                = ' '
+              if mwes.data && mwes.data.Gram && mwes.data.Gram.FreeText
+                span.dict_Verbalization= mwes.data.Gram.FreeText
+                = ' '
+            else
+              = ' '
+              span.dict_Verbalization= v.verbalize_entity('sense', mwes.data.Gram.Flags, mwes.data.Gram.StructuralRestrictions)
+
+        = ' '
+        span.dict_Gloss !{beforeRender(capitalize_first_letter(mwes.linkifiedGloss || mwes.gloss, rel.entry.senses.length === 1))}
+
+        +hidden(mwes)
+
+
+mixin linkedMWEgroup(rels, type_id, name, title, host_entry_id)
+  - const f_rels = rels.filter(r=>r.entry.type_id === type_id);
+  if f_rels.length > 0
+      .sv_Idioms
+        +collapse(name, title, short_info_for_mwes(f_rels.map(r => r.entry), 100), "mwes", false, false, true)
+          ul.sv_MWEs
+            each rel, index in f_rels
+              +linkedMWE(rel, host_entry_id)
+
+mixin senseExamples(sense, sense_order_no)
+  if sense && sense.examples && sense.examples.length > 0
+    +if_show_examples(sense)
+      ul.sv_MWEs
+        each ex, index in sense.examples
+          +if_editor
+            div-hidden(:show-hidden="showHidden" hidden=ex.hidden)
+              li.sv_MWE
+                +senseExample(sense, ex, index)
+          +if_not_editor
+            li.sv_MWE
+              +senseExample(sense, ex, index)
+
+
+mixin senseExample(sense, ex, index)
+  //- if ex.data && ex.data.CitedSource
+    //- vai šī ir pareizā pazīme dekorācijai?
+    span.mwe_decoration ○
+    = ' '
+  //- i.example-decoration.fas.fa-circle
+  +editSenseExample(sense, ex, index)
+
+  //- +except('tezaurs')
+  +only('llvv')
+    if ex.data && ex.data.Gram && ex.data.Gram.FlagText
+      span.dict_Verbalization= ex.data.Gram.FlagText
+      = ' '
+    if ex.data && ex.data.Gram && ex.data.Gram.FreeText
+      span.dict_Verbalization= ex.data.Gram.FreeText
+      = ' '
+  //- +only('tezaurs')
+  +except('llvv')
+    if ex.data && ex.data.Gram
+      span.dict_Verbalization= v.verbalize_entity('example', ex.data.Gram.Flags, ex.data.Gram.StructuralRestrictions)
+      = ' '
+
+  span.sv_PI !{ex.content}
+  = ' '
+  if ex.data && ex.data.CitedSource
+    span(data-tippy-content=ex.data.CitedSource)
+      i.fas.fa-info-circle(style="color: lightgrey")
+  //- if ex.data && ex.data.CitedSource
+    = ' '
+    span.dict_Source [#{ex.data.CitedSource}]
+  +stuffFromGrammar(ex.data, EXAMPLE_COLOR)
+  //- if mwe.data && mwe.data.Gram && mwe.data.Gram.FreeText
+  //-   = ' '
+  //-   span.sv_PG= mwe.data.Gram.FreeText
+  //- if mwe.data && mwe.data.Gram && mwe.data.Gram.FlagText
+  //-   = ' '
+  //-   span.sv_PG= mwe.data.Gram.FlagText
+  //+hidden(ex)
+  example-toggle(idata=ex entry_id=sense.entry_id sense_id=sense.id)
+
+  //- = ' '
+  //- if ex.data && ex.data.sketchEngineTokenNum
+    a.external-link(target="_blank" title="Saite uz korpusu" href=`http://nosketch.korpuss.lv/#concordance?corpname=${ex.data.sketchEngineCorpname}&tab=basic&viewmode=sen&structs=s%2Cg&refs=doc&showresults=1&operations=`+encodeURIComponent(JSON.stringify([{"name":"filter","arg":`[#${ex.data.sketchEngineTokenNum}]`,"query":{"queryselector":"cqlrow","cql":`[#${ex.data.sketchEngineTokenNum}]`,"inclkwic":true},"active":true}])))
+      i.fas.fa-external-link-alt
+
+
+mixin senseAltLemmas(als)
+  each al, index in als
+    if index > 0
+      | #{'; '}
+    span.dict_Lemma= al.Header.Lemma
+    if al.Header.Gram && al.Header.Gram.Inflection
+      span.dict_Inflection= al.Header.Gram.Inflection
+  | #{' – '}
+
+
+mixin corporaExampleInfo(ex)
+  small
+    //- em #{JSON.stringify(ex)}
+    //- tezaurs
+    em #{ex.reference}
+    if ex.section
+      | #{` (${ex.section})`}
+    //- mlvv
+    em #{ex.author}
+    if ex.title
+      | #{` ${ex.title}`}
+
+mixin textFromFormRestrictions(fr)
+  span.dict_FormRestrictions #{fr.map(x=>x.Header.Gram.FlagText).join(' ')}
+
+mixin iconForFlags(data, iconColor='orange')
+  +if_editor
+    if data && data.Gram && data.Gram.Flags
+      = ' '
+      //- span(data-tippy-content=boxify(JSON.stringify(data.Gram.Flags, null, 2)))
+      span(data-tippy-content=boxify(format_kvp_table(data.Gram.Flags)))
+        i.fas.fa-flag(style=`color: ${iconColor}`)
+
+mixin iconForStructuralRestrictions(data, iconColor='orange')
+  +if_editor
+    if data && data.Gram && data.Gram.StructuralRestrictions
+      = ' '
+      //- span(data-tippy-content=JSON.stringify(data.Gram.StructuralRestrictions, null, 2))
+      span(data-tippy-content=rsr(data.Gram.StructuralRestrictions))
+        i.fas.fa-gavel(style=`color: ${iconColor}`)
+
+mixin iconForImportNotices(data, iconColor='orange')
+  +if_editor
+    if data && data.ImportNotices
+      = ' '
+      span(data-tippy-content=data.ImportNotices.join(', '))
+        i.far.fa-clipboard(style=`color: ${iconColor}`)
+
+mixin iconForLeftovers(data, iconColor='orange')
+  +if_editor
+    if data && data.Gram && data.Gram.Leftovers
+      = ' '
+      span(data-tippy-content=data.Gram.Leftovers.map(lo1 => JSON.stringify(lo1)).join(', '))
+        i.fas.fa-radiation-alt(style=`color: ${iconColor}`)
+
+mixin iconForParadigm(lexeme)
+  +if_editor
+    if lexeme && lexeme.paradigm
+      = ' '
+      //- span(data-tippy-content=boxify(`${lexeme.paradigm.human_key} (${lexeme.paradigm.legacy_no})\n${JSON.stringify(lexeme.paradigm.data, null, 2)}`))
+      span(data-tippy-content=boxify(`${lexeme.paradigm.human_key} (${lexeme.paradigm.legacy_no})\n${break_longer_text(lexeme.paradigm.caption, 30, 50)}\n${lexeme.stem1 ? `\nNenoteiksmes celms: ${lexeme.stem1}`: ''}${lexeme.stem2 ? `\nTagadnes celms: ${lexeme.stem2}`: ''}${lexeme.stem3 ? `\nPagātnes celms: ${lexeme.stem3}`: ''}\n${format_kvp_table(lexeme.paradigm.data)}`))
+        i.fas.fa-paragraph(style=`color: ${LEXEME_COLOR}`)
+
+mixin iconForOldVerbalization(data, iconColor='orange')
+  +if_editor
+    +only('tezaurs')
+      if data && data.Gram && data.Gram.FlagText
+        = ' '
+        span(data-tippy-content=data.Gram.FlagText)
+          i.fas.fa-archive(style=`color: ${iconColor}`)
+      if data && data.Gram && data.Gram.FreeText
+        = ' '
+        span(data-tippy-content=data.Gram.FreeText)
+          i.fas.fa-archive(style=`color: ${iconColor}`)
+
+mixin verbalize_lexeme(lex)
+  = ' '
+  span.dict_Verbalization !{highlight_warning(v.verbalize_lexeme(lex))}
+
+mixin stuffFromGrammar(data, iconColor=LEXEME_COLOR)
+  +iconForFlags(data, iconColor)
+  +iconForStructuralRestrictions(data, iconColor)
+  +iconForOldVerbalization(data, iconColor)
+  +iconForImportNotices(data, 'red')
+  +iconForLeftovers(data, 'red')
+
+mixin collapser(containerId, heading="give me a name", tooltip=null, expanded=false, summaryText=null)
+  //- span.dict_Section= title
+  if summaryText
+    span.summary #{summaryText}
+  a.collapser-link.collapser-link-expand(onclick=`javascript:toggleCollapsible('${containerId}-container', event)` role="button" style=`display:${!expanded?'inline':'none'};` id=`${containerId}-container-expand` title=tooltip)
+    if heading
+      span.dict_Section= heading
+      //- = ' '
+    i.fas.fa-plus-circle(style='color: var(--dark-color); margin-left: 0.3em;')
+    //- if inline
+    //-   i.fas.fa-plus-circle(style='color: grey; margin-left: 0.3em;')
+    //- else
+    //-   i.fas.fa-plus-circle(style='color: grey;')
+
+  a.collapser-link.collapser-link-collapse(onclick=`javascript:toggleCollapsible('${containerId}-container', event)` role="button" style=`display:${expanded?'inline':'none'}` id=`${containerId}-container-collapse`)
+    if heading
+      span.dict_Section= heading
+      //- = ' '
+    i.fas.fa-minus-circle(style='color: var(--dark-color); margin-left: 0.3em;')
+    //- if inline
+    //-   i.fas.fa-minus-circle(style='color: grey; margin-left: 0.3em;')
+    //- else
+    //-   i.fas.fa-minus-circle(style='color: grey;')
+
+  div.sv_Items.collapser-container(style=`display:${expanded?'block':'none'}` id=`${containerId}-container`)
+    if block
+      block
+    else
+      p tukšs konteineris
+
+
+mixin collapse(containerId, heading="", info="", groupTag="other", expanded=false, wrapper=false, large=false)
+  div(class=wrapper ? "" : "entry-collapse")
+    .entry-collapse-toggle(onclick=`javascript:toggleCollapsible('${containerId}-container', event)` role="button" style=`display:${!expanded?'block':'none'};` id=`${containerId}-container-expand`)
+      i.fas.fa-angle-down.entry-collapse-icon
+      if heading
+        span.entry-collapse-heading(class=large ? "large" : "") #{heading}
+      if info
+        i.entry-collapse-info !{info}
+
+    .entry-collapse-toggle.open(onclick=`javascript:toggleCollapsible('${containerId}-container', event)` role="button" style=`display:${expanded ? 'block' : 'none'}` id=`${containerId}-container-collapse`)
+      i.fas.fa-angle-up.entry-collapse-icon
+      if heading
+        span.entry-collapse-heading(class=large ? "large" : "") #{heading}
+
+    div.collapser-container.entry-collapse-container(class=`entry-collapse-container-${groupTag}` style=`display:${expanded ? 'block' : 'none'}` id=`${containerId}-container`)
+      if block
+        block
+      else
+        p tukšs konteineris
+
+mixin collapseInline(containerId, heading="", info="", groupTag="other", expanded=false)
+  div(style="white-space:nowrap; display: inline")
+    span.collapser-link.entry-collapse-toggle.inline(onclick=`javascript:toggleCollapsible('${containerId}-container', event)` role="button" style=`display:${!expanded ? 'inline' : 'none'};` id=`${containerId}-container-expand`)
+      i.fas.fa-angle-down.entry-collapse-icon
+      if heading
+        span.entry-collapse-heading #{heading}
+
+    span.collapser-link.entry-collapse-toggle.open.inline(onclick=`javascript:toggleCollapsible('${containerId}-container', event)` role="button" style=`display:${expanded ? 'inline' : 'none'}` id=`${containerId}-container-collapse`)
+      i.fas.fa-angle-up.entry-collapse-icon
+      if heading
+        span.entry-collapse-heading #{heading}
+
+  div.sv_Items.entry-collapse-container(class=`entry-collapse-container-${groupTag}` style=`display:${expanded ? 'block' : 'none'}` id=`${containerId}-container`)
+    if block
+      block
+
+mixin relatedSense(s)
+  div.related-sense
+    span.sv_PI
+      a(href=`${entry_link(s)}`)
+        span.text !{s.text}
+        sub
+          if s.parent_order_no
+            span #{s.parent_order_no}.#{s.order_no}
+          else
+            span #{s.order_no}
+
+    if s.data && s.data.Gram
+      = ' '
+      if s.data.Gram.Leftovers
+        if s.data && s.data.Gram && s.data.Gram.FreeText
+          span.dict_Verbalization= s.data.Gram.FreeText
+          = ' '
+        if s.data && s.data.Gram && s.data.Gram.FlagText
+          span.dict_Verbalization= s.data.Gram.FlagText
+          = ' '
+      else
+        span.dict_Verbalization= v.verbalize_entity('sense', s.data.Gram.Flags, s.data.Gram.StructuralRestrictions)
+        = ' '
+    if s.gloss
+      = ' — '
+      span.sv_PN !{beforeRender(capitalize_first_letter(add_sense_punctuation(s.unlinkifiedGloss || s.gloss)))}
+
+mixin senseRelations(wn)
+  each r, relType in wn.relations
+    div.sv_WN
+      .wn-relation-heading #{relType}
+        span.explanation(data-relation=relType data-search=r.search onmouseover=`javascript:getExplanation(this)`)
+          if r.search
+            i.fas.fa-info-circle(style="color: lightgrey")
+      if relType === 'Gradācijas jēdzienu grupa'
+        each synset in r.data
+          .gradset-synset
+            div
+              each sense in synset.senses
+                div
+                  if synset.display_info
+                    span.dict_Verbalization (#{synset.display_info})
+                    = ' '
+                  +relatedSense(sense)
+      else
+        - var senses = r.data.flatMap(rel => rel.senses).sort((a, b) => a.text.localeCompare(b.text))
+        each sense in senses
+          +relatedSense(sense)
+
+mixin senseSynonyms(s)
+  div.sv_WN
+    .wn-relation-heading Sinonīmi
+      span.explanation(data-relation="Sinonīmi" data-search='sinonīms' onmouseover=`javascript:getExplanation(this)`)
+        i.fas.fa-info-circle(style="color: lightgrey")
+
+    if s.senses
+      each sense in s.senses
+        +relatedSense(sense)
+
+
+mixin sensePWN(synsets)
+  each synset in synsets
+    .synset
+      if synset.display_relation
+        span.dict_Verbalization (#{synset.display_relation})
+        = ' '
+      i.synset-senses #{synset.senses.map(s => s.text).join(', ')}
+      = ' '
+      a.external-link(target="_blank" data-tippy-content="Saite uz <i>Open Multilingual WordNet</i>" href=synset.url style='margin-left: 0.25rem')
+        i.fas.fa-external-link-alt
+      .synset-gloss #{synset.gloss}
+
+  .source-info.dict_Source [Princeton WordNet 3.0]
+
+
+mixin senseInfo(sense, sense_order_no)
+  .sense-info
+    - const hasSynonyms = sense.synset && sense.synset.senses.length
+    if sense.examples && sense.examples.length > 0
+      +if_editor
+        div-hidden.entry-collapse(:show-hidden="showHidden" hidden=sense.examples.filter(ex => !ex.hidden).length === 0)
+          +senseExamples(sense)
+      +if_not_editor
+        +senseExamples(sense)
+    if hasSynonyms || (sense.synset && sense.synset.relations)
+      +collapse(sense.id + '-2', "Saistītās nozīmes", hasSynonyms ? short_info_for_synonyms(sense.synset) : short_info_for_related(sense.synset.relations), "relatedsenses")
+        if hasSynonyms
+          +senseSynonyms(sense.synset)
+        if sense.synset && sense.synset.relations
+          +senseRelations(sense.synset)
+    if sense.MWEs && sense.MWEs.length > 0
+      +collapse(sense.id + '-4', "Stabili vārdu savienojumi", short_info_for_mwes(sense.MWEs, 50), "mwes")
+        +senseMWEs(sense)
+    if sense.synset && sense.synset.external_links
+      +collapse(sense.id + '-5', "Tulkojumi",short_info_for_pwns(sense.synset.external_links), "translations")
+        +sensePWN(sense.synset.external_links)
+
+mixin showCorporaExamples(corporaExamples, entryWord, entry)
+  //- hr
+  //- #examples
+  - const hasOwnExamples = entry => entry && ((entry.examples && entry.examples.length > 0) || (entry.senses && entry.senses.some(x => ((x.examples && x.examples.length > 0 )|| (x.subSenses && x.subSenses.some(xx => xx.examples && xx.examples.length > 0))))))
+  - const formatExampleSource = ex => `<em>${ex.reference}</em> ${ex.section ? '('+ex.section+')' : ''} ${ex.author || ''} ${ex.title || ''}`
+  div.dict_Block
+    if hasOwnExamples(entry)
+      span.dict_Section Korpusa piemēri:
+      span(style='color: var(--color-2);') #[a(href=`http://nosketch.korpuss.lv/#concordance?corpname=LVK2018&queryselector=lemma&showresults=1&keyword=${encodeURIComponent(entryWord)}`, target="_blank") šeit]
+    else
+      if corporaExamples && corporaExamples.length > 0
+        //- +collapser('corporaExamples', 'Korpusa piemēri:', null, false)
+        +collapse('corporaExamples', 'Korpusa piemēri', null, "examples", false, false, true)
+          .disclaimer Šie piemēri no latviešu valodas tekstu korpusa ir atlasīti automātiski un var būt neprecīzi.
+
+          ul
+            each ex, index in corporaExamples
+              //- .example
+              li
+                //- span.sv_PI &laquo; #{ex.example} &raquo;
+                //- br
+                //- +corporaExampleInfo(ex)
+
+                //- span.sv_PI &laquo; #{ex.example} &raquo;
+                span.sv_PI= ex.example
+                = ' '
+                span(data-tippy-content=formatExampleSource(ex))
+                  i.fas.fa-info-circle(style="color: lightgrey")
+
+          .example
+            //- a(href=`http://bonito.korpuss.lv/bonito/run.cgi/first?corpname=LUMII_lidzsvarotais&iquery=${encodeURIComponent(entryWord)}`, target="_blank") Vairāk ...
+            a(href=`http://nosketch.korpuss.lv/#concordance?corpname=LVK2022&queryselector=lemma&showresults=1&keyword=${encodeURIComponent(entryWord)}`, target="_blank", style="color: var(--color-2);") Vairāk piemēru ...
+
+mixin entitySources(entry, lexeme_id, sense_id)
+  -
+    let ess = entry.sources || [];
+    if (lexeme_id) ess = ess.filter(x => x.lexeme_id === lexeme_id);
+    if (sense_id) ess = ess.filter(x => x.sense_id === sense_id);
+
+  if ess && ess.length > 0
+    span.dict_Block
+      //- span.dict_Section Avoti:
+      span.dict_Section [
+      each src, index in ess
+        if index > 0
+          = ', '
+        +editSourceLink(entry, lexeme_id, sense_id, src, index)
+
+        -
+          let tippyContent = src.title;
+          let visibleContent = src.abbr;
+
+          const srcDetails = src.data && src.data && src.data.sourceDetails;
+          if (srcDetails) {
+            if (srcDetails.startsWith('http')) {
+              tippyContent += `<br /><a href='${srcDetails}'>${srcDetails}</a>`;
+            } else {
+              visibleContent += `-${srcDetails}`;
+            }
+          }
+
+        //- span(style="color: var(--color-2);", data-tippy-content=src.title) #{src.abbr}#{src.data && src.data && src.data.sourceDetails && '-' + src.data.sourceDetails}
+        span(style="color: var(--color-2);", data-tippy-content=tippyContent) #{visibleContent}
+      span.dict_Section= ' ]'

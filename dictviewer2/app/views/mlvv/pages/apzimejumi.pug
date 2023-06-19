@@ -1,0 +1,175 @@
+extends ../../common/layout
+
+mixin if_not_public
+  if app_mode === APP_MODE.EDITOR
+    block
+
+block append header_scripts
+  +if_not_public
+    link(type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css")
+  link(rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css")
+  style.
+    h2 {
+      margin-top: 2rem;
+    }
+    h2 {
+      font-size: 1.4em;
+    }
+    h3 {
+      font-size: 1.2em;
+    }
+    th, td {
+      padding: 0.3rem;
+    }
+    .biblio {
+      font-weigth: 300;
+      vertical-align: top;
+    }
+    .spacer {
+      width: 15px;
+      text-align: center;
+      vertical-align: top;
+    }
+    .code {
+      font-weight: 400;
+      width: 25px;
+      vertical-align: top;
+    }
+    .term {
+      width: 200px;
+      vertical-align: top;
+    }
+    dd {
+      margin-bottom: 0;
+    }
+    dt {
+      margin-top: 0.4em;
+    }
+
+block content
+  include ../../common/includes/entry-constants
+
+  h1 Lietotie apzīmējumi
+
+  table
+    //- tr
+      td.code(align='center') //
+      | &#x9;&#x9;
+      td(style='width : 20px') &ndash;
+      | &#x9;&#x9;
+      td.biblio norāda uz nozīmes niansi
+    | &#x9;
+    tr
+      td.code(align='center') &rarr;
+      | &#x9;&#x9;
+      td(style='width : 20px') &ndash;
+      | &#x9;&#x9;
+      td.biblio
+        | skaidrojumā norāda uz vārdu, pie kura var atrast pilnīgāku semantisko informāciju
+
+    //- tr
+      td.code(align='center') &squ;
+      | &#x9;&#x9;
+      td(style='width : 20px') &ndash;
+      | &#x9;&#x9;
+      td.biblio norāda uz šķirkļa vārda atvasinājumu vai atvasinājumiem
+
+    //- tr
+      td.code(align='center') &cir;
+      | &#x9;&#x9;
+      td(style='width : 20px') &ndash;
+      | &#x9;&#x9;
+      td.biblio ievada citātu
+
+    //- tr
+      td.code(align='center') &xutri;
+      | &#x9;&#x9;
+      td(style='width : 20px') &ndash;
+      | &#x9;&#x9;
+      td.biblio
+        | šķirkļa beigās ievada skaidrotos vārdu savienojumus, kuri semantiski saistīti ar vairākām vārda nozīmēm (nozīmes niansēm) vai nav saistīti ne ar vienu no tām
+
+    //- tr
+      td.code(align='center') &#x27E1;
+      | &#x9;&#x9;
+      td(style='width : 20px') &ndash;
+      | &#x9;&#x9;
+      td.biblio frazeoloģisms
+
+    //- tr
+      td.code(align='center') *
+      | &#x9;&#x9;
+      td(style='width : 20px') &ndash;
+      | &#x9;&#x9;
+      td.biblio jaunvārds
+
+    //- tr
+      td.code(align='center') &#x25CF;
+      | &#x9;&#x9;
+      td(style='width : 20px') &ndash;
+      | &#x9;&#x9;
+      td.biblio ievada auga vai dzīvnieka taksonomiskās kategorijas nosaukumu
+
+    tr
+      td(colspan='3') &nbsp;
+
+    tr
+      td.code.dict_Pronunciation(align='center') &grave;
+      | &#x9;&#x9;
+      td(style='width : 20px') &ndash;
+      | &#x9;&#x9;
+      td.biblio krītošā intonācija
+    | &#x9;
+    tr
+      td.code.dict_Pronunciation(align='center') ^
+      | &#x9;&#x9;
+      td(style='width : 20px') &ndash;
+      | &#x9;&#x9;
+      td.biblio lauztā intonācija
+    | &#x9;
+    tr
+      td.code.dict_Pronunciation(align='center') ~
+      | &#x9;&#x9;
+      td(style='width : 20px') &ndash;
+      | &#x9;&#x9;
+      td.biblio stieptā intonācija
+    | &#x9;
+    tr
+      td.code.dict_Pronunciation(align='center') &apos;
+      | &#x9;&#x9;
+      td(style='width : 20px') &ndash;
+      | &#x9;&#x9;
+      td.biblio zilbes uzsvars (ne pirmajā zilbē)
+    | &#x9;
+    tr
+      td.code.dict_Pronunciation(align='center') e&#x327;
+      | &#x9;&#x9;
+      td(style='width : 20px') &ndash;
+      | &#x9;&#x9;
+      td.biblio platais #[i e]
+
+  h2 Šķirkļa leksēmu krāsa
+
+  table(style='width: 600px')
+    tr
+      td.term(style=`color: ${ENTRY_WORD_COLOR}; font-weight: bold`) Šķirkļvārds
+      td.biblio šķirkļa nosaukums.
+    tr
+      td.term(style=`color: ${MAIN_LEXEME_COLOR}; font-weight: bold`) Pamatleksēma
+      td.biblio galvenā vārda pamatforma jeb leksēma.
+    tr
+      td.term(style=`color: ${DERIVED_LEXEME_COLOR}; font-weight: bold`) Atvasinājums
+      td.biblio no galvenās vārda pamatformas atvasināta vārda pamatforma, kas var būt arī citas vārdšķiras vārds.
+    //- tr
+      td.term(style=`color: ${ALTERNATIVE_SPELLING_LEXEME_COLOR}; font-weight: bold`) Rakstības variants
+      td.biblio galvenā vārda pamatformas variants, kāds var parādīties tekstos vai citā valodas lietojumā.
+    //- tr
+      td.term(style=`color: ${ALTERNATIVE_SPELLING_DERIVATIVE_LEXEME_COLOR}; font-weight: bold`) Rakstības varianta atvasinājums
+      td.biblio no rakstības varianta atvasināta vārda pamatforma, kas var būt arī citas vārdšķiras vārds.
+    //- tr
+      td.term(style=`color: ${ABBREVIATION_LEXEME_COLOR}; font-weight: bold`) Saīsinājums
+      td.biblio burts, burtkopa (ar vai bez punkta), kas veidota, paņemot tikai vārda sākotnējo burtu vai samazinot burtu skaitu vārdā, bieži pieliekot klāt punktu; vai arī abreviatūra, ko veido no vārdu savienojumā esošo vārdu pirmajiem burtiem vai vārdu pirmajām daļām.
+    //- tr
+      td.term(style=`color: ${SUPPLEMENTAL_LEXEME_COLOR}; font-weight: bold`) Cita papildu leksēma
+      td.biblio ar šķirkli saistīta vārda pamatforma.
+

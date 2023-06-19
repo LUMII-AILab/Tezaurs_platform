@@ -1,0 +1,222 @@
+extends layout
+
+include includes/mixins/wordnet
+
+block main-top
+  +if_wordnet_editor
+    +if_editing_wordnet
+      b-form-checkbox.d-inline(switch inline v-model="visibleSubSenses.all") Rādīt visas apakšnozīmes
+      b-form-checkbox(switch inline v-model="visibleExamples.all") Rādīt visus piemērus
+
+block content
+  #entry-content
+    include includes/entry-content
+
+block main-bottom
+  +if_wordnet_editor
+    +if_editing_wordnet
+      if entriesToShow[0]
+        tab-section(heading=entriesToShow[0]['heading'] :wordnet-entry=entriesToShow[0].wordnet_entry :entry-id=entriesToShow[0].id)
+
+block left-rightside
+  +if_wordnet_editor
+    +if_editing_wordnet
+      if entriesToShow[0]
+        corpus-section(idata=entriesToShow[0] title="Korpuss" v-slot:trigger="{id}")
+
+  //- #devinfo(style="padding-top: 1em;")
+  //-   span(class="tooltip", title=`<pre>${jsonColored}</pre>`, style="color: #AAA;") JSON
+  //- p(class="tooltip", title=`${jsonColored}`) JSON
+
+  //- if entry
+    p(style='color: var(--color-2);') #{JSON.stringify(entry)}
+
+  //- hr
+  //- h2 datu saturs
+  //- pre(style="margin: 20px; overflow-x: scroll; overflow-y: hidden; white-space: wrap;") !{jsonColored}
+
+block leftside
+  +if_not_editing_wordnet
+    //- Homonīmi
+    if entriesToShow && entriesToShow[0]
+      if homonymEntries && homonymEntries.length > 1
+        #homonyms(class="resultSet")
+          .wordList Homonīmi
+          .listBox
+            each he, index in homonymEntries
+              if entriesToShow[0].homonym_no === he.homonym_no
+                .listItem.listItem-current !{format_entry_slug(he)}
+              else
+                .listItem
+                  a(href=`${entry_link(he)}`, class="word") !{format_entry_slug(he)}
+
+    //- Līdzīgi šķirkļi
+    if similarEntries && similarEntries.length > 0
+      #similarWords(class="resultSet")
+        if entriesToShow.length > 0
+          //- .wordList Šķirklim <strong>!{format_entry_slug(entriesToShow[0], !has_homonymes())}</strong> tuvi šķirkļi:
+          .wordList Līdzīgi šķirkļi:
+        else
+          .wordList Ievadam <strong><em>#{pattern}</em></strong> tuvi šķirkļi:
+
+        .listBox
+          each e, i in similarEntries
+            .listItem(style=`${i % 2 === 1 ? 'background-color: var(--row-bg-color-dark)' : 'background-color: var(--row-bg-color-lite)'}`)
+              span(style="color: var(--first-color-dark-dimmed);")= `${e.relation} `
+              a(href=`${entry_link(e.entry)}` style='margin-right: 0.3em') !{format_entry_slug(e.entry, !e.showIndex)}
+          if numSimilarEntries > similarEntries.length
+            = `... (vēl ${numSimilarEntries - similarEntries.length})`
+
+    //- Pameklēt plašāk
+    a(href=`/_search/${pattern}`)
+      button.side-button.secondary(type="button" style='margin-top: 0.6em;') Pameklēt plašāk
+
+
+    //- Apkaime
+    if entriesToShow && entriesToShow[0]
+      if (entriesToShow[0].prev && entriesToShow[0].prev.length > 0) || (entriesToShow[0].next && entriesToShow[0].next.length > 0)
+        #prevNextEntries(class="resultSet")
+          .wordList Apkaime
+          .listBox
+            if entriesToShow[0].type_id === 4
+              each e, i in entriesToShow[0].prev
+                .listItem(style=`${i % 2 === 1 ? 'background-color: var(--row-bg-color-dark)' : 'background-color: var(--row-bg-color-lite)'}`)
+                  a(href=`${entry_link(e)}`, class="word") !{format_entry_slug(e)}
+              .listItem.listItem-current !{entriesToShow[0].heading}
+              each e, i in entriesToShow[0].next
+                .listItem(style=`${i % 2 === 1 ? 'background-color: var(--row-bg-color-dark)' : 'background-color: var(--row-bg-color-lite)'}`)
+                  a(href=`${entry_link(e)}`, class="word") !{format_entry_slug(e)}
+            else
+              each e, i in entriesToShow[0].prev
+                .listItem(style=`${i % 2 === 1 ? 'background-color: var(--row-bg-color-dark)' : 'background-color: var(--row-bg-color-lite)'}`)
+                  a(href=`${heading_link(e)}`, class="word") !{e.heading}
+              .listItem.listItem-current !{entriesToShow[0].heading}
+              each e, i in entriesToShow[0].next
+                .listItem(style=`${i % 2 === 1 ? 'background-color: var(--row-bg-color-dark)' : 'background-color: var(--row-bg-color-lite)'}`)
+                  a(href=`${heading_link(e)}`, class="word") !{e.heading}
+
+    //- Kaimiņvārdnīcas
+    if inOtherDictionaries
+      each dictData, dictKey in inOtherDictionaries
+        if dictData.entries && dictData.entries.length > 0
+          .resultSet(style=`border-color: ${dictData.style.primaryColor}`)
+            .wordList(style=`background-color: ${dictData.style.primaryColorLite}; border-color: ${dictData.style.primaryColor}`) #{dictData.name}
+            .listBox(style=`border-color: ${dictData.style.primaryColor}`)
+              each e, i in dictData.entries
+                .listItem(style=`${i % 2 === 1 ? 'background-color: var(--row-bg-color-dark)' : 'background-color: var(--row-bg-color-lite)'}`)
+                  a(href=`${dictData.baseUrl}${entry_link(e)}`, class="word", target="_blank") !{format_entry_slug(e, dictData.entries.length === 1)}
+
+block append rightside
+  +if_editor
+    if entriesToShow.length === 1
+      +if_not_editing_wordnet
+        - var hasHiddenExamples = entriesToShow[0].senses.flatMap(s => s.examples).filter(ex => ex.hidden).length
+        if hasHiddenExamples
+          b-form-checkbox.mb-2(switch v-model="showHidden" @input="onShowHiddenChange") Rādīt paslēptos piemērus
+      button.side-button.primary(type="button" :title="this.editing ? 'Beigt rediģēt' : 'Rediģēt'" @click="this.toggleEditor") {{this.editing ? 'Beigt rediģēt' : 'Rediģēt'}}
+    entry-form(idata="{}" title="Pievienot šķirkli" v-slot:trigger="{id}")
+      button.side-button.secondary(type="button" title="Pievienot jaunu šķirkli" v-b-modal="id") Pievienot šķirkli
+  +if_wordnet_editor
+    button.side-button.primary(type="button" :title="this.editingWordnet ? 'Aizvērt korpusu piemērus' : 'Korpusu piemēru skats'" @click="this.toggleWordnetEditor") {{this.editingWordnet ? 'Aizvērt piemērus' : 'Korpusu piemēri'}}
+
+  //- if debug || SHOW_DEBUG
+  +if_editor
+    a(href='/_/r')
+      button.side-button(type="button") Nejaušs šķirklis
+
+  +if_editor
+    if entriesToShow.length === 1
+      unless debug
+        case dict
+          when 'mlvv'
+            a(href=`https://mlvv.tezaurs.lv/${encodeURIComponent(entriesToShow[0].primaryLexeme.lemma)}` target='compare')
+              button.side-button.tertiary(type="button" title="Atvērt šī šķirkļa publisko versiju (jaunā cilnē)" tabindex="-1") Publiskā versija
+            a(href=`https://vecais.tezaurs.lv/mlvv/#/sv/${encodeURIComponent(entriesToShow[0].primaryLexeme.lemma)}` target='compare')
+              button.side-button.tertiary(type="button" title="Atvērt šī šķirkļa klasisko versiju (jaunā cilnē)" tabindex="-1") Klasiskā versija
+          when 'llvv'
+            a(href=`https://llvv.tezaurs.lv/${encodeURIComponent(entriesToShow[0].primaryLexeme.lemma)}` target='compare')
+              button.side-button.tertiary(type="button" title="Atvērt šī šķirkļa publisko versiju (jaunā cilnē)" tabindex="-1") Publiskā versija
+          when 'tezaurs'
+            a(href=`https://tezaurs.lv/${encodeURIComponent(entriesToShow[0].primaryLexeme.lemma)}` target='compare')
+              button.side-button.tertiary(type="button" title="Atvērt šī šķirkļa publisko versiju (jaunā cilnē)" tabindex="-1") Publiskā versija
+            a(href=`https://vecais.tezaurs.lv/#/sv/${encodeURIComponent(entriesToShow[0].primaryLexeme.lemma)}` target='compare')
+              button.side-button.tertiary(type="button" title="Atvērt šī šķirkļa veco versiju (jaunā cilnē)" tabindex="-1") Vecais tēzaurs
+
+      a(href=`/_history/entry/${entriesToShow[0].id}`)
+        button.side-button.tertiary(type="button") Labošanas vēsture
+
+      if debug
+        a(href=`https://vecais.tezaurs.lv/#/sv/${encodeURIComponent(entriesToShow[0].primaryLexeme.lemma)}` target='compare')
+          button.side-button.tertiary(type="button") Tēzaurs
+        a(href=`https://vecais.tezaurs.lv/mlvv/#/sv/${encodeURIComponent(entriesToShow[0].primaryLexeme.lemma)}` target='compare')
+          button.side-button.tertiary(type="button") MLVV
+        a(href=`https://vecais.tezaurs.lv/llvv/#/sv/${encodeURIComponent(entriesToShow[0].primaryLexeme.lemma)}` target='compare')
+          button.side-button.tertiary(type="button") LLVV
+
+  +if_editor
+    a(href='/_q')
+      button.side-button.secondary(type="button" title="Datu vaicājumi" tabindex="-1") Vaicājumi
+    +only(['tezaurs','mlvv'])
+      a(href='/_issues/feedback/list')
+        button.side-button.secondary(type="button" title="Ziņojumi" tabindex="-1") Ziņojumi
+    a(href='/__/dokumenti')
+      button.side-button.secondary(type="button") Dokumenti
+
+  if debug || SHOW_DEBUG
+    p
+      small šķirklis #{msEntry} ms; piedevas #{msExtras} ms
+
+  each entry, index in entriesToShow
+    if entry.sidelinks && entry.sidelinks.length > 0
+      .resultSet
+        .wordList
+          strong
+            em !{format_entry_slug(entry, !has_homonymes())}
+          = ' šķērssaites:'
+        .listBox
+          each side, index in entry.sidelinks
+            .listItem(style=`${index % 2 === 1 ? 'background-color: var(--row-bg-color-dark)' : 'background-color: var(--row-bg-color-lite)'}`)
+              span(class="", style="color: var(--first-color-dark-dimmed);") #{side.relation}
+              = ' '
+              a(href=`${h_k_link(side.human_key)}`) !{side.heading}
+              +if_editing
+                | &nbsp;
+                if side.direction === 'nozīmes'
+                  //- šīs mwe saites var dzēst no otra gala, pie nozīmes
+                else
+                  delete-confirm(url=`/api/entry_relations/${side.rel_id}` size="sm" title=`Dzēst starpšķirkļu saiti "${side.relation}" starp "${entriesToShow[0].heading}" un "${side.heading}"?`)
+                    i.fas.fa-unlink
+
+
+    //+if_editor
+    //  if entry.wordnet_data
+    //    .resultSet
+    //      .wordList
+    //        strong WordNet
+    //      .listBox
+    //        if entry.wordnet_data.in_list
+    //          .listItem
+    //            span(class="", style="color: #A05000;") Šķirkļu sarakstā
+    //            = ': '
+    //            span jā
+    //        if entry.wordnet_data.in_synsets.length > 0
+    //          .listItem
+    //            span(class="", style="color: #A05000;") Iekļautā/ās nozīmes
+    //            = ': '
+    //            span #{entry.wordnet_data.in_synsets.join(', ')}
+
+  +if_wordnet_editor
+    div
+      +if_editing_wordnet
+        if entriesToShow && entriesToShow[0]
+          if homonymEntries && homonymEntries.length > 1
+            #homonyms(class="resultSet")
+              .wordList Homonīmi
+              .listBox
+                each he in homonymEntries
+                  .listItem.homonymItem(@click="changeHomonym", data-no=he.homonym_no, class="word") !{format_entry_slug(he)}
+
+
+block append footer_scripts
+  script.
+    tippy('[data-tippy-content]', { trigger: 'mouseenter click', hideOnClick: true, interactive: true, allowHTML: true, maxWidth: 'none' });

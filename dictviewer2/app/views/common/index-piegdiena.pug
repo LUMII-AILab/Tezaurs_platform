@@ -1,0 +1,86 @@
+extends layout
+
+//- include editor
+
+block content
+  h1 Tēzaurs ir saguris 
+
+  p. 
+    Sēžu savā dzelzs kastē. 
+    Dzīve ir tur, ārā. 
+    Manus vārdus tur vairs nelieto. 
+    Jaunruna ielās un tramvajos. 
+    Nevienam neesmu vajadzīgs.
+    Esmu saguris. 
+    Dodos pelnītā atpūtā. 
+    Varbūt nepelnītā. 
+    Bet dodos. 
+
+  p Piegdiena ir tur, ārā, nevis šeit.
+
+  p -- Tavs Tēzaurs 
+
+  h2 piegdiena 
+
+  pre(style="").
+    uspūš vējš un aiskari plīv 
+    tad kad piegdiena pienāk 
+    mana mejtene baltā meitelī
+    pie manīm izstabā ienāk 
+
+    pamožos gūltā vēdars man tukš
+    skatos zemaijos grieztos 
+    mamma virtuvē kokletes cepj 
+    kausē plācmaizei sviestu 
+
+    «paliec pajēst» es mejtenei saku 
+    «kā teu vispābā iet pa dzīvi?»
+    «zolīdi» atbild «nu viskaukā»
+    mamma virtuvē skandina ščīvjus 
+
+    «savlīt» es saku «zandāles novelc
+    pie manīm uz madrača nāc»
+    abet mejtene tikaj smeijas 
+    «ideots stūlbenis tāc»
+
+    «ak tu ķūska» es viņai saku 
+    nelajmīks – «kavna teu nau»
+    mamma pabāž gālvu pa durvīm 
+    «puzdienas gatavas jav»
+
+    nolemu – tagat vai arī nekat 
+    «vai aprecēsies ar manīm?»
+    «tu alhaholiķi smieklīgajs
+    ei kajmiņu kazu ganīt»
+
+    mejtene isskrien no izstabas
+    man asenis saskrien vaijgos 
+    es ceļos un uzzvelku ģemperi 
+    jo issalkums manī ir baijgais
+
+    es kokletes ēdu ar brokuļiem 
+    uz mammas plācmaizi skatos 
+    un neriāli tas garšīks vis 
+    a mamma man čemmē matus 
+
+    ar užaunieku vaj aldari 
+    man pajies piegdienas bessis 
+    es klusi gajdīšu veitverī
+    kad omei penziju nessīs
+
+    -- Kārlis Vērdiņš
+
+block append rightside
+  if SHOW_EDITOR
+    entry-form(idata="{}" title="Pievienot šķirkli" v-slot:trigger="{id}")
+      button.side-button.secondary(type="button" title="Pievienot jaunu šķirkli" v-b-modal="id") Pievienot šķirkli
+
+    a(href='/_/r')
+      button.side-button(type="button") Nejaušs šķirklis
+
+    a(href='/_q')
+      button.side-button.secondary(type="button" title="Datu vaicājumi") Vaicājumi
+    a(href='/_issues/feedback/list')
+      button.side-button.secondary(type="button" title="Ziņojumi") Ziņojumi
+    a(href='/__/dokumenti')
+      button.side-button.secondary(type="button") Dokumenti

@@ -1,0 +1,137 @@
+-
+  const SR_OPEN = '<span style="color: orange">(</span>';
+  const SR_CLOSE = '<span style="color: orange">)</span>';
+  const SR_COMMA = '<span style="color: orange">, </span>';
+  const SR_AND_OPEN = SR_OPEN;
+  const SR_OR_OPEN = SR_OPEN;
+  const SR_NOT_OPEN = '<span style="color: orange">NE(</span>';
+  const SR_AND_JOIN = '<span style="color: orange"> UN </span>';
+  const SR_OR_JOIN = '<span style="color: orange"> VAI </span>';
+
+  const format_entry_slug = (e, suppressIndex = false) => {
+    if ([2,3,4].includes(e.type_id)) return e.heading;
+    if (suppressIndex) return e.heading;
+    //- if (!e.homonym_no || e.homonym_no === 1) return e.heading;
+    return `${e.heading}<sup>${e.homonym_no}</sup>`;
+  }
+
+  const prepare_pronunciation = p => p.replace(/,/g, '\u0327').replace(/~/g, '\u0303').replace(/\^/g, '\u0302').replace(/\\/g, '\u0300').replace(/!/g, '\u02c8');
+
+  const capitalize_first_letter = (s, unless) => {
+    if (!s) return '';
+    if (unless) return s;
+    if (s.startsWith('<') && s.includes('>')) {
+      let x = s.indexOf('>');
+      return s.slice(0, x + 1) + s.slice(x + 1, x + 2).toUpperCase() + s.slice(x + 2);
+    }
+    if (s.startsWith('(')) {
+      return '(' + s.slice(1, 2).toUpperCase() + s.slice(2);
+    }
+    return s.slice(0, 1).toUpperCase() + s.slice(1);
+  }
+  const add_sense_punctuation = (s, unless) => {
+    if (!s) return '';
+    if (unless) return s;
+    let s2 = s.trim();
+    let lastChar = s2.slice(s2.length - 1);
+    if (['.', '?', '!', ';'].includes(lastChar)) return s2;
+    return s2 + '.';
+  }
+  const entry_link = e => `/${encodeURIComponent(e.human_key).replace('%3A', ':')}`;
+  const heading_link = e => `/${encodeURIComponent(e.heading)}`;
+  const h_k_link = h_k => `/${encodeURIComponent(h_k).replace('%3A', ':')}`;
+  const has_homonymes = () => homonymEntries && homonymEntries.length > 1;
+  const andify = srs => `${SR_AND_OPEN}${srs.map(x => rsr(x)).join(SR_AND_JOIN)}${SR_CLOSE}`;
+  const orify = srs => `${SR_OR_OPEN}${srs.map(x => rsr(x)).join(SR_OR_JOIN)}${SR_CLOSE}`;
+  const notify = sr => `${SR_NOT_OPEN}${rsr(sr)}${SR_CLOSE}`;
+  const simple_sr = sr => `${sr.Frequency || ''} ${(sr.Restriction || '').toLowerCase()}${sr.Value ? ' ➤ ' : ''}${sr.Value && sr.Value.Flags ? ' karogi: ' + JSON.stringify(sr.Value.Flags) : ''}${sr.Value && sr.Value.LanguageMaterial ? ' LM: "' + sr.Value.LanguageMaterial + '"' : ''}`;
+  const rsr = sr => sr.AND ? andify(sr.AND) : (sr.OR ? orify(sr.OR) : (sr.NOT ? notify(sr.NOT) : simple_sr(sr)))
+  //- - const rsr = sr => JSON.stringify(sr)
+  const boxify = text => `<div style='white-space: pre; font-size: 0.8em;'>${text}</div>`;
+
+  const break_first_line = (text, col1, col2) => {
+    let i1 = text.indexOf(',', col1);
+    if (i1 >= 0 && i1 < text.length - 1 && i1 <= col2) {
+      return text.slice(0, i1 + 1);
+    }
+    i1 = text.indexOf(' ', col1);
+    if (i1 >= 0 && i1 <= col2) {
+      return text.slice(0, i1);
+    }
+    return text.slice(0, col2);
+  }
+
+  const break_longer_text = (text, col1, col2) => {
+    let t = text.trim();
+    if (t.length <= col2) return t;
+    let l1 = break_first_line(t, col1, col2);
+    if (l1.length < t.length) {
+      return l1.trim() + '\n' + break_longer_text(t.slice(l1.length), col1, col2);
+    }
+    return text;
+  }
+
+  //- const lexeme_color = lex => lex.type_id === 4 ? DERIVED_LEXEME_COLOR : lex.type_id === 5 ? ALTERNATIVE_SPELLING_LEXEME_COLOR : lex.type_id === 6 ? SUPPLEMENTAL_LEXEME_COLOR : lex.type_id === 8 ? ABBREVIATION_LEXEME_COLOR : lex.isPrimary || lex.primary ? PRIMARY_LEXEME_COLOR : MAIN_LEXEME_COLOR;
+  const lexeme_color_0 = lex => lex.type_id === 4 ? DERIVED_LEXEME_COLOR : lex.type_id === 5 ? ALTERNATIVE_SPELLING_LEXEME_COLOR : lex.type_id === 6 ? SUPPLEMENTAL_LEXEME_COLOR : lex.type_id === 8 ? ABBREVIATION_LEXEME_COLOR : lex.type_id === 9 ? ALTERNATIVE_SPELLING_DERIVATIVE_LEXEME_COLOR : MAIN_LEXEME_COLOR;
+  const lexeme_color = lex => {
+    switch (lex.type_id) {
+      case 4: return DERIVED_LEXEME_COLOR;
+      case 5: return ALTERNATIVE_SPELLING_LEXEME_COLOR;
+      case 6: return SUPPLEMENTAL_LEXEME_COLOR;
+      case 8: return ABBREVIATION_LEXEME_COLOR;
+      case 9: return ALTERNATIVE_SPELLING_DERIVATIVE_LEXEME_COLOR;
+      default: return MAIN_LEXEME_COLOR;
+    }
+  }
+
+  const lexeme_type_name = lex => {
+    switch (lex.type_id) {
+      case 1: return '';
+      case 4: return 'atvasinājums';
+      case 5: return 'rakstības variants';
+      case 6: return 'saistīts vārds';
+      default: return '';
+    }
+  }
+
+  const put_in_sandbox = html => {
+    const n1 = (html.match(/<div/g) || []).length;
+    const n2 = (html.match(/<\/div>/g) || []).length;
+    if (n1 === n2) return html;
+    if (n2 > n1) return '<div>'.repeat(n2 - n1) + html;
+    return html + '</div>'.repeat(n1 - n2);
+  }
+
+  const format_kvp_table = flags => `<table class='tooltip-table'>${Object.keys(flags).map(k => `<tr><th>${k}:</th><td>${Array.isArray(flags[k]) ? flags[k].join(', ') : flags[k]}</td></tr>`).join('')}</table>`;
+
+  const join_with_truncate = (arr, n=50, separators=[',']) => {
+    let str = '', nextPart = '', sep = separators[0];
+    while (arr.length > 0 && (str.length  + nextPart.length) < n+2) {
+      str += nextPart;
+      nextPart = arr.shift();
+      if (nextPart === '^') {
+        nextPart = '';
+      } else if (nextPart === '$') {
+        str += `${['?', '!', '.'].includes(str[str.length-1]) ? '' : separators[1]} `;
+        nextPart = '';
+        sep = '';
+      } else {
+        nextPart = `${sep} ${nextPart}`;
+        sep = separators[0];
+      }
+    }
+    str += str.length > 0 && separators.length === 2 && ['?', '!', '.', ' '].includes(str[str.length-1]) ? '' : '.';
+    return str.substr(2);
+  }
+  const short_info_for_examples = exs => exs[0].content;
+  const short_info_for_mwes = (mwes, n=40) => {
+    return join_with_truncate(
+      mwes.map(mwe => [...['^'], ...mwe.lexemes.map((x, idx) => idx === 0 ? capitalize_first_letter(x.lemma) : x.lemma), ...['$']]).flat(),
+      n,
+      [';', '.']);
+  }
+  const short_info_for_pwns = synsets => join_with_truncate([...new Set(synsets.flatMap(s => s.senses).map(s => s.text))]);
+  const short_info_for_synonyms = synset => join_with_truncate([...new Set((synset.senses.length ? synset.senses.map(s => s.text) : []).concat(synset.relations && synset.relations['Sinonīmi'] ? synset.relations['Sinonīmi'] .flatMap(rel => rel.senses).map(s => s.text) : []))]);
+  const short_info_for_related = rels => join_with_truncate(Object.values(rels).map(r => r.data).flat().flatMap(rel => rel.senses).map(s => s.text));
+
+  const highlight_warning = (string) => string.replace('nevēlams', `<span class="verbalization-warning">nevēlams</span>`);

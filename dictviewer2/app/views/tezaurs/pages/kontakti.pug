@@ -1,0 +1,34 @@
+extends ../../common/layout
+
+block append header_scripts
+  style.
+    h2 {
+      margin-top: 2rem;
+      font-size: 1.4em;
+    }
+    dd {
+      margin-bottom: 0;
+    }
+    dt {
+      margin-top: 1em;
+    }
+
+block content
+
+  h1 Tēzaurs.lv autori
+
+  dl
+    dt Galvenais redaktors:
+    dd Andrejs&nbsp;Spektors
+
+    dt Redaktori:
+    dd Baiba&nbsp;Saulīte, Gunta&nbsp;Nešpore-Bērzkalne, Laura&nbsp;Rituma, Ilze&nbsp;Auziņa, Ilze&nbsp;Lokmane, Agute&nbsp;Klints, Madara&nbsp;Stāde
+
+    dt Platformas izstrāde:
+    dd Mikus&nbsp;Grasmanis, Artūrs&nbsp;Znotiņš, Laine&nbsp;Strankale, Normunds&nbsp;Grūzītis, Lauma&nbsp;Pretkalniņa, Pēteris&nbsp;Paikens, Roberts&nbsp;Darģis, Guntis&nbsp;Bārzdiņš
+
+  h2 Kontakti
+
+  dl
+    dt Atsauksmēm un saziņai: #[a(href='mailto:info@tezaurs.lv') info@tezaurs.lv]
+    //- dd tezaurs@ailab.lv

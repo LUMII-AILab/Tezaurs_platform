@@ -1,0 +1,6 @@
+pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+.json-string { color: green; }
+.json-number { color: darkorange; }
+.json-boolean { color: blue; }
+.json-null { color: magenta; }
+.json-key { color: red; }

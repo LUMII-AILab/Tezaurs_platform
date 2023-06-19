@@ -1,0 +1,22 @@
+:root {
+  --dark-color: #4caf50;
+  --dark-dimmed-color: #649666;
+  --accent-color: #e8f5e9;
+
+  /* --color-2: #8080c0; */
+  --color-2: #474794;
+  --separator-color: #E8E8E8;
+
+  --first-color: #81c784;
+  --first-color-dark: #4caf50;
+  --first-color-dark-dimmed: #649666;
+  --first-color-lite: #e8f5e9;
+
+  --row-bg-color-lite: #ffffff;
+  --row-bg-color-dark: #f0f0f0;
+
+  /* --twitter-color: #1DA1F2; */
+  --twitter-color: #0C7ABF;
+  --twitter-color-lite: #6bc2f8;
+  --twitter-color-dark: #074f7c;
+}

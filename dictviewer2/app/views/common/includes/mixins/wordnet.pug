@@ -1,0 +1,42 @@
+mixin if_wordnet_editor
+  if SHOW_WORDNET_EDITOR
+    block
+
+mixin if_editing_wordnet
+  +if_wordnet_editor
+    template(v-if="this.editingWordnet")
+      block
+
+mixin if_not_editing_wordnet
+  if SHOW_WORDNET_EDITOR
+    template(v-if="!this.editingWordnet")
+      block
+  else
+    block
+
+mixin if_show_subsenses(sense_order_no)
+  +if_editing_wordnet
+    b-collapse(v-model=`visibleSubSenses.individual[${sense_order_no}]`)
+      block
+  +if_not_editing_wordnet
+    block
+
+mixin if_show_examples(sense)
+  +if_editing_wordnet
+    +collapseEditor(sense.id + '-3', "Piemēri", short_info_for_examples(sense.examples), "examples", false, "visibleExamples", sense.id)
+      block
+  +if_not_editing_wordnet
+    +collapse(sense.id + '-3', "Piemēri", short_info_for_examples(sense.examples), "examples", false, true)
+      block
+
+mixin toggles(s)
+  +if_editing_wordnet
+    - has_subsenses = s.subSenses != null
+    div
+      if has_subsenses
+        b-form-checkbox.switch-collapse.text-muted(
+        switch inline
+        v-model=`visibleSubSenses.individual[${s.order_no}]`
+        size="sm") Rādīt apakšnozīmes
+  +if_not_editing_wordnet
+    block

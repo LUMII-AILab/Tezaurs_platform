@@ -1,0 +1,13 @@
+:root {
+  --first-color: #81c784;
+  --first-color-dark: #4caf50;
+  --first-color-dark-dimmed: #649666;
+  --dark-color: #4caf50;
+  --first-color-lite: #e8f5e9;
+  --accent-color: #e8f5e9;
+}
+
+.infoVers {
+  white-space: nowrap;
+  color: #66BB6A;
+}

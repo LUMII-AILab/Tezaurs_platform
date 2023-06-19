@@ -1,0 +1,395 @@
+extends ../../common/layout
+
+mixin entryHeader(data)
+  span.dict_Header
+    span.dict_Lemma= data.lemma
+    if data.inflection
+      = ' '
+      span.dict_Inflection= data.inflection
+    if data.flagText
+      = ' '
+      span.dict_FlagText= data.flagText
+    if data.pronunciation
+      = ' '
+      span.dict_Pronunciation [!{data.pronunciation}]
+
+mixin sense(data)
+  .dict_Sense
+    span.dict_SenseNumber #{data.senseNo}.
+    span.dict_Gloss !{data.gloss}
+    block 
+
+mixin subSense(data)
+  .dict_Sense
+    span.dict_SenseNumber #{data.senseNo}.
+    span.dict_Gloss !{data.gloss} 
+
+block content
+
+  h1 Instrukcija 
+  h2 Vārdu atlase
+
+  p.
+    Mūsdienu latviešu valodas vārdnīca (MLVV) ir elektroniska latviešu valodas skaidrojošā vārdnīca, kas tapusi Latvijas Universitātes Latviešu valodas institūtā un kuras autori ir institūta Leksikogrāfijas un leksikoloģijas nodaļas kolektīvs.
+    Vārdnīca paredzēta plašam lietotāju lokam, tajā ievietotā leksika aptver dažādus valodas slāņus.
+    Līdzās vispārlietojamai leksikai, jaunākajiem aizguvumiem un jaundarinājumiem (tostarp jaunvārdiem), izplatītākajiem terminiem un sarunvalodas vārdiem MLVV ir ietverta arī daļa mūsdienās biežāk lietoto neliterārās leksikas vārdu.
+    Tāpat vārdnīcā ievietoti atsevišķi novecojuši vārdi, ko valodas lietotāji varētu sastapt, piemēram, lasot latviešu literatūras klasiķu darbus, tautas pasakas, tautasdziesmas u. tml.
+  p.
+    Vārdu krājuma analīzei izmantots plašs latviešu valodas materiāls: MLVV kartotēka, tekstu korpusi, materiāli no interneta, kā arī vairākas jaunākās vārdnīcas un enciklopēdijas
+    (skat. #[a(href='/_/avoti') avotu un literatūras sarakstu]). Šis valodas materiāls aptver laika periodu no 20. gs. pēdējās desmitgades un tiek papildināts visā vārdnīcas tapšanas gaitā.
+
+  p Ierobežotā skaitā MLVV dotas šādas vārdu grupas:
+  ol
+    li mūsdienās novecojuši, arī reti lietoti vārdi un apvidvārdi (pēdējos gados vērojama šo vārdu &bdquo;renesanse&rdquo;, tāpēc biežāk lietotie ir ievietoti MLVV);
+    li speciālie termini (pamatā vārdnīcā doti termini no nozarēm, ar ko valodas lietotājs saskaras ikdienas dzīvē vai kas saistīti ar viņa vaļasprieku, piem., literatūra, māksla, sports, kulinārija, medicīna);
+    li neliterārās leksikas vārdi (doti paši izplatītākie, tādi, kas pazīstami dažādu paaudžu runātājiem);
+    li regulārie atvasinājumi ar #[em -ējs]/#[em -ēja], #[em -ājs]/#[em -āja], #[em -tājs]/#[em -tāja] (galvenokārt doti izplatītāko profesiju nosaukumi);
+    li deminutīvi ar #[em -iņš]/#[em -iņa], #[em -ītis]/#[em -īte] (pamatā doti neregulāri veidoti atvasinājumi, piem., #[em gosniņa], kā arī deminutīvi, kuriem ir kāda specifiska nozīme, piem., #[em kuģītis], #[em laiviņa]);
+    li atvasinājumi ar #[em ne-] (parasti doti tie atvasinājumi, kuriem izveidojusies no pamatvārda atšķirīga nozīme vai nozīmes nianse);
+    li salikteņi (doti biežāk lietotie salikteņi, kā arī tie, kuru nozīme nav izsecināma no salikteņa sastāvdaļām);
+    li divdabji (atsevišķā šķirklī doti adjektivējušies vai substantivējušies divdabji);
+    li abreviatūras (dotas izplatītākās, populārākās abreviatūras, kuras periodikā dažkārt pat neatšifrē);
+    li īpašvārdi (doti, piem., dažu mitoloģisku tēlu, arī populāru pasaku, komiksu personāžu vārdi).
+
+  p Homonīmi doti katrs savā šķirklī un apzīmēti ar arābu cipariem.
+
+  h2 Šķirkļa uzbūve
+
+  p Vārdnīcā ievietotajiem šķirkļiem var būt šādas daļas:
+
+  ol(type='1')
+
+    li
+      p Šķirkļa vārds.
+      p MLVV šķirkli var veidot gan atsevišķs vārds, gan vārdu savienojums (piem., frazeoloģisms).
+
+      p Šķirkļa vārds parasti dots attiecīgās vārdšķiras pamatformā (piem., lietvārds &ndash; vienskaitļa nominatīvā, darbības vārds &ndash; nenoteiksmē).
+
+      p Daudzskaitļa nominatīva formā doti daudzskaitlinieki (piem., #[em durvis], #[em milti]), kā arī lietvārdi, kurus parasti lieto daudzskaitlī (piem., #[em auzas], #[em griķi], #[em putraimi]). Daudzskaitļa nominatīva formā MLVV rādīti arī tautu nosaukumi (piem., #[em krievi], #[em latvieši], #[em kanādieši], #[em kurdi]) un reliģisko konfesiju nosaukumi (piem., #[em adventisti], #[em baptisti], #[em katoļi], #[em luterāņi]).
+
+      p Gan daudzskaitļa, gan vienskaitļa formā šķirkļa vārds dots, ja to biežāk lieto daudzskaitļa formā, bet samērā izplatīta ir arī vienskaitļa forma, piem.: 
+
+      p
+        +entryHeader({lemma: 'baletkurpes', flagText: 'sieviešu dzimte, lietvārds'})
+        br
+        +entryHeader({lemma: 'baletkurpe', flagText: 'sieviešu dzimte, lietvārds; formā: vienskaitlis'})
+
+      p
+        +entryHeader({lemma: 'zeķes', flagText: 'sieviešu dzimte, lietvārds'})
+        br
+        +entryHeader({lemma: 'zeķe', flagText: 'sieviešu dzimte, lietvārds; formā: vienskaitlis'})
+
+      p Šķirkļa vārds gan vīriešu, gan sieviešu dzimtē tiek rakstīts t.s. darītājvārdiem (#[em pārdevējs], #[em pārdevēja]), dažiem skaitļa vārdiem (#[em viens], #[em viena]) un vietniekvārdiem (#[em viņš], #[em viņa]).
+
+      p Šķirkļos, kuros skaidroti tautu nosaukumi vai reliģisko konfesiju nosaukumi, kas doti daudzskaitļa nominatīvā, aiz #[span.dict_SenseNumber //] zīmes pievienotas arī vienskaitļa formas vīriešu un sieviešu dzimtē (attiecīgās tautas vai reliģiskās konfesijas piederīgais, piederīgā).
+
+      p Gan vīriešu, gan sieviešu dzimtē tiek rādīti arī īpašības vārdi, parasti tiem pievienojot no attiecīgā īpašības vārda atvasināto apstākļa vārdu ar #[em -i] vai #[em -u], piem.: 
+
+      p
+        +entryHeader({lemma: 'sarkans', inflection: '-ais', flagText: 'vīriešu dzimte, īpašības vārds'})
+        br
+        +entryHeader({lemma: 'sarkana', inflection: '-ā', flagText: 'sieviešu dzimte, īpašības vārds'})
+        br
+        +entryHeader({lemma: 'sarkani', flagText: 'apstākļa vārds'})
+
+      p Ja šādam apstākļa vārdam semantika ievērojami atšķiras no attiecīgā īpašības vārda, tas dots atsevišķā šķirklī (piem., #[em labi], #[em slikti]).
+
+      p Vārda fonētiskie vai morfoloģiskie varianti parasti doti vienā šķirklī, kā pirmo minot biežāk izplatīto vai pareizrakstības normām atbilstošāko variantu, piem.: 
+
+      p
+        +entryHeader({ lemma: 'mājinieki', flagText: 'vīriešu dzimte, lietvārds; formā: daudzskaitlis' })
+        br
+        +entryHeader({ lemma: 'mājnieki', flagText: 'vīriešu dzimte, lietvārds; formā: daudzskaitlis' })
+
+      p
+        +entryHeader({ lemma: 'zeķbikses', inflection: 'dsk. ģen. -šu', flagText: 'sieviešu dzimte, lietvārds' })
+        br
+        +entryHeader({ lemma: 'zeķubikses', inflection: 'dsk. ģen. -šu', flagText: 'sieviešu dzimte, lietvārds' })
+
+    li
+      p Norāde par vārda izrunu.
+
+      p Norāde par vārda izrunu dota kvadrātiekavās tūlīt aiz šķirkļa vārda. MLVV atspoguļotas šādas izrunas īpatnības:
+
+      ol(type='a')
+        li zilbes robeža, ja nepieciešams norādīt, ka divi blakus esoši patskaņi neveido divskani, piem., 
+          = ' '
+          +entryHeader({ lemma: 'poliomielīts', pronunciation: 'poliomi-eli&#x303;ts' })
+          | ;
+
+        li ja burts #[em o] apzīmē divskani, piem.,
+          = ' '
+          +entryHeader({ lemma: 'lode', pronunciation: 'luo&#x303;de' })
+          | , izņemot gadījumus, kad #[em o] ir darbības vārda izskaņās #[em -ot], #[em -oties] vai priedēklī #[em no-];
+
+        li ja burti #[em e], #[em ē] apzīmē platos patskaņus;
+
+        li ja vārda uzsvars neatrodas pirmajā zilbē, piem.,
+          = ' '
+          +entryHeader({ lemma: 'nemaz', pronunciation: 'ne&#x2C8;maz' })
+          | ;
+
+
+        li ja homonīmus izrunā ar atšķirīgu zilbes intonāciju, piem., 
+          = ' '
+          +entryHeader({ lemma: 'zāle', pronunciation: 'za&#x303;le' })
+          = ' '
+          | &lsquo;telpa&rsquo; un 
+          = ' '
+          +entryHeader({ lemma: 'zāle', pronunciation: 'za&#x302;le' })
+          = ' '
+          | &lsquo;augs&rsquo;.
+
+      p
+        | Zilbes intonācija atveidota pēc &bdquo;Latviešu valodas pareizrakstības un pareizrunas vārdnīcā&rdquo; (Rīga: &bdquo;Avots&rdquo;, 1995) lietotās trīs intonāciju (stieptā, krītošā, lauztā) sistēmas. Zilbju intonācijas lietošanas normai latviešu valodā ir vairāk fakultatīvs, orientējošs raksturs. Ja vārdam var būt divējāda izruna, doti abi fonētiskie varianti, piem., #[span.dict_Header #[span.dict_Lemma balons] #[span.dict_Pronunciation [balo&#x303;ns vai baluo&#x303;ns]]]. Gadījumos, kad uzsvara lietošanā ir varianti, kvadrātiekavās parādīta tikai neregulārā forma bez uzsvara uz pirmās zilbes, piem., #[span.dict_Header #[span.dict_Lemma daždažāds] #[span.dict_Pronunciation [arī daž&#x2C8;daža&#x302;ds]]]. Patskaņa #[em o] garums vārdnīcā ir atspoguļots tikai izrunas norādēs.
+
+    li
+      p Vārda gramatiskās formas un gramatiskās norādes.
+
+      p Norāde par šķirkļa vārda piederību pie noteiktas vārdu šķiras lietvārdiem, īpašības vārdiem un darbības vārdiem dota aiz vārda gramatiskā raksturojuma, bet pārējām vārdu šķirām &ndash; tūlīt aiz šķirkļa vārda.
+
+      p Pie ģenitīveņiem &ndash; lietvārdiem vienskaitļa vai daudzskaitļa ģenitīva formā, kurus teikumā lieto par apzīmētāju (reizēm arī lokatīvā par apstākli) &ndash; dota norāde #[span.dict_FlagText ģenitīvenis].
+
+      p Adjektivētajiem divdabjiem MLVV pievienota norāde #[span.dict_FlagText divdabis īpašības vārda nozīmē]. Ja adjektivācijas rezultātā saistība ar attiecīgo darbības vārdu ir zudusi vai arī tie morfoloģiski ir saistīti ar attiecīgo lietvārdu, nevis darbības vārdu (piem., #[span.dict_Lemma ķiplokots]), tad šādi vārdi pielīdzināti īpašības vārdiem. Norādes #[span.dict_FlagText īpašības vārda nozīmē], #[span.dict_FlagText lietvārda nozīmē], #[span.dict_FlagText apstākļa vārda nozīmē], #[span.dict_FlagText saikļa nozīmē] u.&nbsp;tml. lietotas arī citos konversijas gadījumos. Šāds risinājums izraudzīts tāpēc, ka ikvienas skaidrojošās vārdnīcas galvenais un primārais uzdevums ir atklāt vārda semantiku, noteikt tā funkcijas no semantiskā viedokļa, turpretī vārda gramatiskajam raksturojumam skaidrojošā vārdnīcā ir pakārtota nozīme.
+
+      p #[span.subtitle Lietvārdiem] MLVV ir dotas šādas gramatiskās norādes:
+
+      ol(type='a')
+        li par dzimti, piem.:
+          p
+            +entryHeader({ lemma: 'suns', inflection: '', flagText: 'vīriešu dzimte, lietvārds', pronunciation: '' })
+            br
+            +entryHeader({ lemma: 'roka', inflection: '', flagText: 'sieviešu dzimte, lietvārds', pronunciation: '' })
+
+          p Kopdzimtes lietvārdiem parādītas arī atšķirīgās datīva galotnes, piem.:
+          p
+            +entryHeader({ lemma: 'paziņa', inflection: 'dat. -am', flagText: 'vīriešu dzimte, kopdzimte, lietvārds', pronunciation: '' })
+            br
+            +entryHeader({ lemma: 'paziņa', inflection: 'dat. -ai', flagText: 'sieviešu dzimte, kopdzimte, lietvārds', pronunciation: '' })
+
+
+        li par skaitli &ndash; daudzskaitliniekiem, lietvārdiem, kurus parasti lieto daudzskaitlī, kā arī tautu un reliģisko konfesiju nosaukumiem; lietvārdiem, kurus daudzskaitlī nelieto un kuriem tāpēc daudzskaitļa ģenitīvā nav līdzskaņu mijas);
+
+        li par locīšanu &ndash; nelokāmajiem lietvārdiem, piem.:
+          p 
+            +entryHeader({ lemma: 'haki', inflection: '', flagText: 'nelokāms vārds, lietvārds', pronunciation: '' })
+
+        li par līdzskaņu miju. Lietvārdiem, kuriem vienskaitļa un/vai daudzskaitļa ģenitīvā rodas līdzskaņu mija, parādītas attiecīgās ģenitīva galotnes, piem.: 
+          p
+            +entryHeader({ lemma: 'magone', inflection: 'dsk. ģen. -ņu', flagText: 'sieviešu dzimte, lietvārds', pronunciation: '' })
+            br
+            +entryHeader({ lemma: 'lācis', inflection: '-ča, dsk. ģen. -ču', flagText: 'vīriešu dzimte, lietvārds', pronunciation: '' })
+
+
+      p #[span.subtitle Īpašības vārdi] MLVV doti gan vīriešu, gan sieviešu dzimtē ar nenoteikto galotni, parasti blakus parādot arī attiecīgā īpašības vārda noteikto galotni un atbilstošo apstākļa vārdu:
+
+        br
+        +entryHeader({ lemma: 'skaists', inflection: '-ais', flagText: 'vīriešu dzimte, īpašības vārds', pronunciation: '' })
+        br
+        +entryHeader({ lemma: 'skaista', inflection: '-ā', flagText: 'sieviešu dzimte, īpašības vārds', pronunciation: '' })
+        br
+        +entryHeader({ lemma: 'skaisti', inflection: '', flagText: 'apstākļa vārds', pronunciation: '' })
+
+      p #[span.subtitle Darbības vārdi] doti nenoteiksmē, kam parasti seko (pilnā vai īsinātā veidā) darāmās kārtas īstenības izteiksmes vienskaitļa visu trīs personu formas tagadnē un pirmās personas forma pagātnē, kā arī norāde par transitivitāti, t. i., vai attiecīgais darbības vārds ir pārejošs vai nepārejošs, piem.: 
+      p
+        +entryHeader({ lemma: 'celt', inflection: 'ceļu, cel, ceļ, pag. cēlu', flagText: 'transitīvs, darbības vārds', pronunciation: '' })
+        br
+        +entryHeader({ lemma: 'lasīt', inflection: '-u, -i, -a, pag. -īju', flagText: 'transitīvs, darbības vārds', pronunciation: '' })
+
+      p Ja darbības vārds lietojams tikai vai parasti 3. personā, aiz nenoteiksmes formas dota norāde #[span.dict_FlagText 3. pers.], šādos gadījumos arī tagadnē un pagātnē rādīta tikai 3. personas forma, piem.:
+      p
+        +entryHeader({ lemma: 'plīst', inflection: '3. pers. plīst, pag. plīsa', flagText: 'intransitīvs, darbības vārds', pronunciation: '' })
+
+      p Refleksīvie (atgriezeniskie) darbības vārdi atsevišķā šķirklī ievietoti tad, ja tiem ir no tiešā darbības vārda atšķirīga nozīme (piem., savstarpējas darbības vai pāri mēram veiktas darbības nozīme). Ja refleksīvais verbs izsaka tikai to, ka darbība vēršas atpakaļ uz darītāju, tas ievietots pie attiecīgā tiešā darbības vārda.
+
+      p #[span.subtitle Skaitļa vārdiem] un #[span.subtitle vietniekvārdiem] kopā ar norādi par vārdu šķiru dota arī norāde par iedalījumu noteiktā šīs vārdšķiras grupā, piem.:
+      p
+        +entryHeader({ lemma: 'pieci', inflection: '', flagText: 'pamata skaitļavārds', pronunciation: '' })
+        br
+        +entryHeader({ lemma: 'es', inflection: '', flagText: 'personas vietniekvārds', pronunciation: '' })
+
+      p #[span.subtitle Prievārdi] raksturoti ar norādi par rekciju:
+      p
+        +entryHeader({ lemma: 'zem', inflection: '', flagText: 'prievārds; kopā ar: ģenitīvs', pronunciation: '' })
+
+      p #[span.subtitle Apstākļa vārdiem], #[span.subtitle saikļiem], #[span.subtitle partikulām], #[span.subtitle izsauksmes vārdiem] parasti dota tikai norāde par vārdu šķiru.
+
+      p #[span.subtitle Ierobežojumi vārdu lietošanā.] MLVV aiz šķirkļa vārda gramatiskā raksturojuma nereti dota norāde par vārda nozīmes papildkomponentu vai ierobežojumiem vārda lietošanā.
+
+    li
+      p Leksikostilistiskais un emocionāli ekspresīvais raksturojums.
+
+      p Vārdnīcā lietotas šādas norādes:
+
+      ol(type='a')
+        li leksikostilistiskās (#[span.dict_FlagText poētisms]; #[span.dict_FlagText sarunvaloda]; #[span.dict_FlagText neliterārā sarunvaloda]; #[span.dict_FlagText vienkāršruna]);
+        li emocionāli ekspresīvās (#[span.dict_FlagText humoristiski ekspresīvā nokrāsa]; #[span.dict_FlagText ironiski ekspresīvā nokrāsa]; #[span.dict_FlagText nievājoša ekspresīvā nokrāsa]);
+        li teritoriāli ierobežojošā (#[span.dict_FlagText apvidvārds]);
+        li temporāli ierobežojošā (#[span.dict_FlagText novecojis]);
+        li terminoloģiskās norādes. Ja termins kļuvis par vispārlietojamās leksikas daļu, šķirklī norāde par attiecīgo nozari nav minēta;
+        // TODO: links
+        li norāde #[span.dict_FlagText pārnestā nozīmē] lietota pie atsevišķiem piemēriem, kas norāda vārda nozīmes niansi. Pie vārda nozīmēm norāde #[span.dict_FlagText pārnestā nozīmē] MLVV nav lietota.
+        //- li vārdnīcā ievietotie jaunvārdi apzīmēti ar zvaigznīti (#[span.dict_FlagText *]).
+
+    li
+      p Vārda nozīmes skaidrojums.
+
+      p Vārda nozīmes daudznozīmju vārdiem apzīmētas ar arābu cipariem, bet sīkākas semantiskās atšķirības (nozīmes nianses) var tikt norādītas aiz semikola. Aiz semikola skaidrojuma beigās dažreiz pievienots arī attiecīgā vārda sinonīms vai sinonīmi.
+
+      p MLVV visbiežāk lietotais skaidrojuma tips ir definīcija, ko dažkārt papildina atbilstošais sinonīms vai sinonīmi. Retāk lietotiem vai stilistiski marķētiem vārdiem izmantots sinonīmiskais skaidrojums, resp., vārda nozīme atklāta tikai ar sinonīmu vai sinonīmiem. Nereti skaidrojumu papildina dažādi norādījumi gan iekavās, gan aiz domu zīmes. Šie norādījumi sīkāk raksturo darbības objektu vai subjektu, nosauc īpašības nesēju vai raksturīgu pazīmi.
+
+      p Augu un dzīvnieku nosaukumu skaidrojumi MLVV papildināti ar attiecīgās dzimtas, ģints vai sugas latīnisko nosaukumu kvadrātiekavās, piem.:
+      p
+        +entryHeader({ lemma: 'zvirbulis', inflection: '-ļa, dsk. ģen. -ļu', flagText: 'vīriešu dzimte, lietvārds', pronunciation: '' })
+        br
+        span.dict_Sense
+          span.dict_Gloss Neliels, drukns, pamatā pelēkbrūni raibs, putns ar īsu, samērā resnu knābi.
+
+        //- Te jāpielāgo jaunajam izskatam
+        br
+        span.dict_Phrase
+          span.dict_Variant Mājas z.
+          = ' '
+          span.dict_Variant Lauku z.
+          = ' '
+          span.dict_Variant Zvirbuļa sauciens skan &quot;čirp, čirp&quot;.
+          = ' '
+          span.dict_Variant Pie barotavas pulcējas zvirbuļi.
+          |  &#x25CF;
+          span.dict_Variant Zvirbuļu dzimta
+        = ' '
+        span.dict_Sense
+          span.dict_Gloss [Passeridae]
+
+      p
+        +entryHeader({ lemma: 'sudrabkļava', inflection: '', flagText: 'sieviešu dzimte, lietvārds', pronunciation: '' })
+        br
+        //- Te jāpielāgo jaunajam izskatam
+        span.dict_Sense
+          span.dict_Gloss Kļavu dzimtas 27&ndash;36 m augsts lapu koks, kura lapas līdzinās kļavu lapām ar gaišzaļu virspusi un sudrabbaltu apakšpusi [Acer saccharinum].
+
+          br
+          span.dict_Phrase
+            span.dict_Variant Sīklapu s.
+            = ' '
+            span.dict_Variant Ziedoša s.
+            = ' '
+            span.dict_Variant Stādīt sudrabkļavas.
+
+      p Aiz skaidrojuma kvadrātiekavās MLVV doti arī ķīmisko elementu simboli:
+      p
+        +entryHeader({ lemma: 'varš', inflection: '', flagText: 'vīriešu dzimte, lietvārds', pronunciation: '' })
+        br
+        span.dict_Sense
+          span.dict_Gloss Ķīmiskais elements &ndash; sarkanīgs, viegli kaļams un stiepjams metāls, kas labi vada elektrību un siltumu [Cu].
+
+      p Dažkārt šķirkļa beigās pievienoti biežāk lietotie vārdu savienojumi, kuri semantiski saistīti ar vairākām vārda nozīmēm (nozīmes niansēm) vai nav saistīti ne ar vienu no tām.
+
+      p Ir skaidrojumi, kuros dota atsauce uz citu vārdu, pie kura var atrast pilnīgāku semantisko informāciju. Šāda veida skaidrojumos uz pamatvārdu norādīts ar bultiņu (#[span.dict_Gloss &rarr;]), piem.,
+      p
+        +entryHeader({ lemma: 'kuģītis', inflection: '-ša, dsk. ģen. -šu', flagText: 'vīriešu dzimte, lietvārds', pronunciation: '' })
+        br
+        +sense({ senseNo: '1', gloss: 'Dem. &rarr; kuģis.' })
+          +subSense({ senseNo: '1.1', gloss: 'Mazs kuģis pasažieru pārvadāšanai nelielos attālumos pa upēm, ezeriem.' })
+        +sense({ senseNo: '2', gloss: 'Šujmašīnas elements, kas krusto augšējo un apakšējo diegu.' })
+
+    li
+      p Ilustratīvais materiāls.
+
+      p Piemēri skaidrojošā vārdnīcā papildina skaidrojumu, parāda, kā vārds tiek lietots kontekstā, kā tas saistās ar citiem vārdiem. MLVV piemēri (parasti vārdu savienojumu veidā) doti aiz nozīmes vai nozīmes nianses skaidrojuma. 
+        
+      p Reizumis, kad vārda semantikas atklāšanai nepieciešams plašāks konteksts, aiz aplīša (&cir;) kā piemērs dots citāts no daiļliteratūras, periodikas vai interneta materiāliem.
+
+    li
+      p Frazeoloģismi, to skaidrojums.
+
+      p Par frazeoloģismiem MLVV uzskatīti sastāva un struktūras ziņā samērā stabili vārdu savienojumi, kuros vērojams nozīmes pārnesums. Vārdnīcā frazeoloģisms ievietots pie visiem frazeoloģismu veidojošajiem patstāvīgajiem vārdiem.
+
+        // Vēl nerealizēta lieta.
+        // Pie citiem frazeoloģismā esošajiem patstāvīgajiem vārdiem dota norāde uz attiecīgo šķirkli, kurā atrodams pilns frazeoloģisma skaidrojums, piem., <span class="dict_Header"><span class="dict_Lemma">brīnums</span></span> [..] <span class="dict_StablePhrase">&#x27E1; <span class="dict_Variant">Zili brīnumi</span> – <span class="dict_Sense"> <span class="dict_Gloss">skat. zils.</span></span></span>
+      
+      p Visi šķirklī iekļautie frazeoloģismi redzami, izvēršot šķirkļa beigās redzamo sadaļu #[span.entry-collapse-heading Stabili vārdu savienojumi].
+
+    li
+      p Atvasinājumi.
+
+      p Atvasinātie lietvārdi ar izskaņu #[em -ība], #[em -ums], #[em -iens], #[em -oņa], #[em -(it)āte], #[em -šana], kas darināti no tās pašas saknes kā šķirkļa vārds, tāpat arī atbilstošie atgriezeniskie (refleksīvie) darbības vārdi, ja tiem nav no attiecīgā pamatvārda atšķirīgas nozīmes, MLVV ievietoti pie pamatvārda, bez nozīmes skaidrojuma (piem., #[span.dict_Lemma dabīgums] pie #[span.dict_Lemma dabīgs]; #[span.dict_Lemma uzstājība], #[span.dict_Lemma uzstājīgums] pie #[span.dict_Lemma uzstājīgs]; #[span.dict_Lemma dūciens], #[span.dict_Lemma dūkoņa] pie #[span.dict_Lemma dūkt]).
+
+      p Ja atvasinātajam lietvārdam vai atgriezeniskajam (refleksīvajam) darbības vārdam ir cita, no pamatvārda atšķirīga nozīme, tad šādam atvasinājumam veidots atsevišķs šķirklis, piem.:
+      p
+        +entryHeader({ lemma: 'kratīšana', inflection: '', flagText: 'sieviešu dzimte, lietvārds', pronunciation: '' })
+        +sense({ senseNo: '1', gloss: 'Darbība, process → kratīt.' })
+        +sense({ senseNo: '2', gloss: 'Izmeklēšanas darbība – personu, telpu pārmeklēšana, lai atrastu pierādījumus, kuriem ir nozīme krimināllietā.' })
+          //- Jāsakārto piemēri
+          br
+          span.dict_Phrase
+            span.dict_Variant Kratīšanas orderis.
+            span.dict_Variant Veikt kratīšanu dzīvoklī.
+
+    li
+      p Komentārs par vārda cilmi.
+
+      p Aizgūtiem vārdiem un (atsevišķos gadījumos) jaunvārdiem, kā arī pazīstamu kultūras darbinieku darinātiem vārdiem šķirkļa beigās dota norāde par attiecīgā vārda cilmi, piem., 
+      +entryHeader({ lemma: 'dadaisms' })
+      = ' [..] '
+      span.dict_Origin
+        | Cilme: no franču #[i dadaisme], kam pamatā ir #[i dada] &apos;koka zirdziņš&apos; (bērnu valodā); #[i da-da], bērna pirmās artikulētās skaņas, ko šī virziena pārstāvji uzskatīja par vistiešāko mākslas izpausmi.
+
+      br
+      +entryHeader({ lemma: 'ciedrs' })
+      = ' [..] '
+      span.dict_Origin
+        | Cilme: no grieķu #[i kedros]  &apos;tīkami smaržīgs koks&apos;.
+
+      br
+      +entryHeader({ lemma: 'mēstule' })
+      = ' [..] '
+      span.dict_Origin
+        | Cilme: pirmo reizi lietots laikrakstā &quot;Diena&quot; 2004. gada 11. oktobrī, rakstnieka Paula Bankovska rakstā. Vārds &quot;mēstule&quot; 2004. gadā atzīts par gada vārdu.
+
+      br
+      +entryHeader({ lemma: 'daba' })
+      = ' [..] '
+      span.dict_Origin
+        | Cilme: vārda mūsdienu nozīme &apos;apkārtējā vide&apos; radās 18. gs., tulkojot vācu #[i Natur]; šo nozīmi latviešu valodā ieviesa G. F. Stenders (1774. g.).
+
+    li
+      p Normatīvs vai paskaidrojošs komentārs.
+
+      p Pie atsevišķiem šķirkļiem iekļauta sadaļa Normatīvais komentārs:
+
+      ol(type='a')
+        li
+          | normatīvie komentāri ir komentāri no valodas kultūras viedokļa, tie doti gadījumos, ja ar kādu vārdu saistās kļūmes tā pareizrakstībā, pareizā izrunā vai formu lietošanā, tāpat, ja kāda vārda vietā labā, pareizā latviešu valodā ieteicams lietot citu vārdu, piem.,
+          br
+          +entryHeader({ lemma: 'hakeris' })
+          = ' [..] '
+          span.dict_Normative
+            span.dict_Comment Anglisma #[i hakeris] vietā latviešu terminoloģijas speciālisti iesaka lietot vārdu #[i urķis];
+
+          br
+          +entryHeader({ lemma: 'bandrole' })
+          = ' [..] '
+          span.dict_Normative
+            span.dict_Comment Krievu valodas ietekmē dažkārt sastopams šī vārda rakstījums ar patskani #[i e] starp līdzskaņiem #[i d] un #[i r]: #[i banderole], taču šāds rakstījums ir kļūdains;
+
+          br
+          +entryHeader({ lemma: 'bēres' })
+          = ' [..] '
+          span.dict_Normative
+            span.dict_Comment Vārds #[i bēres] ģenitīvā (#[i bēru ceremonija, bēru mielasts]) izrunājams ar šauro #[i e].
+
+          p Šajos komentāros dota arī informācija par pareizrakstības normu izmaiņām;
+        |
+        li 
+          p paskaidrojošie komentāri ietver plašāku informāciju par vārdu un tā lietojumu, tie doti, piem., pie jaunvārdiem:
+          +entryHeader({ lemma: 'fotopašportrets' })
+          = ' [..] '
+          span.dict_Normative
+            span.dict_Comment Latviešu valodas ekspertu komisija 2014. gada 8. janvārī lēmusi, ka latviešu valodā šī jēdziena apzīmēšanai oficiālā saziņā lietojams termins #[i fotopašportrets], bet sarunvalodā &ndash; arī #[i pašfoto].
+            
+          p Šādi komentāri doti arī pie vārdiem, kuru lietojumā vērojamas problēmsituācijas, piem.,
+          +entryHeader({ lemma: 'dabisks' })
+          = ' [..] '
+          span.dict_Normative
+            span.dict_Comment Lai gan ir mēģināts nošķirt īpašības vārdus #[i dabīgs] un #[i dabisks], norādot, ka adjektīvi ar - #[i īgs], -#[i īga] vairāk lietojami īpašības, līdzīguma nozīmē, bet atvasinājumi ar -#[i isks], -#[i iska] &ndash; atbilstības, piemērotības nozīmē, tomēr praktiskajā lietojumā šīs gramatiski semantiskās nianses netiek ievērotas. Atšķiras vienīgi lietojuma biežums &ndash; adjektīvus #[i dabisks, dabiska] un to formas latviešu valodā lieto biežāk.

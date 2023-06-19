@@ -1,0 +1,132 @@
+mixin only(d)
+  if typeof d === 'string' && dict === d || Array.isArray(d) && d.includes(dict)
+    block
+
+mixin except(d)
+  if typeof d === 'string' && dict !== d || Array.isArray(d) && !d.includes(dict)
+    block
+
+mixin print(abc)
+  p= abc
+
+mixin if_public
+  if app_mode === APP_MODE.PUBLIC
+    block
+
+mixin if_not_public
+  if app_mode !== APP_MODE.PUBLIC
+    block
+
+mixin if_editor
+  if SHOW_EDITOR
+    block
+
+mixin if_editor_or(cond)
+  if SHOW_EDITOR && cond
+    block
+
+mixin if_not_editor
+  if !SHOW_EDITOR
+    block
+
+mixin if_editing
+  +if_editor
+    template(v-if="this.editing")
+      block
+
+mixin print_dictstats()
+  if dictstats
+    if dictstats.release
+      .infoTitle
+        //- span.infoVers MLVV priekšskats
+        //- {"release":"Ziemas versija","year":2020,"credits":"Red. Dr. philol. I. Zuicena, Dr. philol. A. Roze","entriesStr":"","synonymsStr":"","load_date":"2020.01.8.","input_file":"mlvv-2019-09-26.json","dictionary":"mlvv","initial_counts":{"senses":89301,"entries":62792,"lexemes":75728,"examples":161480,"entry_rels":9011,"sense_rels":0,"source_links":0,"sense_entry_rels":7898}}2020
+
+        span.infoVers #{dictstats.release}
+        //- | 2017
+        if dictstats.year
+          = ' '
+          span= dictstats.year
+    if dictstats.cornertitle
+      .infoTitle
+        span.infoVers #{dictstats.cornertitle}
+    if dictstats.credits
+      .infoMore
+        span.infoEmph #{dictstats.credits}
+        //- span.infoEmph Red. Dr. philol. I. Zuicena, Dr. philol. A. Roze
+        //- span.infoEmph #{dictstats.credits}
+    //- +except('tezaurs')
+      if dictstats.input_file
+        .infoMore
+          span.infoEmph Dati: #{dictstats.input_file}
+      if dictstats.load_date
+        .infoMore
+          span.infoEmph Datu ielāde: #{dictstats.load_date}
+    //- +only('tezaurs')
+    +if_public
+      if dictstats.entriesStr
+        .infoMore
+          span.infoEmph !{dictstats.entriesStr}
+      if dictstats.synonymsStr
+        .infoMore
+          span.infoEmph !{dictstats.synonymsStr}
+      if dictstats.wordsStr
+        .infoMore
+          span.infoEmph !{dictstats.wordsStr}
+      if dictstats.mwesStr
+        .infoMore
+          span.infoEmph !{dictstats.mwesStr}
+    +if_not_public
+      if dictstats.dbname
+        .infoMore
+          span.infoEmph Datubāze: #{dictstats.dbname}
+
+mixin print_buildinfo()
+  if buildinfo
+    if buildinfo.buildtime
+      .infoMore
+        span.infoEmph(title=`Git: ${buildinfo.gitcommitinfo}`) Lietotne: #{buildinfo.buildtime}
+    //- if buildinfo.gitcommitinfo
+      .infoMore
+        span.infoEmph Git: #{buildinfo.gitcommitinfo}
+
+mixin google_analytics(id)
+  +if_public
+    //- <!-- Google tag (gtag.js) -->
+    script(src=`https://www.googletagmanager.com/gtag/js?id=${id}`, async)
+    script.
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '#{id}');
+
+//- +if_editor
+  include editor
+
+mixin logo_books(color1)
+  linearGradient#gradient
+    stop.begin(offset="0%" stop-color=color1)
+    stop.end(offset="100%" stop-color="white")
+  each x0 in [0, 30, 60, 90, 120, 150, 180, 210, 240, 270]
+    rect(x=x0 y="0" width="20" height="100" style="fill:url(#gradient); stroke: '#004085'")
+  //- rect(x="0" y="0" width="100" height="100" style="fill:url(#gradient)")
+  //- circle(cx="50" cy="50" r="30" style="fill:url(#gradient)")
+
+mixin logo_letters(text, start)
+  text(fill='#004085' font-size="90" font-family="Verdana" x=start y="80")= `[${text}]:`
+  //- rect(x="0" y="0" width="100" height="100" style="fill:url(#gradient)")
+
+mixin logo_small()
+  svg(viewbox="0 0 200 100" preserveAspectRatio="xMidYMid slice" role="img" width="90" height="40")
+    //- +logo_books('#004085')
+    +logo_letters('LTG', 0)
+
+mixin logo_large()
+  svg(viewbox="0 0 600 100" preserveAspectRatio="xMidYMid slice" role="img" width="240" height="40")
+    +logo_books('#004085')
+    +logo_letters('LTG', 300)
+
+mixin header_logo()
+  .header-logo-small
+    +logo_small()
+  .header-logo-large
+    +logo_large()

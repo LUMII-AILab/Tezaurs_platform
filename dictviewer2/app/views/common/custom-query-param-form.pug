@@ -1,0 +1,34 @@
+extends layout
+
+block append header_scripts
+  style.
+    .field-block {
+      padding-bottom: 1em;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+    }
+    label::after {
+      content: ":"
+    }
+    input.form-submit[type='submit'] {
+      margin-top: 1em;
+      padding: 0.5em;
+    }
+
+block content
+  h1 #{paramForm.title || 'Ievadiet vaicājuma parametrus'}
+
+  form(action=`./${targetQuery}` method='POST')
+    each paramField in paramForm.fields
+      .field
+        label(for=paramField.name)= paramField.label
+        if paramField.type === 'select'
+          select(id=paramField.name name=paramField.name)
+            option(value='') ( izvēlieties vērtību )
+            each v in paramField.values
+              option(value=v.val) !{v.caption}
+
+    div 
+      input.form-submit(type='submit' value='Nosūtīt')

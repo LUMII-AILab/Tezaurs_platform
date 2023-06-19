@@ -1,0 +1,121 @@
+mixin editEntry(entry)
+  +if_editing
+    b-button-group(size="sm")
+      entry-form(idata=entry title="Rediģēt šķirkli")
+      b-dropdown(size="sm" variant="primary")
+        lexeme-form(idata="{}" entry_id=entry.id dropdown="true" title="Pievienot leksēmu") Pievienot leksēmu
+        sense-form(idata="{}" entry_id=entry.id dropdown="true" title="Pievienot nozīmi") Pievienot nozīmi
+        entry-relation-form(entry_id=entry.id :type_id="3" :entry_type_id="4" dropdown="true" title="Pievienot saiti uz stabilu vārdu savienojumu") Pievienot saiti uz stabilu vārdu savienojumu
+        +only('tezaurs')
+          entry-relation-form(entry_id=entry.id :type_id="1" :entry_type_id="1" dropdown="true" title="Pievienot saiti uz atvasinājumu") Pievienot saiti uz morfoloģisko atvasinājumu
+          entry-relation-form(entry_id=entry.id :type_id="4" :entry_type_id="1" dropdown="true" title="Pievienot saiti uz saistītu šķirkli") Pievienot saiti uz saistītu šķirkli
+        //- entry-relation-form(entry_id=entry.id :entry_type_id=entry.type_id :merge_form="true" dropdown="true" title="Pievienot šo šķirkli citam" v-if="this.$SHOW_DEBUG") Pievienot šo šķirkli citam šķirklim
+        entry-relation-form(entry_id=entry.id :entry_type_id=entry.type_id :merge_form="true" dropdown="true" title="Pievienot šo šķirkli citam") Pievienot šo šķirkli citam šķirklim
+        //entry-relation-form(entry_id=entry.id type_id="3" dropdown="true" title="Pievienot piemēru") Pievienot piemēru // TODO: deprecated?
+        +only(['tezaurs','ltg'])
+          source-form(idata="{}" entry_id=entry.id dropdown="true" title="Pievienot šķirkļa avotu") Pievienot šķirkļa avotu
+        safe-delete-confirm(url=`/api/entries/${entry.id}` dropdown="true" title=`Dzēst šķirkli "${entry.heading}"?`) Dzēst šķirkli
+
+mixin editLexeme(entry, lexeme, index)
+  +if_editing
+    b-button-group(size="sm")
+      lexeme-form(idata={...lexeme, entry_lexeme_count: entry.lexemes.length} entry_id=entry.id title="Rediģēt leksēmu")
+      b-dropdown(size="sm" variant="warning")
+        move-form(entity='lexemes' :entity_id=lexeme.id :context_id=entry.id :max=entry.lexemes.length :initial_position=index dropdown="true" title="Pārvietot leksēmu") Pārvietot leksēmu
+        +only(['tezaurs','ltg'])
+          source-form(idata="{}" entry_id=entry.id lexeme_id=lexeme.id dropdown="true" title="Pievienot leksēmas avotu") Pievienot leksēmas avotu
+        lexeme-form(idata={...lexeme, hidden: true, id: undefined, primary: false} entry_id=entry.id title="Pavairot leksēmu" dropdown="true") Pavairot leksēmu
+        delete-confirm(url=`/api/entries/${entry.id}/lexemes/${lexeme.id}` title=`Dzēst leksēmu "${lexeme.lemma}"?` dropdown="true") Dzēst leksēmu
+
+mixin editSense(entry, s, index)
+  +if_editing
+    b-button-group(size="sm" variant="success")
+      sense-relation-form(:sense=s :dropdown="false" title="Sinonīmu kopa" :loaded-synset=s.synset_id ? entry.synsets[s.synset_id.toString()] : null) Sinonīmu kopa
+      sense-form(idata=s entry_id=entry.id title="Rediģēt nozīmi")
+      b-dropdown(size="sm" variant="success")
+        sense-form(idata="{}" entry_id=entry.id sense_id=s.id dropdown="true" title="Pievienot apakšnozīmi") Pievienot apakšnozīmi
+        example-form(idata="{}" entry_id=entry.id sense_id=s.id dropdown="true" title="Pievienot piemēru") Pievienot piemēru
+        mwe-link-form(entry_id=entry.id sense_id=s.id dropdown="true" title="Pievienot saiti uz stabilu vārdu savienojumu") Pievienot saiti uz stabilu vārdu savienojumu
+        move-form(entity='senses' :entity_id=s.id :context_id=entry.id :max=entry.senses.length :initial_position=(index + 1) dropdown="true" title="Pārvietot nozīmi") Pārvietot nozīmi
+        move-form(entity='senses' :entity_id=s.id :context_id=entry.id :max=entry.senses.length :initial_position=0 dropdown="true" :change_parent="true" title="Pārvietot nozīmi zem citas nozīmes") Pārvietot nozīmi zem citas nozīmes
+        +only(['tezaurs','ltg'])
+          source-form(idata="{}" entry_id=entry.id sense_id=s.id dropdown="true" title="Pievienot nozīmes avotu") Pievienot nozīmes avotu
+        safe-delete-confirm(url=`/api/entries/${entry.id}/senses/${s.id}` title=`Dzēst nozīmi "${s.gloss}"?` dropdown="true" description=(s.subSenses && s.subSenses.flatMap(s => s.examples || []).length > 0 || s.examples.length > 0) ? 'Brīdinājums! Nozīmei vai tās apakšnozīmēm ir piemēri.' : '') Dzēst nozīmi
+
+mixin editSubsense(entry, s, ss, index)
+  +if_editing
+    b-button-group(size="sm")
+      sense-relation-form(:sense=ss :dropdown="false" title="Sinonīmu kopa" :loaded-synset=ss.synset_id ? entry.synsets[ss.synset_id.toString()] : null) Sinonīmu kopa
+      sense-form(idata=ss entry_id=entry.id sense_id=s.id title="Rediģēt apakšnozīmi")
+      b-dropdown(size="sm" variant="success")
+        example-form(idata="{}" entry_id=entry.id sense_id=ss.id dropdown="true" title="Pievienot piemēru") Pievienot piemēru
+        mwe-link-form(entry_id=entry.id sense_id=ss.id dropdown="true" title="Pievienot saiti uz stabilu vārdu savienojumu") Pievienot saiti uz stabilu vārdu savienojumu
+        move-form(entity='sub_senses' :entity_id=ss.id :context_id=s.id :max=s.subSenses.length :initial_position=(index + 1) dropdown="true" title="Pārvietot apakšnozīmi") Pārvietot apakšnozīmi
+        move-form(entity='senses' :entity_id=ss.id :context_id=entry.id :max=entry.senses.length :initial_position=(s.order_no) dropdown="true" :change_parent="true" title="Pārvietot apakšnozīmi zem citas nozīmes") Pārvietot apakšnozīmi zem citas nozīmes
+        move-form(entity='senses' :entity_id=ss.id :context_id=entry.id :max=entry.senses.length :initial_position=0 dropdown="true" :change_parent="true" :hide_input="true" title="Pārvietot apakšnozīmi par patstāvīgu nozīmi") Pārvietot apakšnozīmi par patstāvīgu nozīmi
+        +only(['tezaurs','ltg'])
+          source-form(idata="{}" entry_id=entry.id sense_id=ss.id dropdown="true" title="Pievienot apakšnozīmes avotu") Pievienot apakšnozīmes avotu
+        safe-delete-confirm(url=`/api/entries/${entry.id}/senses/${s.id}/senses/${ss.id}` title=`Dzēst apakšnozīmi "${ss.gloss}"?` dropdown="true" description=ss.examples.length > 0 ? 'Brīdinājums! Apakšnozīmei ir piemēri.' : '') Dzēst apakšnozīmi
+
+
+mixin editSenseExample(sense, ex, index)
+  +if_editing
+    b-button-group(size="sm")
+      example-form(idata=ex entry_id=sense.entry_id sense_id=sense.id title="Rediģēt piemēru")
+      b-dropdown(size="sm" variant="info")
+        move-form(entity='sense_examples' :entity_id=ex.id :context_id=sense.id :max=sense.examples.length :initial_position=(index + 1) dropdown="true" title="Pārvietot piemēru") Pārvietot piemēru
+        b-dropdown-item-button(size="sm" modal="changeParentForm" @click="openModal" data={sense_id: sense.id, relation: ex, entity: 'examples'}) Pārcelt piemēru pie citas nozīmes
+        delete-confirm(url=`/api/entries/${sense.entry_id}/senses/${sense.id}/examples/${ex.id}` title=`Dzēst piemēru "${ex.content}"?` dropdown="true") Dzēst piemēru
+
+mixin editEntryMWELink(rel, entry_id)
+  +if_editing
+    b-button-group(size="sm")
+      if rel.entry.type_id === 4
+        delete-confirm(url=`/api/entry_relations/${rel.rel_id}` title=`Dzēst saiti uz stabilu vārdu savienojumu "${rel.entry.heading}"?`): i.fas.fa-unlink
+      b-dropdown(size="sm" variant="danger")
+        b-dropdown-item-button(size="sm" modal="changeParentForm" @click="openModal" data={
+          relation: rel.entry,
+          entity: 'entry_mwe_link'
+        }) Pārcelt stabilu vārdu savienojumu
+
+mixin editSenseMWELink(sense, mwe)
+  +if_editing
+    b-button-group(size="sm")
+      delete-confirm(url=`/api/entries/${sense.entry_id}/senses/${sense.id}/sense_mwe_link/${mwe.id}` title=`Dzēst saiti uz stabilu vārdu savienojumu "${mwe.heading}"?`): i.fas.fa-unlink
+      b-dropdown(size="sm" variant="danger")
+        b-dropdown-item-button(size="sm" modal="changeParentForm" @click="openModal" data={
+          sense_id: sense.id,
+          relation: mwe,
+          entity: 'sense_mwe_link'
+        }) Pārcelt stabilu vārdu savienojumu
+
+mixin editSourceLink(entry, lexeme_id, sense_id, src, index)
+  +if_editing
+    b-button-group(size="sm")
+      source-form(idata=src entry_id=entry.id lexeme_id=lexeme_id sense_id=sense_id title="Rediģēt avotsaiti")
+      b-dropdown(size="sm" variant="secondary")
+        move-form(entity='sources' :entity_id=src.id :context_id=entry.id :max=entry.sources.length :initial_position=(index + 1) dropdown="true" title="Pārvietot avotu") Mainīt avotu secību
+        delete-confirm(url=`/api/entries/${entry.id}/sources/${src.id}` title=`Dzēst saiti uz avotu "${src.abbr}"?` dropdown="true") Dzēst saiti uz avotu
+
+mixin modals(entry)
+  +if_editing
+    change-parent-form(:entry_id=entry.id :senses=entry.senses)
+    //wordnet-graph-modal
+
+mixin collapseEditor(containerId, heading="", info="", groupTag="", large=false, name="", id=null)
+  div
+    .entry-collapse-toggle(
+    @click=`${name}.individual[${id}] = !visibleExamples.individual[${id}]`
+    role="button"
+    id=`${containerId}-container-expand`
+    :class=`!${name}.individual[${id}] ? '' : 'open'`
+    )
+      i.fas.entry-collapse-icon(:class=`${name}.individual[${id}] ? 'fa-angle-up' : 'fa-angle-down'`)
+      if heading
+        span.entry-collapse-heading(class=large ? "large" : "") #{heading}
+      if info
+        i.entry-collapse-info(v-if=`!${name}.individual[${id}]`) !{info}
+
+    b-collapse.entry-collapse-container(v-model=`${name}.individual[${id}]`)
+      if block
+        block

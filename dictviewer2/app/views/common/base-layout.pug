@@ -1,0 +1,259 @@
+include includes/common-mixins
+
+doctype html
+html(lang='lv')
+  head
+    meta(charset='utf-8')
+
+    if entryDescription
+      meta(name='description', content=entryDescription)
+    else
+      +only('tezaurs')
+        meta(name='description', content='Skaidrojošā un sinonīmu vārdnīca: vairāk nekā 385 000 šķirkļu.')
+        meta(name='keywords', content='vārdnīca, skaidrojošā vārdnīca, sinonīmu vārdnīca, tēzaurs, sinonīmi, vārdi, vietvārdi, apvidvārdi, latviešu, valoda, morfoloģija, Latvian, lexicon, vocabulary, dictionary, thesaurus, morphology')
+      +only('mlvv')
+        meta(name='description', content='Mūsdienu latviešu valodas vārdnīca: vairāk nekā 45 000 šķirkļu.')
+        meta(name='keywords', content='vārdnīca, latviešu, valoda, mūsdienu, Latvian, lexicon, vocabulary, dictionary, contemporary')
+      +only('llvv')
+        meta(name='description', content='Latviešu literārās valodas vārdnīca: vairāk nekā 60 000 šķirkļu.')
+        meta(name='keywords', content='vārdnīca, latviešu, valoda, literārā valoda, Latvian, lexicon, vocabulary, dictionary, standard language')
+      +only('ltg')
+        meta(name='description', content='Latgalīšu volūdys vuordineica.')
+        meta(name='keywords', content='vārdnīca, vuordineica, latgaliešu, latgalīšu, valoda, volūda, Latgalian, vocabulary, dictionary')
+
+
+    meta(name='viewport' content='width=device-width, initial-scale=1')
+
+    link(rel='preconnect' href='//unpkg.com')
+    link(rel='preconnect' href='//use.fontawesome.com')
+    link(rel='preconnect' href='//fonts.googleapis.com')
+
+    if titlePrefix
+      //- title #{titlePrefix} | Tēzaurs
+      title #{titlePrefix} | #{themeinfo.title}
+    else
+      title #{themeinfo.title}
+      //- title Tēzaurs
+
+    link(href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,400,600,300&subset=latin,latin-ext', rel='stylesheet', type='text/css')
+
+    link(rel="stylesheet" href="//use.fontawesome.com/releases/v5.9.0/css/all.css" integrity="sha384-i1LQnF23gykqWXg6jxC2ZbCbUMxyw5gLZY6UiUS98LYV5unm8GWmfkIS6jqJfb4E" crossorigin="anonymous")
+
+    link(href='/styles/layout.css', rel='stylesheet', type='text/css')
+    link(href='/styles/theme.css', rel='stylesheet', type='text/css')
+    link(href='/styles/dict.css', rel='stylesheet', type='text/css')
+    link(href='/styles/jsonstyle.css', rel='stylesheet', type='text/css')
+    link(href='/styles/style.css', rel='stylesheet', type='text/css')
+    link(href='/styles/display.css', rel='stylesheet', type='text/css')
+
+    +only('tezaurs')
+      link(href='/styles/tezaurs-overrides.css', rel='stylesheet', type='text/css')
+    +only('mlvv')
+      link(href='/styles/mlvv-overrides.css', rel='stylesheet', type='text/css')
+    +only('llvv')
+      link(href='/styles/llvv-overrides.css', rel='stylesheet', type='text/css')
+    +only('ltg')
+      link(href='/styles/ltg-overrides.css', rel='stylesheet', type='text/css')
+
+    +only('tezaurs')
+      +if_public
+        link(rel='shortcut icon', href='/img/tezaurs/favicon-32x32-green.png')
+        link(rel='icon', type='image/png', sizes='32x32', href='/img/tezaurs/favicon-32x32-green.png')
+      +if_not_public
+        link(rel='shortcut icon', href='/img/tezaurs/favicon-32x32-red.png')
+        link(rel='icon', type='image/png', sizes='32x32', href='/img/tezaurs/favicon-32x32-red.png')
+
+      link(rel='icon', type='image/png', sizes='144x144', href='/img/tezaurs/favicon-144x144.png')
+      link(rel='icon', type='image/png', sizes='192x192', href='/img/tezaurs/favicon-192x192.png')
+      link(rel='apple-touch-icon', href='/img/tezaurs/favicon-144x144.png')
+      link(rel='apple-touch-icon', sizes='144x144', href='/img/tezaurs/favicon-144x144.png')
+      link(rel='apple-touch-icon', sizes='192x192', href='/img/tezaurs/favicon-192x192.png')
+
+    +only('mlvv')
+      link(rel='shortcut icon', href='/img/mlvv/favicon-32x32.png')
+      link(rel='icon', type='image/png', sizes='32x32', href='/img/mlvv/favicon-32x32.png')
+      link(rel='icon', type='image/png', sizes='144x144', href='/img/mlvv/favicon-144x144.png')
+      link(rel='icon', type='image/png', sizes='192x192', href='/img/mlvv/favicon-192x192.png')
+      link(rel='apple-touch-icon', href='/img/mlvv/favicon-144x144.png')
+      link(rel='apple-touch-icon', sizes='144x144', href='/img/mlvv/favicon-144x144.png')
+      link(rel='apple-touch-icon', sizes='192x192', href='/img/mlvv/favicon-192x192.png')
+
+    +only('llvv')
+      link(rel='shortcut icon', href='/img/llvv/favicon-32x32.png')
+      link(rel='icon', type='image/png', sizes='32x32', href='/img/llvv/favicon-32x32.png')
+      link(rel='icon', type='image/png', sizes='144x144', href='/img/llvv/favicon-144x144.png')
+      link(rel='icon', type='image/png', sizes='192x192', href='/img/llvv/favicon-192x192.png')
+      link(rel='apple-touch-icon', href='/img/llvv/favicon-144x144.png')
+      link(rel='apple-touch-icon', sizes='144x144', href='/img/llvv/favicon-144x144.png')
+      link(rel='apple-touch-icon', sizes='192x192', href='/img/llvv/favicon-192x192.png')
+
+    +only('ltg')
+      link(rel='shortcut icon', href='/img/ltg/favicon-32x32.png')
+      link(rel='icon', type='image/png', sizes='16x16', href='/img/ltg/favicon-16x16.png')
+      link(rel='icon', type='image/png', sizes='32x32', href='/img/ltg/favicon-32x32.png')
+      //- link(rel='icon', type='image/png', sizes='144x144', href='/img/ltg/favicon-144x144.png')
+      link(rel='icon', type='image/png', sizes='192x192', href='/img/ltg/favicon-192x192.png')
+      link(rel='apple-touch-icon', href='/img/ltg/apple-touch-icon.png')
+      //- link(rel='apple-touch-icon', sizes='144x144', href='/img/ltg/favicon-144x144.png')
+      link(rel='apple-touch-icon', sizes='192x192', href='/img/ltg/favicon-192x192.png')
+
+    script.
+      //- Redirect old version links, should be executed as soon as possible
+      if (window.location.href.includes("/#/sv/?")) {
+        window.location.href = window.location.href.replace("/#/sv/?", "/")
+      } else if (window.location.href.includes("/#/sv/")) {
+        window.location.href = window.location.href.replace("/#/sv", "")
+      }
+
+    //- script(src='//ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js')
+    //- script(src='/js/lib/jquery-3.5.1.min.js')
+    script(src='/js/lib/jquery-3.6.0.min.js')
+    //- script(src='/js/lib/jquery.address.min.js')
+    script(src='/js/lib/modernizr.custom.js')
+    //- script(src="//unpkg.com/@popperjs/core@2")
+    //- script(src="https://unpkg.com/@popperjs/core@2.5.4/dist/umd/popper.min.js")
+    script(src="/js/lib/popper.min.js")
+    //- script(src="//unpkg.com/tippy.js@6")
+    //- script(src="https://unpkg.com/tippy.js@6.2.7/dist/tippy-bundle.umd.min.js")
+    script(src="/js/lib/tippy-bundle.umd.min.js")
+
+    //- +google_analytics('UA-2563945-2')
+
+
+    +if_public
+      +only('tezaurs')
+        +google_analytics('G-18XW21Q67Z')
+      +only('mlvv')
+        +google_analytics('G-DD8XE2Q8X3')
+      +only('llvv')
+        +google_analytics('G-F455THSDBJ')
+      //- +only('ltg')
+        +google_analytics('G-...') // TODO
+
+      script.
+        window.DICT="#{dict}"
+
+    script(src='/js/tezplus.js')
+
+    +if_editor
+      include includes/editor-header-scripts
+
+    block header_scripts
+
+  body(class=`dict dict-${dict} app-mode-${app_mode_name} ${SHOW_EDITOR?'show-editor':''}`)
+    #gridcontainer
+      header#header
+        #header-logo
+          a#logo-link(href='/')
+            +only('tezaurs')
+                img#Tezaurs_SVG.header-logo-large(src='/img/tezaurs/Tezaurs.svg', width='325', height='55', alt='Tēzaurs')
+                img#Tezaurs_SVG_small.header-logo-small(src='/img/tezaurs/Tezaurs-small.svg', width='55', height='55', alt='Tēzaurs')
+            +only('mlvv')
+                img#MLVV_SVG.header-logo-large(src='/img/mlvv/MLVV.svg', width='325', height='55', alt='Mūsdienu latviešu valodas vārdnīca')
+                img#MLVV_SVG_small.header-logo-small(src='/img/mlvv/MLVV-small.svg', width='100%', height='100%', alt='Mūsdienu latviešu valodas vārdnīca')
+            +only('llvv')
+                img#LLVV_SVG.header-logo-large(src='/img/llvv/LLVV.svg', width='325', height='55', alt='Latviešu literārās valodas vārdnīca')
+                img#LLVV_SVG_small.header-logo-small(src='/img/llvv/LLVV-small.svg', width='100%', height='100%', alt='Latviešu literārās valodas vārdnīca')
+            +only('ltg')
+              +header_logo()
+              //- img#LTG_SVG.header-logo-large(src='/img/ltg/MLVV.svg', width='325', height='55', alt='Latgalīšu volūdys vuordineica')
+              //- img#LTG_SVG_small.header-logo-small(src='/img/ltg/MLVV-small.svg', width='100%', height='100%', alt='Latgalīšu volūdys vuordineica')
+
+        .header-search.js-only
+          form#searchForm.form-search
+            .form-search-wrapper
+              .form-search-field-wrapper
+                input#searchField.form-search-field(type="text", autocapitalize="none", autocorrect="off", autocomplete="off", name="w", placeholder="vārds vai frāze")
+                img#keyboard_SVG.form-search-keyboard.img-hover.hide-on-mobile(src="/img/keyboard.svg", width="29", height="20", alt="Ekrāna tastatūra")
+              input.form-search-submit(type="submit", value="")
+              //- input.form-search-submit(type="submit", value="")
+
+          #keyboard
+            .key(data-letter="ā") Ā
+            .key(data-letter="č") Č
+            .key(data-letter="ē") Ē
+            .key(data-letter="ģ") Ģ
+            .key(data-letter="ī") Ī
+            .key(data-letter="ķ") Ķ
+            .key(data-letter="ļ") Ļ
+            .key(data-letter="ņ") Ņ
+            .key(data-letter="ō") Ō
+            .key(data-letter="ŗ") Ŗ
+            .key(data-letter="š") Š
+            .key(data-letter="ū") Ū
+            .key(data-letter="ž") Ž
+
+        noscript
+          .header-search
+            .noscript-warning
+              | Jūsu pārlūkprogrammai ir atslēgts <i>JavaScript</i> atbalsts, kas nepieciešams <i>Tēzaurs.lv</i> pilnvērtīgai darbībai (t.sk. locījumu tabulu un korpusa piemēru demonstrēšanai), tāpēc Jums tiek piedāvāta <i>Tēzaurs.lv</i> vienkāršota versija.
+              | Instrukcija, kā ieslēgt <i>JavaScript</i>, ir atrodama <a href="//www.enable-javascript.com/" target="_blank">šeit</a>.
+
+            form#searchForm_alt.form-search(action="/_nojs" style="margin-bottom: 36px")
+              .form-search-wrapper
+                .form-search-field-wrapper
+                  input.form-search-field(type="text", autocapitalize="none", autocorrect="off", autocomplete="off", name="w", placeholder="vārds vai frāze")
+                input.form-search-submit(type="submit", value="")
+
+
+      #ne-corner
+        +if_not_public
+          if user
+            .username-block Pieslēdzies kā #[span.username #{user.login}]
+              i.fas.fa-sign-out-alt.logout(title="atslēgties" onclick="var p = window.location.protocol + '//'; window.location = window.location.href.replace(p, p + 'logoutme:password@');")
+
+        //- .info-block
+          if dict==='mlvv' && !debug
+            p.achtung-achtung Darba versija
+          else
+            +print_dictstats
+            +if_not_public
+              +print_buildinfo
+
+        .info-block
+          +print_dictstats
+          +if_not_public
+            +print_buildinfo
+            p.achtung-achtung Darba versija
+
+      block page
+
+      footer#footer
+        //- include footer
+        case dict
+          when 'tezaurs'
+            include ../tezaurs/footer
+          when 'mlvv'
+            include ../mlvv/footer
+          when 'llvv'
+            include ../llvv/footer
+          when 'ltg'
+            include ../ltg/footer
+          default
+            include footer
+
+
+    +if_editor
+      include includes/editor-footer-scripts
+
+    block footer_scripts
+
+  //- script.
+    document.getElementById('js-only').style.visibility = 'visible';
+    for (const e of document.getElementsByClassName('js-only')) {
+      e.style.visibility = 'visible';
+    }
+
+  //- script.
+    // sagatavojam tooltip-us (avoti etc.)
+    $(".tooltip").tooltipster({
+              contentAsHTML: true,
+              interactive: true,
+              //- position: "right",
+              position: "bottom",
+              //- theme: 'tooltipster-light',
+              theme: 'tooltipster-shadow',
+              plugins: ['tooltipster.sideTip', 'laa.scrollableTip'],
+              //- debug: false,
+          })
+

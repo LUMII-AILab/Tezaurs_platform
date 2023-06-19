@@ -1,0 +1,57 @@
+:root {
+  --first-color: #9b81cf;
+  --first-color-dark: #392b58;
+  --first-color-dark-dimmed: #413855;
+  --dark-color: #392b58;
+  --first-color-lite: #f3eff9;
+  --accent-color: #f3eff9;
+}
+
+.infoVers {
+    white-space: nowrap;
+    color: #8464c1;
+}
+
+.form-search-field-wrapper,
+.form-search-submit,
+.twitter-button,
+.feedback-button,
+.feedback-text {
+  border-color: #9B81CF;
+}
+
+.form-search-field {
+  border:none;
+}
+
+.form-search-submit {
+  background-color: #9B81CF;
+}
+
+.form-search-submit:focus,
+.form-search-submit:hover {
+  border-color: #AA93D6;
+  background-color:#AA93D6;
+}
+
+.wordList {
+  color: #212121;
+  background-color: #F3EFF9;
+  border-color: #9B81CF;
+}
+
+.listBox {
+  border-color: #9B81CF;
+}
+
+.side-button.primary {
+  background-color: #4C50AF;
+}
+
+.side-button.secondary {
+  background-color: rgba(76, 79, 175, 0.5);
+}
+
+.side-button.tertiary {
+  background-color: #9B81CF;
+}

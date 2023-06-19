@@ -1,0 +1,10 @@
+extends ../../common/wide-layout
+
+block content
+  div.mx-5
+    div.container
+      a(href='/_/wordnet/potential_links')
+        b-button(variant="outline-secondary") → Atbildēt
+      hr
+  div.ml-5.mr-5
+    potential-link-answers(:answers=answers)

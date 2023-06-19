@@ -1,0 +1,386 @@
+script.
+  function removeNulls(o) {
+    return typeof(o) !== 'object' && o != null ? o :
+            Array.isArray(o) ? o.map(e => removeNulls(e)) : Object.fromEntries(Object.entries(o)
+              .filter(([k, v]) => v !== null)
+              .map(([k, v]) => [k, removeNulls(v)]))
+  }
+
+  function extendDefault(defaultValue, value) {
+    return $.extend(true, {}, defaultValue, removeNulls(value))
+  }
+
+  function submitForm(context, method, url, modalId, {onSuccess, withoutToast}={}) {
+    console.log('submitForm', method, url, context.data)
+    context.submitting = true
+    axios.request({method, url, data: context.data})
+      .then(function (r) {
+        console.log('submitForm response', r);
+        if (r.data.error) {
+          context.error = r.data.error;
+        } else {
+          context.$nextTick(() => context.$bvModal.hide(modalId));
+          if (!withoutToast) context.$bvToast.toast(r.data.message || 'Success', {variant: 'success'})
+          if (onSuccess) {
+            onSuccess(r.data);
+          } else {
+            entryContent.onSubmit(context);
+            context.setLoading(true);
+          }
+        }
+      })
+      .catch(e => context.$bvModal.msgBoxOk(`${new Date().toISOString()} ${method} ${url}\n${e}`, {title: 'Kļūda', bodyTextVariant: 'danger'}))
+      .finally(() => context.submitting = false)
+  }
+
+  function uuid() {
+    var dt = new Date().getTime();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = (dt + Math.random() * 16) % 16 | 0;
+      dt = Math.floor(dt / 16);
+      return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+  }
+
+  const Fragment = {
+    install(Vue) {
+      // install the teleporter
+      Vue.directive('fragment', {
+        inserted(element) {
+          const fragment = document.createDocumentFragment();
+          Array.from(element.childNodes).forEach(child => fragment.appendChild(child));
+          element.parentNode.insertBefore(fragment, element);
+          element.parentNode.removeChild(element);
+        }
+      })
+      Vue.component('vue-fragment', {
+        template: `<div v-fragment><slot /></div>`
+      })
+    }
+  }
+  Vue.use(Fragment);
+
+  Vue.component('div-hidden', {
+    props: { showHidden: Boolean, hidden: Boolean },
+    template: '<div v-if="!hidden || showHidden"><slot></slot></div>'
+  })
+
+  var modalFormSaveShortcut = {
+    mounted() {
+      const saveListener = (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+          e.preventDefault();
+          this.submit(e, true); // true is important for entry form to open newly crated entry after submit
+        }
+      }
+      this.$root.$on('bv::modal::shown', (bvEvent, modalId) => {
+        if (modalId === this.id) {
+          document.addEventListener('keydown', saveListener);
+        }
+      })
+      this.$root.$on('bv::modal::hidden', (bvEvent, modalId) => {
+        if (modalId === this.id) {
+          document.removeEventListener('keydown', saveListener);
+        }
+      })
+    }
+  };
+
+  var App = Object.freeze({
+    mixins: {
+      modalFormSaveShortcut,
+    }
+  });
+
+  Vue.component('v-select', VueSelect.VueSelect);
+  httpVueLoader.register(Vue, '/components/lexeme-form.vue');
+  httpVueLoader.register(Vue, '/components/entry-form.vue');
+  httpVueLoader.register(Vue, '/components/sense-form.vue');
+  httpVueLoader.register(Vue, '/components/example-form.vue');
+  httpVueLoader.register(Vue, '/components/example-toggle.vue');
+  httpVueLoader.register(Vue, '/components/mwe-link-form.vue');
+  httpVueLoader.register(Vue, '/components/entry-relation-form.vue');
+  httpVueLoader.register(Vue, '/components/flag-input.vue');
+  httpVueLoader.register(Vue, '/components/restrictions-input.vue');
+  httpVueLoader.register(Vue, '/components/restrictions-item-input.vue');
+  httpVueLoader.register(Vue, '/components/delete-confirm.vue');
+  httpVueLoader.register(Vue, '/components/safe-delete-confirm.vue');
+  httpVueLoader.register(Vue, '/components/entry-link-input.vue');
+  httpVueLoader.register(Vue, '/components/array-input.vue');
+  httpVueLoader.register(Vue, '/components/move-form.vue');
+  httpVueLoader.register(Vue, '/components/source-form.vue');
+  httpVueLoader.register(Vue, '/components/feedback-form.vue');
+  httpVueLoader.register(Vue, '/components/feedback-list.vue');
+  httpVueLoader.register(Vue, '/components/feedback-table.vue');
+  httpVueLoader.register(Vue, '/components/entry-issues.vue');
+  httpVueLoader.register(Vue, '/components/text-input.vue');
+  httpVueLoader.register(Vue, '/components/mwe-link.vue');
+  httpVueLoader.register(Vue, '/components/change-parent-form.vue');
+  httpVueLoader.register(Vue, '/components/link-autocomplete.vue');
+  httpVueLoader.register(Vue, '/components/gloss-form.vue');
+
+  httpVueLoader.register(Vue, '/components/wordnet/error-toggle.vue');
+  httpVueLoader.register(Vue, '/components/wordnet/mwe-modal.vue');
+  httpVueLoader.register(Vue, '/components/wordnet/wordnet-table.vue');
+  httpVueLoader.register(Vue, '/components/wordnet/corpus-section.vue');
+  httpVueLoader.register(Vue, '/components/wordnet/example-list.vue');
+  httpVueLoader.register(Vue, '/components/wordnet/example.vue');
+  httpVueLoader.register(Vue, '/components/wordnet/tab-section.vue');
+  httpVueLoader.register(Vue, '/components/wordnet/wordnet-comment-form.vue');
+  httpVueLoader.register(Vue, '/components/wordnet/sense-relation-form.vue');
+  httpVueLoader.register(Vue, '/components/wordnet/synset-list.vue');
+  httpVueLoader.register(Vue, '/components/wordnet/synset-info.vue');
+  httpVueLoader.register(Vue, '/components/wordnet/dictionary.vue');
+  httpVueLoader.register(Vue, '/components/wordnet/synset-sense.vue');
+  httpVueLoader.register(Vue, '/components/wordnet/synset-relation-list.vue');
+  httpVueLoader.register(Vue, '/components/wordnet/wordnet-graph.vue');
+  httpVueLoader.register(Vue, '/components/wordnet/wordnet-graph-modal.vue');
+  httpVueLoader.register(Vue, '/components/wordnet/potential-link.vue');
+  httpVueLoader.register(Vue, '/components/wordnet/potential-link-answers.vue');
+
+  Vue.prototype.$SHOW_DEBUG = #{SHOW_DEBUG};
+  Vue.prototype.$DICT = "#{dict}";
+  Vue.prototype.$IS_TEZAURS = #{dict === 'tezaurs'};
+  Vue.prototype.$IS_MLVV = #{dict === 'mlvv'};
+  Vue.prototype.$IS_LLVV = #{dict === 'llvv'};
+  Vue.prototype.$IS_LTG = #{dict === 'ltg'};
+
+  Vue.prototype.$debounce = _.debounce;
+
+  window.values = !{JSON.stringify(values)}
+  // Vue.prototype.$values = !{JSON.stringify(values)}; // TODO does not work with flag-input
+
+  /*
+  * Two Vue instances:
+  * one for side buttons and wordnet editor,
+  * other for the entry and its edit functionality.
+  */
+  const wordnetEditorMountPoint = '#rightside';
+  const entryContentMountPoint = '#homonym-';
+  const defaultContentMountPoint = '#main-app';
+
+  var sharedState = {
+    loading: false,
+    editing: localStorage.getItem('settings.entry.autoEdit') === 'true' || sessionStorage.getItem('editing') === 'true',
+    editingWordnet: sessionStorage.getItem('editingWordnet') === 'true',
+    showHidden: sessionStorage.getItem('showHidden') === 'true',
+    visibleSubSenses: {
+      all: false,
+      individual: {}
+    },
+    visibleExamples: {
+      all: false,
+      individual: {}
+    },
+    entry: null,
+    homonyms: {},
+    searchParams: {
+      corpname: null,
+      word: null,
+      searchType: null,
+      page: null
+    },
+    modals: {
+      'changeParentForm': {},
+      'wordnetGraphModal': {}
+    },
+    wordnetSenses: new Set()
+  }
+
+  var entryMixin = {
+    methods: {
+      setLoading: function (loadings) {
+        this.loading = loadings !== false;
+      },
+      setEntry: function (entry, no=null) {
+        if (no) {
+          this.entry = this.homonyms[no];
+        } else {
+          this.entry = entry
+          this.saveHomonym(entry, entry.homonym_no);
+        };
+      },
+      saveHomonym: function (entry, no) {
+        this.homonyms[no] = entry;
+      },
+      openModal: function(e) {
+        let modalId = e.currentTarget.getAttribute('modal');
+        let data = JSON.parse(e.currentTarget.getAttribute('data'));
+        this.modals[modalId] = data;
+        this.$emit('bv::toggle::modal', modalId)
+      },
+      showWarning: function (description, callback) {
+        this.$bvModal.msgBoxConfirm(description, {
+          title: 'Brīdinājums',
+          size: 'sm',
+          okVariant: 'danger',
+          okTitle: 'Turpināt',
+          cancelTitle: 'Atcelt',
+          footerClass: 'p-2',
+          hideHeaderClose: false
+        }).then(v => {
+          if (v) callback();
+        });
+      }
+    },
+    provide: function () {
+      return {
+        setLoading: this.setLoading,
+        setEntry: this.setEntry,
+        showWarning: this.showWarning,
+        openModal: this.openModal
+      }
+    }
+  };
+
+  let vm = new Vue({
+    el: wordnetEditorMountPoint,
+    data: function () {
+      return sharedState
+    },
+    mixins: [entryMixin],
+    methods: {
+      toggleEditor: function () {
+        this.editing = !this.editing;
+        sessionStorage.setItem('editing', this.editing.toString());
+        if (! this.editing) {
+          sessionStorage.setItem('showHidden', 'false');
+        }
+      },
+      toggleWordnetEditor: function () {
+        this.editingWordnet = !this.editingWordnet;
+        sessionStorage.setItem('editingWordnet', this.editingWordnet.toString());
+
+        this.visibleSubSenses.all = !this.editingWordnet;
+        this.showHidden = this.editingWordnet;
+        sessionStorage.setItem('showHidden', this.editingWordnet.toString());
+        this.adjustGrid();
+      },
+      adjustGrid: function () {
+        let wordnetGridOn = this.editingWordnet && this.entry;
+        document.getElementById('gridcontainer').classList.toggle('wordnet', wordnetGridOn);
+      },
+      showError: function (errorMessage) {
+        this.$bvToast.toast(errorMessage, {
+          title: 'Kļūda',
+          variant: 'danger'
+        });
+      },
+      initSearchParams: function () {
+        let params = new URLSearchParams(window.location.search);
+        ['corpname', 'word', 'searchType', 'page'].forEach((k) => {
+            this.searchParams[k] = params.get(k);
+        });
+      },
+      changeHomonym: function (e) {
+        let homonymNo = e.target.getAttribute('data-no');
+        if (this.homonyms[homonymNo]) {
+          document.getElementById('entry-content').childNodes.forEach(c => c.style.display = 'none');
+          document.getElementById('homonym-' + homonymNo).style.display = 'block';
+          this.setEntry(null, homonymNo);
+        } else {
+          entryContent.reload(homonymNo);
+        }
+      },
+      onShowHiddenChange: function(value) {
+        if (this.editing) {
+          sessionStorage.setItem('showHidden', value.toString());
+        }
+      }
+    },
+    created: function () {
+      this.visibleSubSenses.all = !this.editingWordnet;
+      this.adjustGrid();
+      this.initSearchParams();
+    },
+    watch: {
+      'visibleSubSenses.all': function () {
+        for (no in this.visibleSubSenses.individual) {
+          this.visibleSubSenses.individual[no] = this.visibleSubSenses.all;
+        }
+      },
+      'visibleExamples.all': function () {
+        for (no in this.visibleExamples.individual) {
+          this.visibleExamples.individual[no] = this.visibleExamples.all;
+        }
+      },
+      entry: 'adjustGrid'
+    },
+    provide: function () {
+      return {
+        showError: this.showError
+      }
+    }
+  });
+
+  /*
+  * This part of page needs to be reloaded,
+  * however part of it is rendered server-side
+  * thus the need for 2 instances.
+  */
+  let contentApp = Vue.extend({
+    data: function () {
+      return sharedState
+    },
+    mixins: [entryMixin]
+  });
+
+  var contentVm = {},
+    entryContent = {
+      init() {
+        let honomyms = document.getElementsByClassName('homonym-content');
+        if (honomyms.length > 0) {
+          this.createContentApp(honomyms[0].getAttribute('data-no'));
+        } else {
+          this.createContentApp();
+        }
+      },
+      destroyContentApp(no) {
+        if (contentVm[no]) {
+          contentVm[no].$destroy();
+          contentVm[no] = null;
+        }
+      },
+      createContentApp(no=null) {
+        if (no)
+          contentVm[no] = new contentApp().$mount(entryContentMountPoint + no);
+        else
+          contentVm[0] = new contentApp().$mount(defaultContentMountPoint);
+      },
+      /**
+       * Load the entry view from the server and reinitialize the Vue app
+       **/
+      reload(no) {
+        let url = window.location.pathname;
+        no = no || vm.entry.homonym_no;
+        if (vm.entry.type_id !== 4) {
+          url = `${window.location.pathname.split(':')[0]}:${no}`
+        }
+        vm.setLoading(true);
+        axios.get(`${url}?content=1`) // retrieve only the entry not the whole page
+          .then((r) => {
+            vm.setLoading(false);
+            if (!r.data.error) {
+              this.destroyContentApp(no);
+
+              let contentNode = document.getElementById('entry-content');
+              contentNode.childNodes.forEach(c => c.style.display = 'none');
+              let homonymNode = document.getElementById('homonym-' + no);
+              if (homonymNode) homonymNode.remove();
+              contentNode.insertAdjacentHTML('beforeend', r.data.body);
+
+              this.createContentApp(no);
+              vm.setEntry(r.data.entry);
+              vm.saveHomonym(r.data.entry, no);
+            }
+          })
+      },
+      onSubmit(context) {
+        if (context.$root.editingWordnet)
+          this.reload();
+        else
+          location.reload();
+      }
+    };
+
+  entryContent.init();

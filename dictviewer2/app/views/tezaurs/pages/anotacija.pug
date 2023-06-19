@@ -1,0 +1,88 @@
+extends ../../common/layout
+
+block append header_scripts
+  style.
+    .vmiddle {
+      vertical-align: middle;
+    }
+    td.biblio {
+      padding: 2rem 2rem 2rem 0;
+    }
+
+block content
+  h1 Par Tēzauru
+
+  include:markdown-it(typographer plugins=['markdown-it-emoji', 'markdown-it-sup', 'markdown-it-sub', 'markdown-it-deflist', 'markdown-it-highlightjs']) anotacija.md
+
+  hr
+
+  h1 Kā atsaukties uz Tēzauru 
+
+  //- p Lūdzu, izmantojiet šādas atsauces: 
+
+  table(style='margin-top: 1rem')
+    tbody
+      tr
+        td.biblio.code 
+          strong Datu kopa
+        td(style='width : 20px')
+        td.biblio Spektors, Andrejs et al. Tēzaurs.lv, 2023, Vasaras versija. CLARIN-LV digitālā bibliotēka, #[a(href="http://hdl.handle.net/20.500.12574/66" target="_blank") http://hdl.handle.net/20.500.12574/66].
+
+      tr
+        td.biblio.code 
+          strong Publikācija
+        td(style='width : 20px')
+        td.biblio 
+          a(href="#" target="_blank") ierakstīs, kad būs elex2023
+
+  h1 Pateicības
+
+  p Tēzaurs.lv pirmsākumi meklējami 90. gadu sākumā, kad ar Jaunmeksikas Valsts universitātes un Laskrusas Rotari kluba atbalstu LU MII Mākslīgā intelekta laboratorijā tika radīta "Latviešu valodas vārdnīcas" (Rīga: Avots, 1987) elektroniskā versija. Tēzaurs.lv attīstību ir ietekmējusi arī K.&nbsp;Mīlenbaha un J.&nbsp;Endzelīna "Latviešu valodas vārdnīcas" elektroniskās versijas izveide, kas 2000. gadu sākumā notika ar Latviešu Fonda un LR IZM finansiālu atbalstu.
+
+  p Pēdējo vairāk nekā 15 gadu laikā Tēzaurs.lv platformas un datubāzes izstrāde un attīstība notiek dažādu pētniecības programmu ietvaros.
+
+  table(style='margin-top: 1rem')
+    tbody
+      tr
+        td.biblio.code.vmiddle
+          img(src='/img/funding/vpp_dh.jpg' width=200)
+        td(style='width : 20px')
+        td.biblio.vmiddle 
+          p Valsts pētījumu programmas "Digitālās humanitārās zinātnes" projekts Nr. VPP-IZM-DH-2022/1-0002 (2022–2025)
+          p Valsts pētījumu programmas "Letonika latviskas un eiropeiskas sabiedrības attīstībai" projekts Nr. VPP-LETONIKA-2021/1-0006 (2022–2024)
+          p Valsts pētījumu programmas "Humanitāro zinātņu digitālie resursi" projekts Nr. VPP-IZM-DH-2020/1-0001 (2020–2022)
+      tr
+        td.biblio.code
+          img(src='/img/funding/lzp_flpp.jpg' width=200)
+        td(style='width : 20px')
+        td.biblio.vmiddle Latvijas Zinātnes padomes programmas "Fundamentālie un lietišķie pētījumi" projekts Nr. lzp-2019/1-0464 (2020–2022)
+      tr
+        td.biblio.code
+          img(src='/img/funding/vpp_lv.png' width=200)
+        td(style='width : 20px')
+        td.biblio.vmiddle Valsts pētījumu programmas "Latviešu valoda" projekts Nr. VPP-IZM-2018/2-0002 (2018–2021)
+      tr
+        td.biblio.code
+          img(src='/img/funding/eraf.png' width=200)
+        td(style='width : 20px')
+        td.biblio.vmiddle Eiropas Reģionālās attīstības fonda programmas "Praktiskas ievirzes pētījumi" projekts Nr. 1.1.1.1/16/A/219 (2017–2019)
+      tr
+        td.biblio.code
+          img(src='/img/funding/vpp_letonika.png' width=200)
+        td(style='width : 20px')
+        td.biblio.vmiddle Valsts pētījumu programmas "Letonika: Latvijas vēsture, valoda, kultūra, vērtības" projekts Nr. 3 (2014–2017)
+      tr
+        td.biblio.code
+          img(src='/img/funding/vpp_ni.png' width=200)
+        td(style='width : 20px')
+        td.biblio.vmiddle Valsts pētījumu programmas "Nacionālā identitāte: valoda, Latvijas vēsture, kultūra un cilvēkdrošība" projekts Nr. 3 (2010–2013)
+      tr
+        td.biblio.code
+          img(src='/img/funding/vpp_letonika.png' width=200)
+        td(style='width : 20px')
+        td.biblio.vmiddle Valsts pētījumu programmas "Letonika: pētījumi par vēsturi, valodu un kultūru" projekts Nr. 5.14 (2006–2009)
+      tr
+        td.biblio.code
+          img(src='/img/funding/semti-kamols.jpg' width=200)
+        td(style='width : 20px')
+        td.biblio.vmiddle Valsts pētījumu programmas "Informācijas tehnoloģiju zinātniskā bāze" projekts Nr. 2 (2005–2009)

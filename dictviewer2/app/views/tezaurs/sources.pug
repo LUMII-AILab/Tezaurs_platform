@@ -1,0 +1,61 @@
+extends ../common/layout
+
+mixin avots0(s)
+  dt(style="font-weight: bold;") #{s.abbr}
+  dd
+    if s.url
+      a(href=s.url) !{s.title}
+    else
+      | !{s.title}
+    if s.usages
+      =` (${s.usages} lietojumi)`
+
+mixin avots(s)
+  tr
+  td.biblio.code #{s.abbr}
+  td.biblio
+    if s.url
+      a(href=s.url) !{s.title}
+    else
+      | !{s.title}
+    if app_mode !== APP_MODE.PUBLIC
+      if s.usages
+        =` (${s.usages} lietojumi)`
+
+block append header_scripts
+  style.
+    .biblio {
+      padding-top: 4px;
+      font-weigth: 300;
+      vertical-align: top;
+    }
+    .code {
+      font-weight: 400;
+      width: 50px;
+    }
+
+block content
+  h1 Izmantotie avoti
+  
+  div Tēzaura sastādīšanā ir #{sources.length % 10 !== 1 || sources.length === 11 ? `izmantoti ${sources.length} avoti` : `izmantots ${sources.length} avots`}.
+  br
+  div Primārie avoti ir izmantoti vismaz 5% šķirkļu, bet katrs sekundārais avots ir izmantots vismaz 1% šķirkļu. Perifērie avoti ir izmantoti mazāk nekā 1% šķirkļu.
+  br
+  div Avotu saraksts ir sakārtots izmantojumu skaita dilstošā secībā.
+  br
+
+  .subtitle Primārie avoti:
+  table
+    each s, index in sources.filter(x => x.category === 'PRIMARY')
+      +avots(s)
+
+  .subtitle Sekundārie avoti:
+  table
+    each s, index in sources.filter(x => x.category === 'SECONDARY')
+      +avots(s)
+
+  .subtitle Perifērie avoti:
+  table
+    each s, index in sources.filter(x => x.category === 'TERTIARY')
+      +avots(s)
+

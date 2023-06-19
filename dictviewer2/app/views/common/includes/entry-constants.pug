@@ -1,0 +1,28 @@
+-
+  const ENTRY_COLOR = '#007AFF';
+  const LEXEME_COLOR = '#FFC107';
+  const SENSE_COLOR = '#28A745';
+  const EXAMPLE_COLOR = '#148C9F';
+  const SOURCE_COLOR = '#6C757D';
+
+  const ENTRY_WORD_COLOR = '#000000';
+  const PRIMARY_LEXEME_COLOR = '#7490C0'; // deprecated
+  const MAIN_LEXEME_COLOR = '#205090'; // 1
+  const DERIVED_LEXEME_COLOR = '#508080'; // 4
+  const ALTERNATIVE_SPELLING_LEXEME_COLOR = '#6090D0'; // 5
+  const ALTERNATIVE_SPELLING_DERIVATIVE_LEXEME_COLOR = '#80B0B0'; // 9
+  const ABBREVIATION_LEXEME_COLOR = '#908060'; // 8
+  const SUPPLEMENTAL_LEXEME_COLOR = '#C080C0'; // 6
+
+  const get_lexeme_type_name = type_id => {
+    switch(type_id) {
+      case 4: return 'Atvasinājums';
+      case 5: return 'Rakstības variants';
+      case 6: return 'Cita papildu leksēma';
+      case 8: return 'Saīsinājums';
+      case 9: return 'Rakstības varianta atvasinājums';
+
+      default:
+      case 1: return 'Pamatleksēma';
+    }
+  }

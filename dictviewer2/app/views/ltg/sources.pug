@@ -1,0 +1,50 @@
+extends ../common/layout
+
+mixin avots0(s)
+  dt(style="font-weight: bold;") #{s.abbr}
+  dd
+    if s.url
+      a(href=s.url) !{s.title}
+    else
+      | !{s.title}
+    if s.usages
+      =` (${s.usages} lietojumi)`
+
+mixin avots(s)
+  tr
+  td.biblio.code #{s.abbr}
+  td.biblio
+    if s.url
+      a(href=s.url) !{s.title}
+    else
+      | !{s.title}
+    if app_mode !== APP_MODE.PUBLIC
+      if s.usages
+        =` (${s.usages} lietojumi)`
+
+block append header_scripts
+  style.
+    .biblio {
+      padding-top: 4px;
+      font-weigth: 300;
+      vertical-align: top;
+    }
+    .code {
+      font-weight: 500;
+      width: 160px;
+    }
+
+
+block content
+  h1 Izmantotie avoti
+  
+  div LTG sastādīšanā ir #{sources.length % 10 !== 1 || sources.length === 11 ? `izmantoti ${sources.length} avoti` : `izmantots ${sources.length} avots`}.
+  br
+  div Avotu saraksts ir sakārtots izmantojumu skaita dilstošā secībā.
+  br
+
+  .subtitle Avoti:
+  table
+    each s, index in sources
+      +avots(s)
+

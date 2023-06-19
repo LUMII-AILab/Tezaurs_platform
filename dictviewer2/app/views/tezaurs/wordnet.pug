@@ -1,0 +1,91 @@
+extends ../common/wide-layout
+
+mixin mainStatTable(counts)
+  table.table.table-bordered.table-sm
+    thead
+      tr
+        th Sinonīmu kopas
+        th Nozīmes
+        th Vārdi
+    tr
+      td #{counts.synsets}
+      td #{counts.senses}
+      td #{counts.words}
+
+mixin polysemyTable(data)
+  table.table.table-bordered.table-sm
+    thead
+      tr
+        th Vienlocekļa kopas
+        th Daudzlocekļu kopas
+        th Vidējais locekļu skaits (visām)
+        th Vidējais locekļu skaits (tikai daudzlocekļu)
+    tr
+      td #{data.counts.monosemous}
+      td #{data.counts.polysemous}
+      td #{data.mean.all.toFixed(2)}
+      td #{data.mean.polysemous.toFixed(2)}
+
+mixin relationTable(relations, entity, heading, total)
+  table.table.table-bordered.table-sm
+    thead
+      tr
+        th Saites veids
+        th #{heading}
+    each relation in relations
+      tr
+        td #{relation.name}
+        td #{relation[entity] || 0}
+    if total
+      tr
+        th(scope="row") Kopā
+        td #{total}
+
+mixin tableWithTotal(counts, col1, col2)
+  table.table.table-bordered.table-sm
+    thead
+      tr
+        th #{col1}
+        th #{col2}
+    each count, name in counts
+      tr
+        if (name === 'total')
+          th(scope="row") Kopā
+        else
+          td #{name}
+        td #{count}
+
+block content
+  div.ml-5.mr-5
+    b-tabs.mt-3(justified content-class="mt-4" active-nav-item-class="font-weight-bold")
+      b-tab(title="Biežāko vārdu saraksts" title-link-class="text-decoration-none text-uppercase font-weight-light")
+        #wordnet-list
+          wordnet-table(:entries=entries :user=user)
+      b-tab(title="Pārejo vārdu saraksts" active title-link-class="text-decoration-none text-uppercase font-weight-light")
+        #wordnet-non-top-list
+          wordnet-table(:entries=non_top_entries :user=user :non_top="true")
+      b-tab(title="Statistika" title-link-class="text-decoration-none text-uppercase font-weight-light")
+        #statistics
+          .container
+            .row
+              .col
+                h5.mb-2.text-success Kopējā statistika
+                +mainStatTable(stats.counts)
+                +polysemyTable(stats.polysemy)
+                +relationTable(stats.relations, 'synsets', 'Saišu skaits', stats.counts.relations)
+                h5.mt-5.mb-2.text-success Angļu valodas statistika
+                +tableWithTotal(stats.counts.pwn, 'Saites veids', 'Cik sinonīmu kopām ir saite/es?')
+
+                //h6.mt-4 Wordnet šķirkļu sarakstā
+                //+mainStatTable(stats.top)
+              .col
+                h5.mb-2.text-success Apstrādāto statistika (pabeigta 1. fāze)
+                +mainStatTable(stats.top.doneInner)
+                h5.mb-2.mb-2.text-success Apstrādāto statistika (pabeigta 2. fāze)
+                +mainStatTable(stats.top.done)
+                h5.mt-5.mb-2.text-success Nozīmju un vārdu statistika
+                +relationTable(stats.relations, 'words', 'Cik vārdi ir savienoti ar saiti?')
+                +relationTable(stats.relations, 'senses', 'Cik nozīmes ir savienotas ar saiti?')
+                h5.mt-5.mb-2.text-success Piemēru statistika
+                +tableWithTotal(stats.counts.examplesBySense, 'Šķirkļa tips', 'Cik nozīmēm ir piemēri?')
+                +tableWithTotal(stats.counts.examples, 'Šķirkļa tips', 'Cik piemēri ir pievienoti?')

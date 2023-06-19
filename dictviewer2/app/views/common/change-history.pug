@@ -1,0 +1,40 @@
+extends layout
+
+block append header_scripts
+  style.
+    .odd {
+      background-color: lightgrey;
+    }
+
+block content
+  //- rāda viena šķirkļa izmaiņu vēsturi
+  //- h1 šķirkļa #{} izmaiņu vēsture
+
+  if !change_list || change_list.length === 0
+    h1 Vēstures nav
+    p Šķirklis #[a(href=`/${entry.human_key}`) #{entry.human_key}] pēc datu ielādes nav labots.
+
+  else
+    h1 Šķirkļa izmaiņu vēsture
+    p Šķirklī #[a(href=`/${entry.human_key}`) #{entry.human_key}] kopš datu ielādes ir veiktas #{change_list.length} izmaiņas.
+
+    table
+      tr
+        th Kad
+        th Kurš
+        th Operācija
+        th Kur
+        th Ko
+        //- th id
+      each c, i in change_list
+        tr(class=`${i % 2 === 0 ? 'even' : 'odd'}`)
+          td= c.changed_at || c.effective_on
+          td(title=c.full_name)= c.login || c.user_id
+          td
+            a(href=`/_history/entry/${entry.id}/change/${c.id}`)= c.operation
+            //- a(href=`/_history/entry/${entry.id}/change/${c.id}`)= JSON.stringify(c)
+          td= c.entity_type
+          td= c.slug
+          //- td= c.entity_id
+
+  //- pre= JSON.stringify(change_list, null, 2)

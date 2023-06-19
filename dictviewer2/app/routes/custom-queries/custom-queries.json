@@ -1,0 +1,2236 @@
+{
+  "resultShapes": {
+    "entries": {
+      "extraColumns": []
+    },
+    "lexemes": {
+      "extraColumns": [
+        {
+          "name": "lemma",
+          "caption": "Leksēma"
+        }
+      ]
+    },
+    "senses": {
+      "extraColumns": [
+        {
+          "name": "gloss",
+          "caption": "Nozīmes skaidrojums"
+        }
+      ]
+    },
+    "examples": {
+      "extraColumns": [
+        {
+          "name": "content",
+          "caption": "Piemēra teksts"
+        }
+      ]
+    },
+    "eslx": {
+      "extraColumns": [
+        {
+          "name": "entity",
+          "caption": "Vieta"
+        },
+        {
+          "name": "slug",
+          "caption": "Vietas teksts"
+        }
+      ]
+    },
+    "customTable": {
+      "extraColumns": []
+    }
+  },
+  "groups": {
+    "latest": {
+      "initiallyCollapsed": true,
+      "caption": "Nesenie"
+    },
+    "entries": {
+      "initiallyCollapsed": true,
+      "caption": "Šķirkļi"
+    },
+    "lexemes": {
+      "initiallyCollapsed": true,
+      "caption": "Leksēmas"
+    },
+    "senses": {
+      "initiallyCollapsed": true,
+      "caption": "Nozīmes"
+    },
+    "examples": {
+      "initiallyCollapsed": true,
+      "caption": "Piemēri"
+    },
+    "eslx": {
+      "initiallyCollapsed": true,
+      "caption": "Šķirkļi, nozīmes, leksēmas, piemēri"
+    },
+    "links": {
+      "initiallyCollapsed": true,
+      "caption": "Saites"
+    },
+    "flags": {
+      "initiallyCollapsed": true,
+      "caption": "Karogi jebkur"
+    },
+    "restrictions": {
+      "initiallyCollapsed": true,
+      "caption": "Ierobežojumi"
+    },
+    "meta": {
+      "initiallyCollapsed": true,
+      "caption": "Meta tabulas"
+    },
+    "other": {
+      "caption": "Citi",
+      "initiallyCollapsed": true,
+      "hidden": false
+    },
+    "error": {
+      "caption": "❗❗",
+      "initiallyCollapsed": true,
+      "hidden": false
+    },
+    "warning": {
+      "caption": "❗",
+      "initiallyCollapsed": true,
+      "hidden": false
+    }
+  },
+  "queries": [
+    {
+      "name": "q1",
+      "caption": "Skaidrojumi, kas sākas ar 'Savienojumā '❗",
+      "sql": "SELECT * FROM dict.senses s JOIN dict.entries e ON e.id = s.entry_id WHERE gloss ILIKE 'Savienojumā %' ORDER BY heading, human_key, gloss ",
+      "resultShape": "senses",
+      "group": ["senses", "warning"]
+    },
+    {
+      "name": "q2",
+      "caption": "Šķirkļvārdā ir <em>",
+      "sql": "SELECT * FROM dict.entries WHERE heading LIKE '%<em>%' ORDER BY heading, human_key ",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "entries",
+      "group": "entries"
+    },
+    {
+      "name": "q3",
+      "caption": "Šķirkļvārdā ir iekavas❗",
+      "sql": "SELECT * FROM dict.entries WHERE heading LIKE '%(%' OR heading LIKE '%(%' ORDER BY heading, human_key",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "entries",
+      "group": ["entries", "warning"]
+    },
+    {
+      "name": "q4",
+      "caption": "Šķirkļvārdā ir 'arī'",
+      "sql": "SELECT * FROM dict.entries WHERE type_id in (2,3,4) AND heading LIKE '%arī%' ORDER BY heading, human_key ",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "entries",
+      "group": "entries"
+    },
+    {
+      "name": "q5",
+      "caption": "Šķirkļvārdā varbūt ir gramatika",
+      "description": "vismaz 3 burti + punkts, bet nav <em>",
+      "sql": "SELECT * FROM dict.entries WHERE type_id in (2,3,4) AND heading ~ '\\w\\w\\w\\.' AND heading NOT LIKE '%<em>%' ORDER BY heading, human_key",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "entries",
+      "group": "entries"
+    },
+    {
+      "name": "q6",
+      "caption": "Paslēptas leksēmas❗",
+      "sql": "SELECT * FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE l.hidden = true ORDER BY e.type_id, lemma, human_key",
+      "resultShape": "lexemes",
+      "group": ["lexemes", "warning"]
+    },
+    {
+      "name": "q7",
+      "caption": "Paslēptas nozīmes❗",
+      "sql": "SELECT * FROM dict.senses s JOIN dict.entries e ON e.id = s.entry_id WHERE s.hidden = true ORDER BY e.type_id, gloss, human_key",
+      "resultShape": "senses",
+      "group": ["senses", "warning"]
+    },
+    {
+      "name": "q8",
+      "caption": "500 jaunākie šķirkļi",
+      "sql": "SELECT *, to_char(created_at, 'YYYY-MM-DD HH24:MI') str_created, to_char(updated_at, 'YYYY-MM-DD HH24:MI') str_updated FROM dict.entries ORDER BY created_at DESC LIMIT 500",
+      "notIssue": true,
+      "resultShape": "entries",
+      "skipCache": true,
+      "size": 50,
+      "group": "latest",
+      "extraColumns": [
+        {
+          "name": "str_created",
+          "caption": "Radīts"
+        }
+      ]
+    },
+    {
+      "name": "q8a",
+      "caption": "500 jaunākie vārdšķirkļi",
+      "sql": "SELECT *, to_char(created_at, 'YYYY-MM-DD HH24:MI') str_created, to_char(updated_at, 'YYYY-MM-DD HH24:MI') str_updated FROM dict.entries e WHERE e.type_id = 1 ORDER BY created_at DESC LIMIT 500",
+      "notIssue": true,
+      "resultShape": "entries",
+      "skipCache": true,
+      "size": 50,
+      "group": "latest",
+      "extraColumns": [
+        {
+          "name": "str_created",
+          "caption": "Radīts"
+        }
+      ]
+    },
+    {
+      "name": "q8-2",
+      "caption": "50 nesen labotie šķirkļi",
+      "sql": "SELECT *, to_char(created_at, 'YYYY-MM-DD HH24:MI') str_created, to_char(updated_at, 'YYYY-MM-DD HH24:MI') str_updated FROM dict.entries ORDER BY updated_at DESC LIMIT 50",
+      "notIssue": true,
+      "resultShape": "entries",
+      "skipCache": true,
+      "group": "latest",
+      "extraColumns": [
+        {
+          "name": "str_updated",
+          "caption": "Labots"
+        }
+      ]
+    },
+    {
+      "name": "q9",
+      "caption": "Šķirkļi ar importa un skriptu piezīmēm❗",
+      "sql": "SELECT *, data->>'ImportNotices' value1 FROM dict.entries WHERE data->'ImportNotices' IS NOT NULL ORDER BY heading, human_key",
+      "resultShape": "entries",
+      "group": ["entries", "warning"],
+      "hidden": true,
+      "extraColumns": [
+        {
+          "name": "value1",
+          "caption": "Piezīmes"
+        }
+      ]
+    },
+    {
+      "name": "q10",
+      "caption": "Nozīmes ar importa un skriptu piezīmēm",
+      "sql": "SELECT *, s.data->>'ImportNotices' value1 FROM dict.senses s JOIN dict.entries e ON e.id = s.entry_id WHERE s.data->'ImportNotices' IS NOT NULL ORDER BY heading, human_key, gloss",
+      "showIn": [
+        "mlvv"
+      ],
+      "resultShape": "senses",
+      "group": "senses",
+      "extraColumns": [
+        {
+          "name": "value1",
+          "caption": "Piezīmes"
+        }
+      ]
+    },
+    {
+      "name": "q11",
+      "caption": "Leksēmas ar importa un skriptu piezīmēm",
+      "sql": "SELECT *, l.data->>'ImportNotices' value1 FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE l.data->'ImportNotices' IS NOT NULL ORDER BY heading, human_key, lemma",
+      "resultShape": "lexemes",
+      "group": "lexemes",
+      "extraColumns": [
+        {
+          "name": "value1",
+          "caption": "Piezīmes"
+        }
+      ]
+    },
+    {
+      "name": "q12",
+      "caption": "Šķirkļi ar karogu 'Stils'",
+      "sql": "SELECT *, data->'Gram'->'Flags'->'Stils' value1 FROM dict.entries WHERE data->'Gram'->'Flags'->'Stils' IS NOT NULL ORDER BY heading, human_key",
+      "hidden": false,
+      "notIssue": true,
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "entries",
+      "group": "entries",
+      "extraColumns": [
+        {
+          "name": "value1",
+          "caption": "Stils"
+        }
+      ]
+    },
+    {
+      "name": "q14",
+      "caption": "Leksēmas ar Leftovers",
+      "sql": "SELECT *, l.data->'Gram'->'Leftovers' value1 FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE l.data->'Gram'->'Leftovers' IS NOT NULL ORDER BY heading, human_key, lemma",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes",
+      "hidden": true,
+      "extraColumns": [
+        {
+          "name": "value1",
+          "caption": "Pārpalikumi"
+        }
+      ]
+    },
+    {
+      "name": "q15",
+      "caption": "Nozīmes ar Leftovers",
+      "sql": "SELECT *, s.data->'Gram'->'Leftovers' value1 FROM dict.senses s JOIN dict.entries e ON e.id = s.entry_id WHERE s.data->'Gram'->'Leftovers' IS NOT NULL ORDER BY heading, human_key, gloss",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "group": "senses",
+      "extraColumns": [
+        {
+          "name": "value1",
+          "caption": "Pārpalikumi"
+        }
+      ],
+      "hidden": true
+    },
+    {
+      "name": "q16",
+      "caption": "Šķirkļi ar Leftovers",
+      "sql": "SELECT *, e.data->'Gram'->'Leftovers' value1 FROM dict.entries e WHERE e.data->'Gram'->'Leftovers' IS NOT NULL ORDER BY heading, human_key",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "entries",
+      "group": "entries",
+      "hidden": true,
+      "extraColumns": [
+        {
+          "name": "value1",
+          "caption": "Pārpalikumi"
+        }
+      ]
+    },
+    {
+      "name": "q17",
+      "caption": "Karogi un to vērtības",
+      "sql": "SELECT f.name flag, f.is_multiple, f.scope, f.is_deprecated as f_depr, coalesce(fv.value, '-- fiksētu vērtību nav --') as value, fv.is_deprecated as v_depr FROM dict.grammar_flag_values fv RIGHT JOIN dict.grammar_flags f ON f.id = fv.flag_id ORDER BY f.order_no, f.name, fv.order_no",
+      "notIssue": true,
+      "resultShape": "customTable",
+      "group": "meta",
+      "definedColumns": [
+        {
+          "name": "flag",
+          "caption": "Karogs"
+        },
+        {
+          "name": "is_multiple",
+          "caption": "Vairākvērtību"
+        },
+        {
+          "name": "scope",
+          "caption": "Tvērums"
+        },
+        {
+          "name": "f_depr",
+          "caption": "K. novecojis"
+        },
+        {
+          "name": "value",
+          "caption": "Vērtība"
+        },
+        {
+          "name": "v_depr",
+          "caption": "V. novecojusi"
+        }
+      ],
+      "hideOtherColumns": false,
+      "hidden": false
+    },
+    {
+      "name": "q18",
+      "caption": "Skaidrojumi ar -->",
+      "sql": "SELECT * FROM dict.senses s JOIN dict.entries e ON e.id = s.entry_id WHERE gloss LIKE '%-->%' ORDER BY gloss, human_key",
+      "resultShape": "senses",
+      "group": "senses"
+    },
+    {
+      "name": "q18b",
+      "caption": "Skaidrojumi ar →",
+      "sql": "SELECT * FROM dict.senses s JOIN dict.entries e ON e.id = s.entry_id WHERE gloss LIKE '%→%' ORDER BY gloss, human_key",
+      "resultShape": "senses",
+      "group": "senses"
+    },
+    {
+      "name": "q19",
+      "caption": "Nozīmes ierobežojumkandidāti #1",
+      "sql": "SELECT * FROM dict.senses s JOIN dict.entries e ON e.id = s.entry_id WHERE gloss ~ '([Pp]arasti |[Aa]rī )?[Ss]avienojum(os|ā) (ar )?' ORDER BY gloss, human_key",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "group": "senses"
+    },
+    {
+      "name": "q20",
+      "caption": "Skaidrojumi ar cipariem ( ) iekavās",
+      "sql": "SELECT * FROM dict.senses s JOIN dict.entries e ON e.id = s.entry_id WHERE gloss ~ '\\([\\d\\s,]+\\)' ORDER BY gloss, human_key",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "group": "senses"
+    },
+    {
+      "name": "q21",
+      "caption": "Skaidrojumi ar cipariem [ ] iekavās",
+      "sql": "SELECT * FROM dict.senses s JOIN dict.entries e ON e.id = s.entry_id WHERE gloss ~ '\\[[\\d\\s,]+\\]' ORDER BY gloss, human_key",
+      "notIssue": true,
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "group": "senses"
+    },
+    {
+      "name": "q22a",
+      "caption": "Šķirkļi, kam šķirkļvārds nesakrīt ar galveno leksēmu",
+      "sql": "SELECT * FROM lexemes l JOIN entries e ON e.id = l.entry_id AND e.primary_lexeme_id = l.id WHERE heading <> lemma ORDER BY heading, human_key, lemma",
+      "notIssue": true,
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes"
+    },
+    {
+      "name": "q22b",
+      "caption": "Šķirkļi, kam šķirkļvārds nesakrīt ar galveno leksēmu, pretrunā ar ķeksi",
+      "sql": "SELECT * FROM lexemes l JOIN entries e ON e.id = l.entry_id AND e.primary_lexeme_id = l.id WHERE heading <> lemma AND heading_is_primary_lexeme = true ORDER BY heading, human_key, lemma",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes",
+      "hidden": true
+    },
+    {
+      "name": "q23a",
+      "caption": "Frāžu leksēmas ar lielo burtu",
+      "sql": "SELECT * FROM lexemes l JOIN entries e ON e.id = l.entry_id WHERE e.type_id = 4 AND lemma ~ '^\\(?[A-ZĀĒĪŌŪČŠŽĢĶĻŅŖ]' ORDER BY heading, human_key, lemma ",
+      "resultShape": "lexemes",
+      "group": "lexemes"
+    },
+    {
+      "name": "q23a2",
+      "caption": "Vārdšķirkļu leksēmas ar lielo burtu, nesakrītošas ar šķirkļvārdu",
+      "sql": "SELECT * FROM lexemes l JOIN entries e ON e.id = l.entry_id WHERE NOT heading_is_primary_lexeme AND e.type_id = 1 AND lemma ~ '^[A-ZĀĒĪŌŪČŠŽĢĶĻŅŖ]' ORDER BY heading, human_key, lemma ",
+      "resultShape": "lexemes",
+      "group": "lexemes"
+    },
+    {
+      "name": "q23a3",
+      "caption": "Frāžu leksēmas ar lielo burtu, ne īpašvārdi",
+      "sql": "SELECT * FROM lexemes l JOIN entries e ON e.id = l.entry_id WHERE e.type_id = 4 AND lemma ~ '^\\(?[A-ZĀĒĪŌŪČŠŽĢĶĻŅŖ]' AND (l.data->'Gram'->'Flags'->>'Lietvārda tips' IS DISTINCT FROM 'Īpašvārds') ORDER BY heading, human_key, lemma ",
+      "resultShape": "lexemes",
+      "group": "lexemes"
+    },
+    {
+      "name": "q23b",
+      "caption": "Vārdu savienojumi ar lielo burtu",
+      "sql": "SELECT * FROM entries WHERE type_id = 4 AND heading ~ '^[A-ZĀĒĪŌŪČŠŽĢĶĻŅŖ]' ORDER BY heading, human_key ",
+      "resultShape": "entries",
+      "group": "entries"
+    },
+    {
+      "name": "q23c",
+      "caption": "Vārdu savienojumi ar lielo burtu, izņemot personvārdus un vietvārdus",
+      "sql": "SELECT * FROM lexemes l JOIN entries e ON e.id = l.entry_id WHERE e.type_id = 4 AND heading ~ '^[A-ZĀĒĪŌŪČŠŽĢĶĻŅŖ]' AND coalesce(l.data->'Gram'->'Flags'->>'Īpašvārda veids', '') <> 'Personvārds' AND coalesce(l.data->'Gram'->'Flags'->>'Īpašvārda veids', '') <> 'Vietvārds' ORDER BY heading, human_key, lemma ",
+      "resultShape": "lexemes",
+      "group": "lexemes"
+    },
+    {
+      "name": "q23b2",
+      "caption": "Vārdšķirkļi ar lielo burtu",
+      "sql": "SELECT * FROM entries WHERE type_id = 1 AND heading ~ '^[A-ZĀĒĪŌŪČŠŽĢĶĻŅŖ]' ORDER BY heading, human_key ",
+      "showIn": [
+        "mlvv"
+      ],
+      "resultShape": "entries",
+      "group": "entries"
+    },
+    {
+      "name": "q24",
+      "caption": "Šķirkļi ar piezīmēm ❗",
+      "sql": "SELECT *, to_char(updated_at, 'YYYY-MM-DD HH24:MI') str_updated FROM entries WHERE notes is NOT NULL ORDER BY updated_at DESC",
+      "resultShape": "entries",
+      "group": ["entries", "warning"],
+      "extraColumns": [
+        {
+          "name": "notes",
+          "caption": "Piezīme"
+        },
+        {
+          "name": "str_updated",
+          "caption": "Labots"
+        }
+      ]
+    },
+    {
+      "name": "q24b",
+      "caption": "Šķirkļi ar piezīmēm – jautājumiem",
+      "sql": "SELECT * FROM entries WHERE notes LIKE '%?%' ORDER BY heading, human_key",
+      "resultShape": "entries",
+      "group": "entries",
+      "extraColumns": [
+        {
+          "name": "notes",
+          "caption": "Piezīme"
+        }
+      ],
+      "hidden": true
+    },
+    {
+      "name": "q25a1",
+      "caption": "Šķirkļi bez nozīmēm, bet ar MWE❗",
+      "sql": "SELECT * FROM entries e WHERE (SELECT count(*) FROM senses s WHERE s.entry_id = e.id) = 0 AND (SELECT count(*) FROM entry_relations r WHERE r.type_id = 3 AND r.entry_2_ir = e.id) > 0 ORDER BY heading, human_key ",
+      "hidden": true,
+      "resultShape": "entries",
+      "group": ["entries", "warning"]
+    },
+    {
+      "name": "q25a2",
+      "caption": "Šķirkļi bez nozīmēm un bez MWE❗❗",
+      "sql": "SELECT * FROM entries e WHERE (SELECT count(*) FROM senses s WHERE s.entry_id = e.id) = 0 AND (SELECT count(*) FROM entry_relations r WHERE r.type_id = 3 AND r.entry_2_ir = e.id) = 0 ORDER BY heading, human_key ",
+      "hidden": true,
+      "resultShape": "entries",
+      "group": ["entries", "error"]
+    },
+    {
+      "name": "q25b1",
+      "caption": "Šķirkļi bez redzamām nozīmēm, bet ar MWE❗",
+      "sql": "SELECT * FROM entries e WHERE NOT EXISTS (SELECT 1 FROM senses s WHERE s.entry_id = e.id AND s.hidden = false) AND EXISTS (SELECT 1 FROM entry_relations r WHERE r.type_id = 3 AND r.entry_2_id = e.id) ORDER BY heading, human_key",
+      "resultShape": "entries",
+      "group": ["entries", "warning"]
+    },
+    {
+      "name": "q25b2",
+      "caption": "Šķirkļi bez redzamām nozīmēm un bez MWE❗❗",
+      "sql": "SELECT * FROM entries e WHERE NOT EXISTS (SELECT 1 FROM senses s WHERE s.entry_id = e.id AND s.hidden = false) AND NOT EXISTS (SELECT 1 FROM entry_relations r WHERE r.type_id = 3 AND r.entry_2_id = e.id) ORDER BY heading, human_key",
+      "resultShape": "entries",
+      "group": ["entries", "error"]
+    },
+    {
+      "name": "q25c",
+      "caption": "Šķirkļi bez redzamām leksēmām❗❗",
+      "sql": "SELECT * FROM entries e WHERE NOT EXISTS (SELECT 1 FROM lexemes l WHERE l.entry_id = e.id AND l.hidden = false) ORDER BY heading, human_key",
+      "resultShape": "entries",
+      "group": ["entries", "error"]
+    },
+    {
+      "name": "q26a",
+      "caption": "Leksēmas ar gramatiku analīzes problēmu 'Oriģinālā gramatika satur karodziņos neatšifrētas nianses'",
+      "sql": "SELECT * FROM lexemes l JOIN entries e ON e.id = l.entry_id WHERE l.data->'Gram'->'Flags'->'Gramatiku analīzes problēmas' @> '[\"Oriģinālā gramatika satur karodziņos neatšifrētas nianses\"]'::jsonb  ORDER BY heading, human_key, lemma",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes"
+    },
+    {
+      "name": "q26b",
+      "caption": "Leksēmas ar gramatiku analīzes problēmu 'Neviennozīmīga paradigma'",
+      "sql": "SELECT * FROM lexemes l JOIN entries e ON e.id = l.entry_id WHERE l.data->'Gram'->'Flags'->'Gramatiku analīzes problēmas' @> '[\"Neviennozīmīga paradigma\"]'::jsonb ORDER BY heading, human_key, lemma",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes"
+    },
+    {
+      "name": "q26c",
+      "caption": "Leksēmas ar gramatiku analīzes problēmu 'Neviennozīmīga vārdšķira vai kategorija'",
+      "sql": "SELECT * FROM lexemes l JOIN entries e ON e.id = l.entry_id WHERE l.data->'Gram'->'Flags'->'Gramatiku analīzes problēmas' @> '[\"Neviennozīmīga vārdšķira vai kategorija\"]'::jsonb ORDER BY heading, human_key, lemma",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes"
+    },
+    {
+      "name": "q26d",
+      "caption": "Nozīmes ar gramatiku analīzes problēmu 'Oriģinālā gramatika satur karodziņos neatšifrētas nianses'",
+      "sql": "SELECT * FROM senses s JOIN entries e ON e.id = s.entry_id WHERE s.data->'Gram'->'Flags'->'Gramatiku analīzes problēmas' @> '[\"Oriģinālā gramatika satur karodziņos neatšifrētas nianses\"]'::jsonb ORDER BY heading, human_key, gloss ",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "group": "senses"
+    },
+    {
+      "name": "q27a",
+      "caption": "Karogs 'Kategorija' pie šķirkļa",
+      "sql": "SELECT * FROM dict.entries WHERE data->'Gram'->'Flags'->'Kategorija' IS NOT NULL ORDER BY heading, human_key",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "entries",
+      "group": "entries"
+    },
+    {
+      "name": "q27b",
+      "caption": "Karogs 'Kategorija' pie nozīmes",
+      "sql": "SELECT * FROM dict.senses s JOIN dict.entries e ON e.id = s.entry_id WHERE s.data->'Gram'->'Flags'->'Kategorija' IS NOT NULL ORDER BY heading, human_key, gloss",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "group": "senses"
+    },
+    {
+      "name": "q27c",
+      "caption": "Karogs 'Kategorija' pie leksēmas",
+      "sql": "SELECT * FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE l.data->'Gram'->'Flags'->'Kategorija' IS NOT NULL ORDER BY heading, human_key, lemma",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes"
+    },
+    {
+      "name": "q28",
+      "caption": "Leksēmas ar tipu 'atsauce no'",
+      "sql": "SELECT * FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE l.type_id = 6 ORDER BY heading, human_key, lemma",
+      "resultShape": "lexemes",
+      "group": "lexemes"
+    },
+    {
+      "name": "q29a",
+      "caption": "Leksēmas ar Šķirkļavārda īpatnības: Vienskaitlis",
+      "sql": "SELECT * FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE l.data->'Gram'->'Flags'->'Šķirkļavārda īpatnības' @> '[\"Vienskaitlis\"]'::jsonb ORDER BY heading, human_key, lemma",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes",
+      "hidden": true
+    },
+    {
+      "name": "q29b",
+      "caption": "Leksēmas ar 'Leksēmas pamatformas īpatnības: Vienskaitlis'",
+      "sql": "SELECT * FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE l.data->'Gram'->'Flags'->'Leksēmas pamatformas īpatnības' @> '[\"Vienskaitlis\"]'::jsonb ORDER BY heading, human_key, lemma",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes"
+    },
+    {
+      "name": "q30a",
+      "caption": "50 nesen manis labotie šķirkļi",
+      "sql": "SELECT * FROM dict.entries e WHERE e.updated_by = @@@USER_ID@@@ ORDER BY e.updated_at DESC LIMIT 50",
+      "notIssue": true,
+      "resultShape": "entries",
+      "skipCache": true,
+      "group": "latest"
+    },
+    {
+      "name": "q30b",
+      "caption": "50 nesen manis labotās leksēmas",
+      "sql": "SELECT * FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE l.updated_by = @@@USER_ID@@@ ORDER BY l.updated_at DESC LIMIT 50",
+      "notIssue": true,
+      "resultShape": "lexemes",
+      "skipCache": true,
+      "group": "latest"
+    },
+    {
+      "name": "q30c",
+      "caption": "50 nesen manis labotās nozīmes",
+      "sql": "SELECT * FROM dict.senses s JOIN dict.entries e ON e.id = s.entry_id WHERE s.updated_by = @@@USER_ID@@@ ORDER BY s.updated_at DESC LIMIT 50",
+      "notIssue": true,
+      "resultShape": "senses",
+      "skipCache": true,
+      "group": "latest"
+    },
+    {
+      "name": "q30d",
+      "caption": "50 nesen manis labotie piemēri šķirkļos",
+      "sql": "SELECT * FROM dict.examples x JOIN dict.entries e ON e.id = x.entry_id WHERE x.entry_id IS NOT NULL AND x.updated_by = @@@USER_ID@@@ ORDER BY x.updated_at DESC LIMIT 50",
+      "notIssue": true,
+      "resultShape": "examples",
+      "skipCache": true,
+      "group": "latest"
+    },
+    {
+      "name": "q30d2",
+      "caption": "50 nesen manis labotie piemēri nozīmēs",
+      "sql": "SELECT * FROM dict.examples x JOIN dict.senses s ON x.sense_id = s.id JOIN dict.entries e ON e.id = s.entry_id WHERE x.sense_id IS NOT NULL AND x.updated_by = @@@USER_ID@@@ ORDER BY x.updated_at DESC LIMIT 50",
+      "notIssue": true,
+      "resultShape": "examples",
+      "skipCache": true,
+      "group": "latest"
+    },
+    {
+      "name": "q31",
+      "caption": "Leksēmas ar 0-to paradigmu",
+      "sql": "SELECT * FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE l.paradigm_id = 52 ORDER BY heading, human_key, lemma",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes",
+      "hidden": true
+    },
+    {
+      "name": "q32a",
+      "caption": "Šķirkļi (vārdi) ar vienu vienvārdīgu nozīmi",
+      "sql": "SELECT * FROM senses s JOIN entries e ON s.entry_id = e.id WHERE s.gloss NOT LIKE '% %' AND e.type_id = 1 AND (SELECT count(*) FROM senses WHERE entry_id = e.id) = 1 ORDER BY gloss asc",
+      "resultShape": "senses",
+      "group": "senses"
+    },
+    {
+      "name": "q32b",
+      "caption": "Šķirkļi (vārdu savienojumi) ar vienu vienvārdīgu nozīmi",
+      "sql": "SELECT * FROM senses s JOIN entries e ON s.entry_id = e.id WHERE s.gloss NOT LIKE '% %' AND e.type_id = 4 AND (SELECT count(*) FROM senses WHERE entry_id = e.id) = 1 ORDER BY gloss asc",
+      "resultShape": "senses",
+      "group": "senses"
+    },
+    {
+      "name": "q33",
+      "caption": "Šķirkļi ar paradigmām",
+      "sql": "SELECT * FROM dict.entries WHERE data->'Gram'->'Paradigms' IS NOT NULL ORDER BY heading, human_key",
+      "notIssue": true,
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "entries",
+      "group": "entries",
+      "hidden": true
+    },
+    {
+      "name": "q34",
+      "caption": "Karogs 'Dzimte' pie nozīmes",
+      "sql": "SELECT * FROM dict.senses s JOIN dict.entries e ON e.id = s.entry_id WHERE s.data->'Gram'->'Flags'->'Dzimte' IS NOT NULL ORDER BY heading, human_key, gloss",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "group": "senses"
+    },
+    {
+      "name": "q35",
+      "caption": "Saīsinājumi (e.g., 'bibl.')",
+      "sql": "SELECT * FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE l.lemma ~ '^[^ ]+\\.$' ORDER BY heading, human_key, lemma",
+      "resultShape": "lexemes",
+      "group": "lexemes"
+    },
+    {
+      "name": "q36",
+      "caption": "Šķirkļa tips nav vārdu savienojums, bet vārdā ir atstarpe❗",
+      "sql": "SELECT * FROM dict.entries WHERE heading LIKE '% %' AND type_id <> 4 ORDER BY heading, human_key ",
+      "resultShape": "entries",
+      "group": ["entries", "warning"]
+    },
+    {
+      "name": "q37",
+      "caption": "Šķirkļa tips ir vārdu savienojums, bet tajā nav atstarpes❗",
+      "sql": "SELECT * FROM dict.entries WHERE heading ~ '^[^ ]+$' AND type_id = 4 ORDER BY heading, human_key ",
+      "resultShape": "entries",
+      "group": ["entries", "warning"]
+    },
+    {
+      "name": "q38",
+      "caption": "MWE saite no nozīmes uz šķirkli, kas nav MWE",
+      "sql": "SELECT * FROM dict.sense_entry_relations r JOIN dict.entries e ON e.id = r.entry_id WHERE e.type_id <> 4 ORDER BY heading, human_key ",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "entries",
+      "group": "entries"
+    },
+    {
+      "name": "q39",
+      "caption": "MWE saite starp šķirkļiem, kurai MWE galā nav MWE",
+      "sql": "SELECT * FROM dict.entry_relations r JOIN dict.entries e ON e.id = r.entry_1_id WHERE r.type_id = 3 AND e.type_id <> 4 ORDER BY heading, human_key ",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "entries",
+      "group": "entries"
+    },
+    {
+      "name": "q40",
+      "caption": "MWE saite starp šķirkļiem, kurai vārda galā nav vārds",
+      "sql": "SELECT * FROM dict.entry_relations r JOIN dict.entries e ON e.id = r.entry_2_id WHERE r.type_id = 3 AND e.type_id <> 1 ORDER BY heading, human_key ",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "entries",
+      "group": "entries"
+    },
+    {
+      "name": "q41",
+      "caption": "MWE pie ne-vārda nozīmes",
+      "sql": "SELECT * FROM dict.sense_entry_relations r JOIN dict.entries e ON e.id = r.entry_id JOIN dict.senses s ON s.id = r.sense_id JOIN dict.entries e2 ON e2.id = s.entry_id WHERE e2.type_id <> 1 ORDER BY e.heading, e.human_key ",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "entries",
+      "group": "entries"
+    },
+    {
+      "name": "q42a",
+      "caption": "Daudzskaitļa/vienskaitļa formas",
+      "sql": "SELECT * FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE l.data #> '{Gram,Flags,Citi}' ?| array['Daudzskaitļa formas lieto vienskaitļa formu nozīmē','Daudzskaitļa formas parasti lieto vienskaitļa formu nozīmē','Vienskaitļa formas lieto daudzskaitļa formu nozīmē']; ",
+      "hidden": true,
+      "resultShape": "lexemes",
+      "group": "flags"
+    },
+    {
+      "name": "q42b",
+      "caption": "Vienskaitļa formas",
+      "sql": "SELECT * FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE l.data #> '{Gram,Flags,Citi}' ?| array['Vienskaitļa formas lieto dialektos','Vienskaitļa formas lieto sarunvalodā']; ",
+      "hidden": true,
+      "resultShape": "lexemes",
+      "group": "flags"
+    },
+    {
+      "name": "q43a",
+      "caption": "Daudzskaitļa/vienskaitļa formas",
+      "sql": "SELECT * FROM dict.senses s JOIN dict.entries e ON e.id = s.entry_id WHERE s.data #> '{Gram,Flags,Citi}' ?| array['Daudzskaitļa formas lieto vienskaitļa formu nozīmē','Daudzskaitļa formas parasti lieto vienskaitļa formu nozīmē','Vienskaitļa formas lieto daudzskaitļa formu nozīmē']; ",
+      "hidden": true,
+      "resultShape": "senses",
+      "group": "flags"
+    },
+    {
+      "name": "q43b",
+      "caption": "Vienskaitļa formas",
+      "sql": "SELECT * FROM dict.senses s JOIN dict.entries e ON e.id = s.entry_id WHERE s.data #> '{Gram,Flags,Citi}' ?| array['Vienskaitļa formas lieto dialektos','Vienskaitļa formas lieto sarunvalodā']; ",
+      "hidden": true,
+      "resultShape": "senses",
+      "group": "flags"
+    },
+    {
+      "name": "q44",
+      "caption": "Daudzskaitļa/vienskaitļa formas",
+      "where": "x.data #> '{Gram,Flags,Citi}' ?| array['Daudzskaitļa formas lieto vienskaitļa formu nozīmē','Daudzskaitļa formas parasti lieto vienskaitļa formu nozīmē','Vienskaitļa formas lieto daudzskaitļa formu nozīmē']",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "eslx",
+      "group": "flags"
+    },
+    {
+      "name": "q45",
+      "caption": "Vienskaitļa formas",
+      "where": "x.data #> '{Gram,Flags,Citi}' ?| array['Vienskaitļa formas lieto dialektos','Vienskaitļa formas lieto sarunvalodā']",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "eslx",
+      "group": "flags",
+      "hidden": true
+    },
+    {
+      "name": "q46",
+      "caption": "Leksēmas ar 'Leksēmas pamatformas īpatnības: Daudzskaitlis'",
+      "sql": "SELECT * FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE l.data -> 'Gram' -> 'Flags' -> 'Leksēmas pamatformas īpatnības' @> '[\"Daudzskaitlis\"]'; ",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes"
+    },
+    {
+      "name": "q47",
+      "caption": "Vārda tipa šķirkļi ar vismaz divām pamattipa leksēmām",
+      "sql": "SELECT e.human_key, e.heading, count(*) skaits FROM lexemes l JOIN entries e ON e.id = l.entry_id where l.type_id = 1 AND e.type_id = 1 GROUP BY e.human_key, e.heading HAVING count(*) > 1 ORDER BY skaits DESC, e.heading, e.human_key;  ",
+      "resultShape": "entries",
+      "group": "entries",
+      "extraColumns": [
+        {
+          "name": "skaits",
+          "caption": "Leksēmu skaits"
+        }
+      ]
+    },
+    {
+      "name": "q48",
+      "caption": "Paslēptie šķirkļi❗",
+      "sql": "SELECT * FROM entries WHERE hidden ORDER BY heading, human_key ",
+      "resultShape": "entries",
+      "group": ["entries", "warning"]
+    },
+    {
+      "name": "q49",
+      "caption": "Dubulti un vairākkārtīgi vārdu savienojumi (sakrītoši 'šķirkļvārdi')❗❗",
+      "sql": "SELECT * FROM entries WHERE type_id = 4 AND heading IN (SELECT heading FROM entries e WHERE type_id = 4 GROUP BY heading HAVING COUNT(*) > 1) ORDER BY heading, human_key",
+      "resultShape": "entries",
+      "group": ["entries", "error"]
+    },
+    {
+      "name": "q50a",
+      "caption": "Visu šķirkļu saraksts (vārdi)",
+      "sql": "SELECT * FROM entries WHERE type_id = 1 ORDER BY heading, human_key",
+      "notIssue": true,
+      "resultShape": "entries",
+      "group": "entries"
+    },
+    {
+      "name": "q50b",
+      "caption": "Visu šķirkļu saraksts (vairākvārdu savienojumi)",
+      "sql": "SELECT * FROM entries WHERE type_id = 4 ORDER BY heading, human_key",
+      "notIssue": true,
+      "resultShape": "entries",
+      "group": "entries"
+    },
+    {
+      "name": "q50b1",
+      "caption": "Visu šķirkļu saraksts (vairākvārdu savienojumi – idiomas)",
+      "sql": "SELECT * FROM entries WHERE type_id = 4 AND data->'Gram'->'Flags'->>'Vārdu savienojuma tips' = 'Idioma' ORDER BY heading, human_key",
+      "notIssue": true,
+      "resultShape": "entries",
+      "group": "entries"
+    },
+    {
+      "name": "q50b2",
+      "caption": "Visu šķirkļu saraksts (vairākvārdu savienojumi – taksoni)",
+      "sql": "SELECT * FROM entries WHERE type_id = 4 AND data->'Gram'->'Flags'->>'Vārdu savienojuma tips' = 'Taksons' ORDER BY heading, human_key",
+      "notIssue": true,
+      "resultShape": "entries",
+      "group": "entries"
+    },
+    {
+      "name": "q50b3",
+      "caption": "Visu šķirkļu saraksts (vairākvārdu savienojumi – pārējie)",
+      "sql": "SELECT * FROM entries WHERE type_id = 4 AND ((data->'Gram'->'Flags'->>'Vārdu savienojuma tips' IS NULL) OR (data->'Gram'->'Flags'->>'Vārdu savienojuma tips' <> 'Taksons' AND data->'Gram'->'Flags'->>'Vārdu savienojuma tips' <> 'Idioma')) ORDER BY heading, human_key",
+      "notIssue": true,
+      "resultShape": "entries",
+      "group": "entries"
+    },
+    {
+      "name": "q50c",
+      "caption": "Visu šķirkļu saraksts (vārda daļas)",
+      "sql": "SELECT * FROM entries WHERE type_id = 5 ORDER BY heading, human_key",
+      "notIssue": true,
+      "resultShape": "entries",
+      "group": "entries"
+    },
+    {
+      "name": "q51a",
+      "caption": "Piemēri, kuros ir vienburta saīsinājumi (pie šķirkļa)",
+      "sql": "SELECT heading, human_key, content, e.id FROM examples x JOIN entries e ON e.id = x.entry_id WHERE content ~ '^(.* )?[a-zA-ZĀĒĪŌŪČŠŽĢĶĻŅŖāēīōūčšžģķļņŗ]\\.'  ORDER BY heading, human_key ",
+      "resultShape": "examples",
+      "group": "examples"
+    },
+    {
+      "name": "q51b",
+      "caption": "Piemēri, kuros ir vienburta saīsinājumi (pie nozīmes)",
+      "sql": "SELECT heading, human_key, content, e.id FROM examples x JOIN senses s ON x.sense_id = s.id JOIN entries e ON s.entry_id = e.id WHERE content ~ '^(.* )?[a-zA-ZĀĒĪŌŪČŠŽĢĶĻŅŖāēīōūčšžģķļņŗ]\\.'  ORDER BY heading, human_key ",
+      "resultShape": "examples",
+      "group": "examples"
+    },
+    {
+      "name": "q52",
+      "caption": "Vārdu savienojumi 2 vietās – pie šķirkļa un pie nozīmes❗",
+      "sql": "SELECT w.heading heading, w.human_key human_key, mwe.heading mwe_heading FROM entries w JOIN entry_relations er ON er.entry_2_id = w.id JOIN entries mwe ON er.entry_1_id = mwe.id JOIN sense_entry_relations ser ON ser.entry_id = mwe.id JOIN senses s ON ser.sense_id = s.id WHERE er.type_id = 3 AND s.entry_id = w.id AND w.type_id = 1 AND mwe.type_id = 4 ORDER BY w.heading, w.human_key, mwe.human_key",
+      "extraColumns": [
+        {
+          "name": "mwe_heading",
+          "caption": "Vārdu savienojums"
+        }
+      ],
+      "resultShape": "entries",
+      "group": ["entries", "warning"]
+    },
+    {
+      "name": "q53",
+      "caption": "Karogu validācija❗",
+      "queryType": "code",
+      "codeFunction": "q53",
+      "resultShape": "eslx",
+      "group": ["flags", "warning"]
+    },
+    {
+      "name": "q54",
+      "caption": "Paradigmas",
+      "sql": "SELECT human_key, legacy_no, caption, caption_en, data FROM paradigms ORDER BY human_key",
+      "notIssue": true,
+      "resultShape": "customTable",
+      "group": "meta",
+      "hidden": false,
+      "definedColumns": [
+        {
+          "name": "human_key",
+          "caption": "Kods"
+        },
+        {
+          "name": "legacy_no",
+          "caption": "Vecais kods"
+        },
+        {
+          "name": "caption",
+          "caption": "Apraksts"
+        },
+        {
+          "name": "data",
+          "caption": "Karodziņi"
+        },
+        {
+          "name": "caption_en",
+          "caption": "Apraksts angliski"
+        }
+      ],
+      "hideOtherColumns": false
+    },
+    {
+      "name": "q55",
+      "caption": "Leksēmas ar 29-to paradigmu",
+      "sql": "SELECT e.heading, e.human_key, l.lemma FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id JOIN dict.paradigms p ON p.id = l.paradigm_id WHERE p.legacy_no = 29 ORDER BY heading, e.human_key, lemma",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes",
+      "notIssue": true,
+      "hidden": false
+    },
+    {
+      "name": "q56",
+      "caption": "Leksēmas ar romiešu skaitļiem",
+      "sql": "SELECT e.heading, e.human_key, l.lemma FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE lemma ~ '^[IVXLCMD]+$' ORDER BY heading, e.human_key, lemma",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes",
+      "notIssue": true,
+      "hidden": false
+    },
+    {
+      "name": "q57",
+      "caption": "Leksēmas ar izrunām",
+      "sql": "SELECT heading, human_key, lemma, l.data->>'Pronunciations' pron FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE l.data->'Pronunciations' IS NOT NULL ORDER BY heading, human_key, lemma",
+      "sql3": "SELECT * FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE l.data->'Pronunciations' IS NOT NULL ORDER BY heading, human_key, lemma",
+      "sql2": "SELECT * FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE l.data->'Pronunciations' IS NOT NULL OR l.data->'Gram'->'Flags'->'Pronunciations' IS NOT NULL ORDER BY heading, human_key, lemma",
+      "resultShape": "lexemes",
+      "group": "lexemes",
+      "extraColumns":[
+        {
+          "name": "pron",
+          "caption": "Izruna"
+        }
+      ]
+    },
+    {
+      "name": "q57b",
+      "caption": "Leksēmas ar izrunām (>1)",
+      "sql": "SELECT heading, human_key, lemma, l.data->>'Pronunciations' pron FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE l.data->'Pronunciations' IS NOT NULL AND jsonb_array_length(l.data->'Pronunciations' ) > 1 ORDER BY heading, human_key, lemma",
+      "sql3": "SELECT * FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE l.data->'Pronunciations' IS NOT NULL ORDER BY heading, human_key, lemma",
+      "sql2": "SELECT * FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE l.data->'Pronunciations' IS NOT NULL OR l.data->'Gram'->'Flags'->'Pronunciations' IS NOT NULL ORDER BY heading, human_key, lemma",
+      "notIssue": true,
+      "resultShape": "lexemes",
+      "group": "lexemes",
+      "extraColumns":[
+        {
+          "name": "pron",
+          "caption": "Izruna"
+        }
+      ]
+    },
+    {
+      "name": "q58a",
+      "caption": "Ierobežojums 'Kopā ar' vārda daļu šķirkļos",
+      "where": "x.data #>> '{Gram,StructuralRestrictions,Restriction}' = 'Kopā ar'",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "eslx",
+      "group": "restrictions",
+      "hidden": true
+    },
+    {
+      "name": "q58b",
+      "caption": "Ierobežojums 'Kopā ar' vārda daļu šķirkļos, plus dziļie SR",
+      "where": "entries.type_id = 5 AND (x.data #> '{Gram,StructuralRestrictions,Restriction}' = '\"Kopā ar\"'::jsonb OR x.data #> '{Gram,StructuralRestrictions,AND}' IS NOT NULL OR x.data #> '{Gram,StructuralRestrictions,OR}' IS NOT NULL)",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "eslx",
+      "group": "restrictions",
+      "hidden": true
+    },
+    {
+      "name": "q58c",
+      "caption": "Leksēmas ierobežojums 'Kopā ar' vārda daļu šķirkļos",
+      "sql": "SELECT * FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id WHERE e.type_id = 5 AND (l.data #>> '{Gram,StructuralRestrictions,Restriction}' = 'Kopā ar' OR l.data #> '{Gram,StructuralRestrictions,AND}' IS NOT NULL OR l.data #> '{Gram,StructuralRestrictions,OR}' IS NOT NULL) ORDER BY heading, human_key, lemma",
+      "resultShape": "lexemes",
+      "group": "restrictions",
+      "hidden": true
+    },
+    {
+      "name": "q58d",
+      "caption": "Nozīmes ierobežojums 'Kopā ar' vārda daļu šķirkļos",
+      "sql": "SELECT * FROM dict.senses l JOIN dict.entries e ON e.id = l.entry_id WHERE e.type_id = 5 AND (l.data #>> '{Gram,StructuralRestrictions,Restriction}' = 'Kopā ar' OR l.data #> '{Gram,StructuralRestrictions,AND}' IS NOT NULL OR l.data #> '{Gram,StructuralRestrictions,OR}' IS NOT NULL) ORDER BY heading, human_key, gloss",
+      "resultShape": "senses",
+      "group": "restrictions",
+      "hidden": true
+    },
+    {
+      "name": "q59",
+      "caption": "Karogs 'Apvidvārds'",
+      "where": "x.data #> '{Gram,Flags,Lietojums}' @> '[\"Apvidvārds\"]'::jsonb",
+      "showIn": [
+        "tezaurs"
+      ],
+      "notIssue": true,
+      "resultShape": "eslx",
+      "group": "flags",
+      "hidden": false
+    },
+    {
+      "name": "q60",
+      "caption": "Karogs 'Novecojis'",
+      "where": "x.data #> '{Gram,Flags,Lietojums}' @> '[\"Novecojis\"]'::jsonb",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "eslx",
+      "group": "flags",
+      "hidden": false
+    },
+    {
+      "name": "q61a",
+      "caption": "Ierobežojumu veidi",
+      "sql": "SELECT * FROM grammar_restriction_types ORDER BY id",
+      "notIssue": true,
+      "resultShape": "customTable",
+      "group": "meta",
+      "hidden": false
+    },
+    {
+      "name": "q61b",
+      "caption": "Ierobežojumu biežumi",
+      "sql": "SELECT * FROM grammar_restriction_frequencies ORDER BY compare_value, id",
+      "notIssue": true,
+      "resultShape": "customTable",
+      "group": "meta",
+      "hidden": false
+    },
+    {
+      "name": "q61c",
+      "caption": "Šķirkļa-šķirkļa saišu tipi",
+      "sql": "SELECT * FROM entry_rel_types ORDER BY id",
+      "notIssue": true,
+      "resultShape": "customTable",
+      "group": "meta",
+      "definedColumns": [
+        {
+          "name": "id",
+          "caption": "DB kods"
+        },
+        {
+          "name": "name",
+          "caption": "Kods"
+        },
+        {
+          "name": "description",
+          "caption": "Apraksts"
+        }
+      ],
+      "hidden": false
+    },
+    {
+      "name": "q61d",
+      "caption": "Nozīmes-nozīmes saišu tipi",
+      "sql": "SELECT * FROM sense_rel_types ORDER BY id",
+      "notIssue": true,
+      "resultShape": "customTable",
+      "group": "meta",
+      "definedColumns": [
+        {
+          "name": "id",
+          "caption": "DB kods"
+        },
+        {
+          "name": "name",
+          "caption": "Kods"
+        },
+        {
+          "name": "description",
+          "caption": "Apraksts"
+        }
+      ],
+      "hidden": false
+    },
+    {
+      "name": "q61e",
+      "caption": "Nozīmes-šķirkļa saišu tipi",
+      "sql": "SELECT * FROM sense_entry_rel_types ORDER BY id",
+      "notIssue": true,
+      "resultShape": "customTable",
+      "group": "meta",
+      "definedColumns": [
+        {
+          "name": "id",
+          "caption": "DB kods"
+        },
+        {
+          "name": "name",
+          "caption": "Kods"
+        },
+        {
+          "name": "description",
+          "caption": "Apraksts"
+        }
+      ],
+      "hidden": false
+    },
+    {
+      "name": "q61f",
+      "caption": "Synset saišu tipi",
+      "sql": "SELECT * FROM synset_rel_types ORDER BY id",
+      "notIssue": true,
+      "resultShape": "customTable",
+      "group": "meta",
+      "definedColumns": [
+        {
+          "name": "id",
+          "caption": "DB kods"
+        },
+        {
+          "name": "name",
+          "caption": "Kods"
+        },
+        {
+          "name": "description",
+          "caption": "Apraksts"
+        }
+      ],
+      "hidden": false
+    },
+    {
+      "name": "q61g",
+      "caption": "Šķirkļu tipi",
+      "sql": "SELECT * FROM entry_types ORDER BY id",
+      "notIssue": true,
+      "resultShape": "customTable",
+      "group": "meta",
+      "definedColumns": [
+        {
+          "name": "id",
+          "caption": "DB kods"
+        },
+        {
+          "name": "name",
+          "caption": "Kods"
+        },
+        {
+          "name": "description",
+          "caption": "Apraksts"
+        }
+      ],
+      "hidden": false
+    },
+    {
+      "name": "q61h",
+      "caption": "Leksēmu tipi",
+      "sql": "SELECT * FROM lexeme_types ORDER BY id",
+      "notIssue": true,
+      "resultShape": "customTable",
+      "group": "meta",
+      "definedColumns": [
+        {
+          "name": "id",
+          "caption": "DB kods"
+        },
+        {
+          "name": "name",
+          "caption": "Kods"
+        },
+        {
+          "name": "description",
+          "caption": "Apraksts"
+        }
+      ],
+      "hidden": false
+    },
+    {
+      "name": "q61i",
+      "caption": "Ārējo saišu tipi",
+      "sql": "SELECT * FROM external_link_types ORDER BY id",
+      "notIssue": true,
+      "resultShape": "customTable",
+      "group": "meta",
+      "definedColumns": [
+        {
+          "name": "id",
+          "caption": "DB kods"
+        },
+        {
+          "name": "name",
+          "caption": "Kods"
+        },
+        {
+          "name": "description",
+          "caption": "Apraksts"
+        }
+      ],
+      "hidden": false
+    },
+
+    {
+      "name": "q62",
+      "caption": "Karogs 'Nevēlams'",
+      "where": "x.data #> '{Gram,Flags,Lietojums}' @> '[\"Nevēlams\"]'",
+      "showIn": [
+        "tezaurs",
+        "mlvv"
+      ],
+      "resultShape": "eslx",
+      "group": "flags",
+      "hidden": false
+    },
+    {
+      "name": "q63",
+      "caption": "Skaidrojumi ar 🇺🇦",
+      "sql": "SELECT * FROM dict.senses s JOIN dict.entries e ON e.id = s.entry_id WHERE gloss LIKE '%Ukrain%' ORDER BY heading, gloss",
+      "notIssue": true,
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "group": "senses"
+    },
+    {
+      "name": "q64",
+      "caption": "Starpšķirkļu saites",
+      "queryType": "code",
+      "codeFunction": "q64",
+      "resultShape": "customTable",
+      "notIssue": true,
+      "group": "links",
+      "definedColumns": [
+        {
+          "name": "leftSide",
+          "caption": "Sākums"
+        },
+        {
+          "name": "rel_type",
+          "caption": "Saite"
+        },
+        {
+          "name": "rightSide",
+          "caption": "Beigas"
+        }
+      ],
+      "hideOtherColumns": true,
+      "hidden": true
+    },
+    {
+      "name": "q64a",
+      "caption": "Starpšķirkļu saites 'derivativeOf'",
+      "queryType": "code",
+      "codeFunction": "q64",
+      "param": 1,
+      "resultShape": "customTable",
+      "notIssue": true,
+      "group": "links",
+      "definedColumns": [
+        {
+          "name": "leftSide",
+          "caption": "Atvasinājums"
+        },
+        {
+          "name": "rightSide",
+          "caption": "Atvasinātais"
+        }
+      ],
+      "hideOtherColumns": true
+    },
+    {
+      "name": "q64b",
+      "caption": "Starpšķirkļu saites 'sameAs'",
+      "queryType": "code",
+      "codeFunction": "q64",
+      "param": 2,
+      "resultShape": "customTable",
+      "notIssue": true,
+      "group": "links",
+      "definedColumns": [
+        {
+          "name": "leftSide",
+          "caption": "Sākums"
+        },
+        {
+          "name": "rightSide",
+          "caption": "Beigas"
+        }
+      ],
+      "hideOtherColumns": true
+    },
+    {
+      "name": "q64d",
+      "caption": "Starpšķirkļu saites 'seeAlso'",
+      "queryType": "code",
+      "codeFunction": "q64",
+      "param": 4,
+      "resultShape": "customTable",
+      "notIssue": true,
+      "group": "links",
+      "definedColumns": [
+        {
+          "name": "leftSide",
+          "caption": "Sākums"
+        },
+        {
+          "name": "rightSide",
+          "caption": "Beigas"
+        }
+      ],
+      "hideOtherColumns": true
+    },
+    {
+      "name": "q65",
+      "caption": "Sinonīmkopas",
+      "queryType": "code",
+      "codeFunction": "q65",
+      "resultShape": "customTable",
+      "notIssue": true,
+      "group": "other",
+      "definedColumns": [
+        {
+          "name": "synset",
+          "caption": "Sinonīmkopa"
+        },
+        {
+          "name": "size",
+          "caption": "Izmērs"
+        }
+      ],
+      "pageSize": 100,
+      "hideOtherColumns": true
+    },
+    {
+      "name": "q66a",
+      "caption": "Sinonīmkopas ar 1 elementu",
+      "sql": "SELECT * FROM dict.senses s JOIN dict.entries e ON e.id = s.entry_id WHERE s.synset_id IN (SELECT synset_id FROM dict.senses s2 WHERE s2.synset_id IS NOT NULL GROUP BY s2.synset_id HAVING COUNT(*) = 1) ORDER BY heading, human_key",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "notIssue": true,
+      "group": "senses"
+    },
+    {
+      "name": "q66b",
+      "caption": "Sinonīmkopas ar 1 elementu, kuras nav nevienas saites gals",
+      "sql": "SELECT * FROM dict.senses s JOIN dict.entries e ON e.id = s.entry_id WHERE s.synset_id IN (SELECT synset_id FROM dict.senses s2 WHERE s2.synset_id IS NOT NULL AND s2.synset_id NOT IN ((SELECT DISTINCT r1.synset_1_id FROM dict.synset_relations r1 ) UNION (SELECT DISTINCT r2.synset_2_id FROM dict.synset_relations r2)) GROUP BY s2.synset_id HAVING COUNT(*) = 1) ORDER BY heading, human_key",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "notIssue": true,
+      "group": "senses"
+    },
+    {
+      "name": "q66c",
+      "caption": "Tukšas sinonīmkopas, kuras ir saites gals",
+      "sql": "SELECT * FROM dict.senses s JOIN dict.entries e ON e.id = s.entry_id WHERE s.synset_id IN (SELECT synset_id FROM dict.senses s2 WHERE s2.synset_id IS NOT NULL AND s2.synset_id NOT IN ((SELECT DISTINCT r1.synset_1_id FROM dict.synset_relations r1 ) UNION (SELECT DISTINCT r2.synset_2_id FROM dict.synset_relations r2)) GROUP BY s2.synset_id HAVING COUNT(*) = 1) ORDER BY heading, human_key",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "notIssue": true,
+      "group": "senses"
+    },
+    {
+      "name": "q67",
+      "caption": "Gradāciju kopas",
+      "queryType": "code",
+      "codeFunction": "q67",
+      "resultShape": "customTable",
+      "notIssue": true,
+      "group": "other",
+      "definedColumns": [
+        {
+          "name": "gradset",
+          "caption": "Gradācijkopa"
+        },
+        {
+          "name": "size",
+          "caption": "Izmērs"
+        },
+        {
+          "name": "name",
+          "caption": "Nosaukums"
+        }
+      ],
+      "pageSize": 100,
+      "hideOtherColumns": true
+    },
+    {
+      "name": "q68",
+      "caption": "Sinonīmkopu saites",
+      "queryType": "code",
+      "codeFunction": "q68",
+      "resultShape": "customTable",
+      "notIssue": true,
+      "group": "links",
+      "definedColumns": [
+        {
+          "name": "leftSide",
+          "caption": "Sākums"
+        },
+        {
+          "name": "rel_roles",
+          "caption": "Saite"
+        },
+        {
+          "name": "rightSide",
+          "caption": "Beigas"
+        }
+      ],
+      "hideOtherColumns": true,
+      "hidden": false
+    },
+    {
+      "name": "q68a",
+      "caption": "Sinonīmkopu saites: hiponīmija",
+      "queryType": "code",
+      "codeFunction": "q68",
+      "param": 1,
+      "resultShape": "customTable",
+      "notIssue": true,
+      "group": "links",
+      "definedColumns": [
+        {
+          "name": "leftSide",
+          "caption": "Sākums"
+        },
+        {
+          "name": "rel_roles",
+          "caption": "Saite"
+        },
+        {
+          "name": "rightSide",
+          "caption": "Beigas"
+        }
+      ],
+      "hideOtherColumns": true,
+      "hidden": false
+    },
+    {
+      "name": "q68b",
+      "caption": "Sinonīmkopu saites: meronīmija",
+      "queryType": "code",
+      "codeFunction": "q68",
+      "param": 2,
+      "resultShape": "customTable",
+      "notIssue": true,
+      "group": "links",
+      "definedColumns": [
+        {
+          "name": "leftSide",
+          "caption": "Sākums"
+        },
+        {
+          "name": "rel_roles",
+          "caption": "Saite"
+        },
+        {
+          "name": "rightSide",
+          "caption": "Beigas"
+        }
+      ],
+      "hideOtherColumns": true,
+      "hidden": false
+    },
+    {
+      "name": "q68c",
+      "caption": "Sinonīmkopu saites: aptuvens sinonīms",
+      "queryType": "code",
+      "codeFunction": "q68",
+      "param": 3,
+      "resultShape": "customTable",
+      "notIssue": true,
+      "group": "links",
+      "definedColumns": [
+        {
+          "name": "leftSide",
+          "caption": "Sākums"
+        },
+        {
+          "name": "rel_roles",
+          "caption": "Saite"
+        },
+        {
+          "name": "rightSide",
+          "caption": "Beigas"
+        }
+      ],
+      "hideOtherColumns": true,
+      "hidden": false
+    },
+    {
+      "name": "q68d",
+      "caption": "Sinonīmkopu saites: saistīts ar",
+      "queryType": "code",
+      "codeFunction": "q68",
+      "param": 4,
+      "resultShape": "customTable",
+      "notIssue": true,
+      "group": "links",
+      "definedColumns": [
+        {
+          "name": "leftSide",
+          "caption": "Sākums"
+        },
+        {
+          "name": "rel_roles",
+          "caption": "Saite"
+        },
+        {
+          "name": "rightSide",
+          "caption": "Beigas"
+        }
+      ],
+      "hideOtherColumns": true,
+      "hidden": false
+    },
+    {
+      "name": "q68e",
+      "caption": "Sinonīmkopu saites: antonīmija",
+      "queryType": "code",
+      "codeFunction": "q68",
+      "param": 5,
+      "resultShape": "customTable",
+      "notIssue": true,
+      "group": "links",
+      "definedColumns": [
+        {
+          "name": "leftSide",
+          "caption": "Sākums"
+        },
+        {
+          "name": "rel_roles",
+          "caption": "Saite"
+        },
+        {
+          "name": "rightSide",
+          "caption": "Beigas"
+        }
+      ],
+      "hideOtherColumns": true,
+      "hidden": false
+    },
+    {
+      "name": "q69",
+      "caption": "WordNet vārdi bez paradigmas",
+      "sql": "SELECT DISTINCT lemma, human_key, heading, e.id FROM senses s JOIN entries e ON e.id = s.entry_id JOIN lexemes l ON e.id = l.entry_id WHERE s.synset_id IS NOT NULL AND l.paradigm_id IS NULL AND e.type_id = 1 ORDER BY lemma, e.id",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes"
+    },
+    {
+      "name": "q70a",
+      "caption": "Ierobežojumi bez tipa, šķirklī❗❗",
+      "sql": "SELECT sr, human_key, heading, e.id id FROM admin.sr_e r JOIN entries e ON e.id = r.id WHERE sr->'Restriction' IS NULL ORDER BY e.id;",
+      "showIn": [
+        "tezaurs", "mlvv"
+      ],
+      "resultShape": "entries",
+      "group": ["restrictions", "error"],
+      "extraColumns": [
+        {
+          "name": "sr",
+          "caption": "Ierobežojums"
+        }
+      ]
+    },
+    {
+      "name": "q70b",
+      "caption": "Ierobežojumi bez tipa, nozīmē❗❗",
+      "sql": "SELECT sr, human_key, heading, gloss, e.id id FROM admin.sr_s r JOIN senses s ON s.id = r.id JOIN entries e ON e.id = s.entry_id WHERE sr->'Restriction' IS NULL ORDER BY e.id;",
+      "showIn": [
+        "tezaurs", "mlvv"
+      ],
+      "resultShape": "senses",
+      "group": ["restrictions", "error"],
+      "extraColumns": [
+        {
+          "name": "sr",
+          "caption": "Ierobežojums"
+        }
+      ]
+    },
+    {
+      "name": "q70c",
+      "caption": "Ierobežojumi bez tipa, leksēmā❗❗",
+      "sql": "SELECT sr, human_key, heading, lemma, e.id id FROM admin.sr_l r JOIN lexemes l ON l.id = r.id JOIN entries e ON e.id = l.entry_id WHERE sr->'Restriction' IS NULL ORDER BY e.id;",
+      "showIn": [
+        "tezaurs", "mlvv"
+      ],
+      "resultShape": "lexemes",
+      "group": ["restrictions", "error"],
+      "extraColumns": [
+        {
+          "name": "sr",
+          "caption": "Ierobežojums"
+        }
+      ]
+    },
+    {
+      "name": "q71",
+      "caption": "Šķirkļi ar noteiktu avotu",
+      "group": ["entries"],
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "entries",
+      "notIssue": true,
+      "sql": "SELECT s.abbr, e.human_key, e.heading, e.id id FROM entries e JOIN source_links sl ON sl.entry_id = e.id JOIN sources s ON s.id = sl.source_id WHERE s.id = @@@source_id@@@ ORDER BY e.id;",
+      "extraColumns": [
+        {
+          "name": "abbr",
+          "caption": "Avots"
+        }
+      ],
+      "paramForm": {
+        "title": "Izvēlieties avotu",
+        "fields": [
+          {
+            "label": "Avots",
+            "type": "select",
+            "name": "source_id",
+            "sql": "SELECT id val, CONCAT(abbr, ' - ', CASE WHEN length(title) > 100 THEN concat(substring(title, 1, 100), '...') ELSE title END) caption FROM sources ORDER BY abbr"
+          }
+        ]
+      },
+      "pageSize": 10000
+    },
+    {
+      "name": "q72",
+      "caption": "Leksēmas ar celmu variantiem",
+      "sql": "SELECT heading, human_key, lemma, stem1, stem2, stem3 FROM lexemes l JOIN entries e ON l.entry_id = e.id WHERE stem1 LIKE '%,%'or stem2 LIKE '%,%' or stem3 LIKE '%,%' ORDER BY lemma, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes",
+      "extraColumns": [
+        {
+          "name": "stem1",
+          "caption": "Celms 1"
+        },
+        {
+          "name": "stem2",
+          "caption": "Celms 2"
+        },
+        {
+          "name": "stem3",
+          "caption": "Celms 3"
+        }
+      ]
+    },
+    {
+      "name": "q73a",
+      "caption": "Ierobežojumi 'Kopā ar' vārda daļas šķirklī, nozīmē❗",
+      "sql": "SELECT human_key, heading, e.id, sr FROM admin.sr_s sr_s JOIN senses s ON sr_s.id = s.id JOIN entries e ON s.entry_id = e.id WHERE e.type_id = 5 AND sr->>'Restriction'='Kopā ar' ORDER BY e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "group": ["restrictions", "warning"],
+      "extraColumns": [
+        {
+          "name": "sr",
+          "caption": "Ierobežojums"
+        }
+      ]
+    },
+    {
+      "name": "q73b",
+      "caption": "Ierobežojumi 'Kopā ar' vārda daļas šķirklī, leksēmā❗",
+      "sql": "SELECT human_key, heading, e.id, sr FROM admin.sr_l sr_l JOIN lexemes l ON sr_l.id = l.id JOIN entries e ON l.entry_id = e.id WHERE e.type_id = 5 AND sr->>'Restriction'='Kopā ar' ORDER BY e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": ["restrictions", "warning"],
+      "extraColumns": [
+        {
+          "name": "sr",
+          "caption": "Ierobežojums"
+        }
+      ]
+    },
+    {
+      "name": "q74a",
+      "caption": "Vārdi ar burtiem ŗ ō y, kam nav karogu 'Rakstība' vai 'Valoda'",
+      "sql": "SELECT lemma, heading, human_key, e.id FROM lexemes l join entries e ON l.entry_id = e.id WHERE lemma ~ '[ŌōŗŖyY]' AND l.data->'Gram'->'Flags'->'Valoda' IS NULL AND l.data->'Gram'->'Flags'->'Rakstība' IS NULL ORDER BY lemma, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": ["lexemes"]
+    },
+    {
+      "name": "q74b",
+      "caption": "Vārdi ar burtiem ŗ ō y, kam nav karogu 'Rakstība' vai 'Valoda', un nav lielais sākumburts",
+      "sql": "SELECT lemma, heading, human_key, e.id FROM lexemes l join entries e ON l.entry_id = e.id WHERE lemma ~ '^[^A-ZĀĒĪŌŪĢĶĻŅŖČŠŽ].*[ŌōŗŖyY]' AND l.data->'Gram'->'Flags'->'Valoda' IS NULL AND l.data->'Gram'->'Flags'->'Rakstība' IS NULL ORDER BY lemma, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": ["lexemes"]
+    },
+    {
+      "name": "q75",
+      "caption": "Vārda daļu leksēmas ar paradigmām",
+      "sql": "SELECT human_key, heading, e.id, lemma FROM lexemes l JOIN entries e ON l.entry_id = e.id WHERE l.paradigm_id IS NOT NULL AND e.type_id = 5 ORDER BY lemma, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": ["lexemes"]
+    },
+    {
+      "name": "q76",
+      "caption": "Vārda daļu leksēmas ar karogiem 'Vārdšķira' vai 'Kategorija'",
+      "sql": "SELECT human_key, heading, e.id, lemma, l.data->'Gram'->'Flags' flags FROM lexemes l JOIN entries e ON l.entry_id = e.id WHERE (l.data->'Gram'->'Flags'->'Vārdšķira' IS NOT NULL OR l.data->'Gram'->'Flags'->'Kategorija' IS NOT NULL) AND e.type_id = 5 ORDER BY lemma, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": ["lexemes"],
+      "extraColumns": [
+        {
+          "name": "flags",
+          "caption": "Karogi"
+        }
+      ]
+    },
+    {
+      "name": "q77",
+      "caption": "Nozīmes, kurās varētu būt taksoni",
+      "sql": "SELECT human_key, heading, gloss FROM senses s JOIN entries e ON e.id = s.entry_id WHERE gloss ~ '\\(\"[A-Z].+\"\\)' AND gloss !~ '[Pp]ilsēta' AND gloss !~ '[Aa]pdzīvota' AND gloss !~ '[Aa]pgabals' AND gloss !~ '[Aa]ugstiene' AND gloss !~ '[Šš]tat[sā]' AND gloss !~ '[Tt]eritor' AND gloss !~ '[Aa]dministrat' ORDER BY gloss, human_key, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "group": ["senses"]
+    },
+    {
+      "name": "q78",
+      "caption": "Visas (netukšās) nozīmes alfabētiskā secībā",
+      "sql": "SELECT human_key, heading, gloss FROM senses s JOIN entries e ON e.id = s.entry_id WHERE gloss IS NOT NULL AND length(gloss) > 0 ORDER BY lower(gloss), human_key, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "notIssue": true,
+      "group": ["senses"]
+    },
+    {
+      "name": "q78b",
+      "caption": "Nozīmes ar tukšu skaidrojumu",
+      "sql": "SELECT human_key, heading, gloss FROM senses s JOIN entries e ON e.id = s.entry_id WHERE gloss IS NULL OR length(gloss) = 0 ORDER BY lower(gloss), human_key, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "notIssue": true,
+      "group": ["senses"]
+    },
+    {
+      "name": "q79",
+      "caption": "Bieži lietotie skaidrojumi",
+      "queryType": "code",
+      "codeFunction": "q79",
+      "resultShape": "customTable",
+      "notIssue": true,
+      "group": "senses",
+      "definedColumns": [
+        {
+          "name": "gloss",
+          "caption": "Skaidrojums"
+        },
+        {
+          "name": "size",
+          "caption": "Skaits"
+        },
+        {
+          "name": "entries",
+          "caption": "Šķirkļi"
+        }
+      ],
+      "hideOtherColumns": true,
+      "hidden": false
+    },
+    {
+      "name": "q80",
+      "caption": "Šķirkļi, kuru pamatleksēmai ir adverba paradigma",
+      "sql": "SELECT e.id, e.heading, e.human_key FROM entries e JOIN lexemes l ON e.primary_lexeme_id = l.id WHERE l.paradigm_id in (21, 51) ORDER BY heading, human_key, e.id",
+      "notIssue": true,
+      "resultShape": "entries",
+      "group": "entries"
+    },
+    {
+      "name": "q81",
+      "caption": "Leksēmas ar paradigmu adjdef-f1 vai adjdef-f2, bet bez pamatformas morforīkiem",
+      "sql": "SELECT e.human_key human_key, heading, e.id, lemma, p.human_key paradigm FROM lexemes l JOIN entries e ON l.entry_id = e.id JOIN paradigms p ON l.paradigm_id = p.id WHERE p.legacy_no IN (40, 41) AND l.data->'Gram'->'Flags'->'Pamatforma morforīkiem' IS NULL ORDER BY lemma, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": ["lexemes"],
+      "extraColumns": [
+        {
+          "name": "paradigm",
+          "caption": "Paradigma"
+        }
+      ]
+    },
+    {
+      "name": "q82",
+      "caption": "Leksēmas ar vārdšķiru darbības vārds vai divdabis, bet ar īpašības vai apstākļa vārda paradigmu, un bez pamatformas morforīkiem❗",
+      "sql": "SELECT e.human_key human_key, heading, e.id, lemma, p.human_key paradigm FROM lexemes l JOIN entries e ON l.entry_id = e.id JOIN paradigms p ON l.paradigm_id = p.id WHERE p.legacy_no IN (13, 14, 40, 41, 30, 54, 21, 51, 42, 43, 52, 53) AND l.data->'Gram'->'Flags'->>'Vārdšķira' IN ('Divdabis', 'Darbības vārds') AND l.data->'Gram'->'Flags'->'Pamatforma morforīkiem' IS NULL ORDER BY lemma, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": ["lexemes"],
+      "extraColumns": [
+        {
+          "name": "paradigm",
+          "caption": "Paradigma"
+        }
+      ]
+    },
+    {
+      "name": "q83",
+      "caption": "Sinonīmkopu ārējās saites",
+      "queryType": "code",
+      "codeFunction": "q83",
+      "resultShape": "customTable",
+      "notIssue": true,
+      "group": "links",
+      "definedColumns": [
+        {
+          "name": "leftSide",
+          "caption": "Sinonīmkopa"
+        },
+        {
+          "name": "relation",
+          "caption": "Attiecība"
+        },
+        {
+          "name": "targetType",
+          "caption": "Resurss"
+        },
+        {
+          "name": "rightSide",
+          "caption": "Ārējā saite"
+        }
+      ],
+      "hideOtherColumns": true,
+      "hidden": false
+    },
+    {
+      "name": "q84",
+      "caption": "Šķirkļi, kuriem ir vairākas bezdatu saites uz vienu un to pašu avotu❗",
+      "sql": "SELECT human_key, heading, id FROM entries e WHERE id IN (SELECT entry_id FROM source_links WHERE data IS NULL GROUP BY entry_id, source_id HAVING count(*) > 1) ORDER BY heading, human_key ;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "entries",
+      "group": ["entries", "warning"]
+    },
+    {
+      "name": "q85",
+      "caption": "Sinseti ar > 1 precīzo OMW nozīmi❗❗",
+      "queryType": "code",
+      "codeFunction": "q85",
+      "resultShape": "customTable",
+      "notIssue": true,
+      "group": ["links", "error"],
+      "definedColumns": [
+        {
+          "name": "leftSide",
+          "caption": "Sinonīmkopa"
+        },
+        {
+          "name": "rightSide",
+          "caption": "OMW saite(s)"
+        }
+      ],
+      "hideOtherColumns": true,
+      "hidden": false
+    },
+    {
+      "name": "q86",
+      "caption": "Viena precīzā OMW nozīme > 1 sinsetam❗❗",
+      "queryType": "code",
+      "codeFunction": "q86",
+      "resultShape": "customTable",
+      "notIssue": true,
+      "group": ["links", "error"],
+      "definedColumns": [
+        {
+          "name": "leftSide",
+          "caption": "Sinonīmkopa(s)"
+        },
+        {
+          "name": "rightSide",
+          "caption": "OMW saite(s)"
+        }
+      ],
+      "hideOtherColumns": true,
+      "hidden": false
+    },
+    {
+      "name": "q87",
+      "caption": "Sinsetā ir vairākas viena šķirkļa nozīmes❗",
+      "sql": "WITH bp AS (SELECT entry_id, synset_id FROM senses WHERE synset_id IS NOT NULL GROUP BY entry_id, synset_id HAVING count(*) > 1) SELECT heading, human_key, gloss, bp.synset_id y_id, s.hidden s_hidden FROM bp JOIN entries e ON e.id = bp.entry_id JOIN senses s ON s.entry_id = bp.entry_id AND s.synset_id = bp.synset_id ORDER BY bp.entry_id, bp.synset_id, gloss;",
+      "extraColumns": [
+        {
+          "name": "y_id",
+          "caption": "Sinseta id"
+        },
+        {
+          "name": "s_hidden",
+          "caption": "Paslēpta"
+        }
+      ],
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "group": ["senses", "warning"]
+    },
+    {
+      "name": "q88a",
+      "caption": "Īpašvārdi bez paradigmas",
+      "sql": "SELECT e.human_key human_key, heading, e.id, lemma FROM lexemes l JOIN entries e ON l.entry_id = e.id WHERE l.paradigm_id IS NULL AND e.type_id = 1 AND l.data->'Gram'->'Flags'->>'Lietvārda tips' = 'Īpašvārds' ORDER BY lemma, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": ["lexemes"]
+    },
+    {
+      "name": "q88b",
+      "caption": "Īpašvārdi bez paradigmas (vietvārdi)",
+      "sql": "SELECT e.human_key human_key, heading, e.id, lemma FROM lexemes l JOIN entries e ON l.entry_id = e.id WHERE l.paradigm_id IS NULL AND e.type_id = 1 AND l.data->'Gram'->'Flags'->>'Lietvārda tips' = 'Īpašvārds' AND l.data->'Gram'->'Flags'->>'Īpašvārda veids' = 'Vietvārds' ORDER BY lemma, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": ["lexemes"]
+    },
+    {
+      "name": "q88c",
+      "caption": "Īpašvārdi bez paradigmas (nevietvārdi)",
+      "sql": "SELECT e.human_key human_key, heading, e.id, lemma FROM lexemes l JOIN entries e ON l.entry_id = e.id WHERE l.paradigm_id IS NULL AND e.type_id = 1 AND l.data->'Gram'->'Flags'->>'Lietvārda tips' = 'Īpašvārds' AND (l.data->'Gram'->'Flags'->>'Īpašvārda veids' != 'Vietvārds' OR l.data->'Gram'->'Flags'->>'Īpašvārda veids' IS NULL) ORDER BY lemma, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": ["lexemes"]
+    },
+    {
+      "name": "q88c2",
+      "caption": "Īpašvārdi bez paradigmas (nullvārdi)",
+      "sql": "SELECT e.human_key human_key, heading, e.id, lemma FROM lexemes l JOIN entries e ON l.entry_id = e.id WHERE l.paradigm_id IS NULL AND e.type_id = 1 AND l.data->'Gram'->'Flags'->>'Lietvārda tips' = 'Īpašvārds' AND l.data->'Gram'->'Flags'->>'Īpašvārda veids' IS NULL ORDER BY lemma, e.id;",
+      "hidden": true,
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": ["lexemes"]
+    },
+    {
+      "name": "q88d",
+      "caption": "Īpašvārdi bez paradigmas (MWE)",
+      "sql": "SELECT e.human_key human_key, heading, e.id, lemma FROM lexemes l JOIN entries e ON l.entry_id = e.id WHERE l.paradigm_id IS NULL AND e.type_id = 4 AND l.data->'Gram'->'Flags'->>'Lietvārda tips' = 'Īpašvārds' ORDER BY lemma, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "hidden": true,
+      "resultShape": "lexemes",
+      "group": ["lexemes"]
+    },
+    {
+      "name": "q88e",
+      "caption": "Īpašvārdi bez īpašvārda❗",
+      "sql": "SELECT e.human_key human_key, heading, e.id, lemma FROM lexemes l JOIN entries e ON l.entry_id = e.id WHERE l.paradigm_id IS NULL AND l.data->'Gram'->'Flags'->>'Lietvārda tips' IS NULL AND l.data->'Gram'->'Flags'->>'Īpašvārda veids' IS NOT NULL ORDER BY lemma, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": ["lexemes", "warning"]
+    },
+    {
+      "name": "q88f",
+      "caption": "Īpašvārdi bez veida❗",
+      "sql": "SELECT e.human_key human_key, heading, e.id, lemma FROM lexemes l JOIN entries e ON l.entry_id = e.id WHERE l.paradigm_id IS NULL AND l.data->'Gram'->'Flags'->>'Lietvārda tips' = 'Īpašvārds' AND l.data->'Gram'->'Flags'->>'Īpašvārda veids' IS NULL ORDER BY lemma, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": ["lexemes", "warning"]
+    },
+    {
+      "name": "q88g",
+      "caption": "Īpašvārdi talkai – reversais saraksts",
+      "sql": "SELECT e.human_key human_key, heading, e.id, lemma, p.human_key paradigm FROM lexemes l JOIN entries e ON l.entry_id = e.id LEFT JOIN paradigms p on p.id = l.paradigm_id WHERE e.type_id = 1 AND (l.data->'Gram'->'Flags'->>'Lietvārda tips' = 'Īpašvārds' OR l.data->'Gram'->'Flags'->'Īpašvārda veids' IS NOT NULL) ORDER BY reverse(lemma), e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "notIssue": true,
+      "group": ["lexemes"],
+      "extraColumns": [
+        {
+          "name": "paradigm",
+          "caption": "Paradigma"
+        }
+      ]
+    },
+    {
+      "name": "q89",
+      "caption": "Skaidrojumi ar ..❗",
+      "sql": "SELECT human_key, heading, gloss FROM senses s JOIN entries e ON e.id = s.entry_id WHERE gloss ~ '\\.\\.' AND gloss !~ '\\.\\.\\.' ORDER BY lower(gloss), human_key, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "group": ["senses", "warning"]
+    },
+    {
+      "name": "q90",
+      "caption": "Skaidrojumi ar dīvainu pēdējo simbolu, ieskaitot '!' un '?'",
+      "sql": "SELECT human_key, heading, gloss FROM senses s JOIN entries e ON e.id = s.entry_id WHERE gloss !~ '[a-zA-ZāēīōūšžčģļņķĀĒĪŌŪŠŽČĢĻŅĶ\\.\\)>%]$' AND gloss IS NOT NULL AND gloss <> '' ORDER BY lower(gloss), human_key, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "group": ["senses"]
+    },
+    {
+      "name": "q90b",
+      "caption": "Skaidrojumi ar dīvainu pēdējo simbolu, neskaitot '!' un '?' ❗",
+      "sql": "SELECT human_key, heading, gloss FROM senses s JOIN entries e ON e.id = s.entry_id WHERE gloss !~ '[a-zA-ZāēīōūšžčģļņķĀĒĪŌŪŠŽČĢĻŅĶ\\.\\)>%\\?!]$' AND gloss IS NOT NULL AND gloss <> '' ORDER BY lower(gloss), human_key, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "group": ["senses", "warning"]
+    },
+    {
+      "name": "q91",
+      "caption": "Leksēmas, kam ir ierobežojums ar tipu \"Formā/atvasinājumā\", bez biežuma un ar karodziņu \"Skaitlis: Vienskaitlis\"",
+      "sql": "SELECT e.id, human_key, heading, lemma FROM admin.sr_l r JOIN lexemes l ON r.id = l.id JOIN entries e ON l.entry_id = e.id WHERE sr->>'Restriction' = 'Formā/atvasinājumā' AND sr->'Value'->'Flags'->>'Skaitlis' = 'Vienskaitlis' AND sr->'Frequency' IS NULL ORDER BY heading, e.human_key, lemma",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes",
+      "notIssue": true,
+      "hidden": false
+    },
+    {
+      "name": "q92",
+      "caption": "Skaidrojumi ar mazo sākumburtu un pieturzīmi '.', '!' vai '?' beigās ❗",
+      "sql": "SELECT human_key, heading, gloss FROM senses s JOIN entries e ON e.id = s.entry_id WHERE gloss ~ '^\\(?[a-zāēīōūšžčģļņķ].*[\\.!\\?]$' ORDER BY lower(gloss), human_key, e.id;",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "senses",
+      "group": ["senses", "warning"]
+    },
+    {
+      "name": "q93",
+      "caption": "Leksēmas bez paradigmas, ar avotu MLVV, nav apvidvārds",
+      "sql": "SELECT human_key, heading, e.id, lemma FROM lexemes l JOIN entries e on l.entry_id = e.id JOIN source_links sl on sl.entry_id = e.id WHERE sl.source_id = 302 AND e.type_id = 1 AND l.paradigm_id IS NULL AND (l.data->'Gram'->'Flags'->'Lietojums' IS NULL OR NOT l.data->'Gram'->'Flags'->'Lietojums' @> '[\"Apvidvārds\"]') ORDER BY heading, human_key, lemma",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes"
+    },
+    {
+      "name": "q95",
+      "caption": "Šķirkļi ar jebkādiem ierobežojumiem",
+      "sql": "SELECT id, heading, human_key FROM entries WHERE data->'Gram'->'StructuralRestrictions' IS NOT NULL ORDER BY heading, human_key",
+      "notIssue": true,
+      "resultShape": "entries",
+      "group": "entries"
+    },
+    {
+      "name": "q96",
+      "caption": "Vienburtīgas leksēmas",
+      "sql": "SELECT e.id, human_key, heading, lemma FROM lexemes l JOIN entries e ON l.entry_id = e.id WHERE length(lemma) < 2 ORDER BY heading, e.human_key, lemma",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes",
+      "notIssue": true,
+      "hidden": false
+    },
+    {
+      "name": "q97",
+      "caption": "Leksēmas ar vietniekvārda paradigmu",
+      "sql": "SELECT e.heading, e.human_key, l.lemma FROM dict.lexemes l JOIN dict.entries e ON e.id = l.entry_id JOIN dict.paradigms p ON p.id = l.paradigm_id WHERE p.legacy_no = 25 ORDER BY heading, e.human_key, lemma",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes",
+      "notIssue": true,
+      "hidden": false
+    },
+    {
+      "name": "q98",
+      "caption": "Leksēmas ar divdabja tipu ierobežojumos",
+      "sql": "SELECT e.id, e.heading, e.human_key, l.lemma FROM admin.sr_l v JOIN dict.lexemes l ON v.id = l.id JOIN dict.entries e ON l.entry_id = e.id WHERE sr->'Value'->'Flags'->'Divdabja veids' IS NOT NULL ORDER BY heading, e.human_key, lemma",
+      "showIn": [
+        "tezaurs"
+      ],
+      "resultShape": "lexemes",
+      "group": "lexemes",
+      "notIssue": true,
+      "hidden": false
+    },
+
+    {
+      "name": "q999",
+      "caption": "Šķirkļi ar ",
+      "sql": "SELECT *, e.data->'Gram'->'Leftovers' value1 FROM dict.entries e WHERE e.data->'Gram'->'Leftovers' IS NOT NULL ORDER BY heading, human_key",
+      "resultShape": "senses",
+      "group": "senses",
+      "hidden": true,
+      "extraColumns": [
+        {
+          "name": "value1",
+          "caption": "Pārpalikumi"
+        }
+      ]
+    }
+  ]
+}

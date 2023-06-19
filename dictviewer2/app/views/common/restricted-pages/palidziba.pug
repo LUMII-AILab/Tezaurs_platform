@@ -1,0 +1,349 @@
+extends ../layout
+
+mixin if_not_public
+  if app_mode === APP_MODE.EDITOR
+    block
+
+block append header_scripts
+  +if_not_public
+    link(type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css")
+  link(rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css")
+  style.
+    h2 {
+      margin-top: 2rem;
+    }
+    h2 {
+      font-size: 1.4em;
+    }
+    h3 {
+      font-size: 1.2em;
+    }
+    th, td {
+      padding: 0.3rem;
+    }
+    .biblio {
+      font-weigth: 300;
+      vertical-align: top;
+    }
+    .spacer {
+      width: 15px;
+      text-align: center;
+      vertical-align: top;
+    }
+    .code {
+      font-weight: 400;
+      width: 25px;
+      vertical-align: top;
+    }
+    .term {
+      width: 200px;
+      vertical-align: top;
+    }
+    dd {
+      margin-bottom: 0;
+    }
+    dt {
+      margin-top: 0.4em;
+    }
+
+block content
+  include ../includes/entry-constants
+
+  h1 Palīdzība redaktorcilvēkam 
+
+  h2 Markdown izmantošana teksta noformēšanai
+
+  p Markdown kodu var izmantot laukos 'skaidrojums', 'etimoloģija', 'normatīvais komentārs', kā arī redaktora piezīmju laukā.
+
+  table(style='width: 600px') 
+    tr
+      th Vēlamais rezultāts  
+      th Kods 
+
+    tr
+      td 
+        :markdown-it(inline) *slīps*
+      td *slīps* vai _slīps_
+
+    tr
+      td 
+        :markdown-it(inline) **trekns**  
+      td **trekns** vai __trekns__
+
+    tr
+      td 
+        :markdown-it(inline) ***slīps un trekns***  
+      td ***slīps un trekns*** vai ___slīps un trekns___
+
+    tr
+      td 
+        :markdown-it(inline) ~~nosvītrots~~
+      td ~~nosvītrots~~
+
+    tr
+      td 
+        :markdown-it(inline plugins=['markdown-it-sub']) H~2~O
+      td H~2~O
+
+    tr
+      td 
+        :markdown-it(inline plugins=['markdown-it-sup']) km^2^
+      td km^2^
+
+    tr
+      td 
+        :markdown-it(inline typographer) -- (n-dash)
+      td --
+
+    tr
+      td 
+        :markdown-it(inline typographer) --- (m-dash)
+      td ---
+
+    tr
+      td 
+        :markdown-it(inline typographer) ...
+      td ...
+
+  p Ja ir nepieciešams kādu no markdown kodējumā aizņemtajiem simboliem neuzskatīt par markdown elementu, tad pirms tā liek atpakaļvērsto slīpsvītru ('\'), piemēram, '\_'. 
+
+  hr
+
+  h2 Izrunas pieraksta simboli 
+
+  p Ievadot izrunu, izmantojam viegli ievadāmus simbolus, kurus rīks izrunas attēlojumā automātiski aizstās ar tradicionālajiem tipogrāfiskajiem simboliem. 
+
+  p Vairākas izrunas ievadlaukā savstarpēji nodala ar simbolu '|'.
+
+  table(style='width: 600px') 
+    tr 
+      th Parādība
+      th Pieraksts 
+      th Piemērs 
+      th Rezultāts 
+
+    tr 
+      td Krītošā intonācija
+      td \ pēc intonējamā burta
+      td vi\le
+      td vìle
+
+    tr 
+      td Lauztā intonācija
+      td ^ pēc intonējamā burta
+      td zā^le
+      td zā̂le
+
+    tr 
+      td Stieptā intonācija
+      td ~ pēc intonējamā burta
+      td zā~le
+      td zā̃le
+
+    tr 
+      td Uzsvars
+      td ! pirms uzsveramās zilbes
+      td nu!ja
+      td nuˈja
+
+    tr 
+      td Platais e
+      td e,
+      td me,lns
+      td mȩlns
+
+    tr 
+      td Palatalizācija
+      td l%
+      td saul%e
+      td saulʲe
+  
+  //- include:markdown-it(html typographer plugins=['markdown-it-emoji', 'markdown-it-sup', 'markdown-it-sub', 'markdown-it-deflist', 'markdown-it-highlightjs']) palidziba.md
+
+  //- -
+    const ENTRY_COLOR = '#007AFF';
+    const LEXEME_COLOR = '#FFC107';
+    const SENSE_COLOR = '#28A745';
+    const EXAMPLE_COLOR = '#148C9F';
+    const SOURCE_COLOR = '#6C757D';
+
+  +if_not_public
+    hr
+
+    h2 Informatīvie simboli (ikonas); nebūs redzami publiskajā skatā
+
+    table(style='width: 600px')
+      tr
+        th(style='text-align: left') Šķirklis
+        th(style='text-align: left') Leksēma
+        th(style='text-align: left') Nozīme
+        th(style='text-align: left') Piemērs
+        th(style='text-align: left') Avots
+        th(style='text-align: left') Kas
+      tr
+        td
+          i.fas.fa-flag(style=`color: ${ENTRY_COLOR}`)
+        td
+          i.fas.fa-flag(style=`color: ${LEXEME_COLOR}`)
+        td
+          i.fas.fa-flag(style=`color: ${SENSE_COLOR}`)
+        td
+          i.fas.fa-flag(style=`color: ${EXAMPLE_COLOR}`)
+        td
+        td Karogi
+      tr
+        td
+          i.fas.fa-gavel(style=`color: ${ENTRY_COLOR}`)
+        td
+          i.fas.fa-gavel(style=`color: ${LEXEME_COLOR}`)
+        td
+          i.fas.fa-gavel(style=`color: ${SENSE_COLOR}`)
+        td
+          i.fas.fa-gavel(style=`color: ${EXAMPLE_COLOR}`)
+        td
+        td Strukturālie ierobežojumi
+      tr
+        td
+        td
+          i.fas.fa-paragraph(style=`color: ${LEXEME_COLOR}`)
+        td
+        td
+        td
+        td Paradigma
+      tr
+        td
+          i.far.fa-clipboard(style=`color: red`)
+        td
+          i.far.fa-clipboard(style=`color: red`)
+        td
+          i.far.fa-clipboard(style=`color: red`)
+        td
+          i.far.fa-clipboard(style=`color: red`)
+        td
+        td Importa piezīmes
+      tr
+        td
+          i.fas.fa-archive(style=`color: ${ENTRY_COLOR}`)
+        td
+          i.fas.fa-archive(style=`color: ${LEXEME_COLOR}`)
+        td
+          i.fas.fa-archive(style=`color: ${SENSE_COLOR}`)
+        td
+          i.fas.fa-archive(style=`color: ${EXAMPLE_COLOR}`)
+        td
+        td Vecie karogi
+      tr
+        td
+          i.fas.fa-radiation-alt(style="color: red")
+        td
+          i.fas.fa-radiation-alt(style="color: red")
+        td
+          i.fas.fa-radiation-alt(style="color: red")
+        td
+          i.fas.fa-radiation-alt(style="color: red")
+        td
+        td Pārpalikumi
+      tr
+        td
+        td
+          i.fas.fa-eye-slash(style="color: red")
+        td
+          i.fas.fa-eye-slash(style="color: red")
+        td
+          i.fas.fa-eye-slash(style="color: red")
+        td
+        td Paslēpts elements
+
+    div(style='margin-top: 1rem') Ja peles kursors atrodas virs ikonas (izņemot #[i.fas.fa-eye-slash(style="color: red")]), tad parādās uzpeldošs informācijas lodziņš.
+
+  +if_not_public
+    hr
+
+    h2 Rediģēšanas spiedpogas
+    table(style='width: 600px')
+      tr
+        th(style='text-align: left') Šķirklis
+        th(style='text-align: left') Leksēma
+        th(style='text-align: left') Nozīme
+        th(style='text-align: left') Piemērs
+        th(style='text-align: left') Avots
+        th(style='text-align: left') Kas
+      tr
+        td
+          button.btn.btn-primary.btn-sm(type='button')
+            i.fas.fa-pen
+        td
+          button.btn.btn-warning.btn-sm(type='button')
+            i.fas.fa-pen
+        td
+          button.btn.btn-success.btn-sm(type='button')
+            i.fas.fa-pen
+        td
+          button.btn.btn-info.btn-sm(type='button')
+            i.fas.fa-pen
+        td
+          button.btn.btn-secondary.btn-sm(type='button')
+            i.fas.fa-pen
+        td Labot entītiju
+      tr
+        td
+          button.btn.btn-primary.btn-sm.dropdown-toggle(type='button')
+        td
+          button.btn.btn-warning.btn-sm.dropdown-toggle(type='button')
+        td
+          button.btn.btn-success.btn-sm.dropdown-toggle(type='button')
+        td
+          button.btn.btn-info.btn-sm.dropdown-toggle(type='button')
+        td
+          button.btn.btn-secondary.btn-sm.dropdown-toggle(type='button')
+        td Saistīto darbību izvēlne
+
+    hr
+
+    h2 Rediģēšanas īsceļi
+    table(style='width: 600px; margin: 1em 0')
+      tr
+        th(style='text-align: left') Taustiņš
+        th(style='text-align: left') Nozīme
+      tr
+        td Control + S
+        td Saglabāt izmaiņas un iziet no rediģēšanas ekrānformu
+      tr
+        td Esc
+        td Iziet no rediģēšanas ekrānformas bez saglabāšanas
+      tr
+        td Ātrpoga#[sup *] + E
+        td Atvērt šķirkļa rediģēšanas ekrānformu
+      tr
+        td Ātrpoga#[sup *] + cipara taustiņš (0..9)
+        td Atvērt N-tās nozīmes rediģēšanas ekrānformu
+      tr
+        td Ātrpoga#[sup *] + L
+        td Atvērt leksēmas rediģēšanas ekrānformu (noderīgi tikai šķirkļos ar 1 leksēmu; ja šķirklī ir vairākas leksēmas, tad ātrpogas vietā jāizmanto pele)
+    p * Ātrpoga ir atkarīga no izmantotā pārlūka un izmantotās operētājsistēmas. Biežāk sastopamie varianti:
+    table(style='width: 600px; margin: 1em 0')
+      tr
+        th Pārlūks
+        th Windows
+        th Linux
+        th Mac
+      tr
+        td Chrome
+        td Alt
+        td Alt
+        td ⌃ + ⌥
+      tr
+        td Firefox
+        td Alt + Shift
+        td Alt + Shift
+        td (versija 57+): ⌃ + ⌥
+      tr
+        td Edge
+        td Alt
+        td
+        td ⌃ + ⌥
+      tr
+        td Safari
+        td
+        td
+        td ⌃ + ⌥
